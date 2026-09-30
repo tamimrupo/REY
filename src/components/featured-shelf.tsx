@@ -10,7 +10,7 @@ import type { ShelfBook } from "@/lib/types";
 /** How long each book stays centred before the shelf advances on its own. */
 const AUTOPLAY_MS = 4500;
 /** After a manual click, leave the reader alone for a while. */
-const QUIET_AFTER_CLICK_MS = 9000;
+const QUIET_AFTER_CLICK_MS = 5000;
 
 /** Round author avatar: photo when we have one, initials when we do not. */
 function AuthorAvatar({
@@ -53,12 +53,10 @@ function AuthorAvatar({
  */
 export function FeaturedShelf({
   books,
-  total,
   label,
   children,
 }: {
   books: ShelfBook[];
-  total: number;
   label?: string;
   children: ReactNode;
 }) {
@@ -68,9 +66,12 @@ export function FeaturedShelf({
   const pausedRef = useRef(false);
   const visibleRef = useRef(true);
   const lastClickRef = useRef(0);
+  /** True when the reader is navigating the shelf by keyboard, not mouse. */
+  const keyboardRef = useRef(false);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [pad, setPad] = useState(0);
+  const [autoplayOn, setAutoplayOn] = useState(true);
 
   const cards = useCallback((): HTMLElement[] => {
     const rail = railRef.current;
@@ -144,6 +145,7 @@ export function FeaturedShelf({
   // Endless autoplay, one book at a time. Skipped for reduced-motion users.
   useEffect(() => {
     if (books.length < 2) return;
+    if (!autoplayOn) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const rail = railRef.current;
@@ -151,6 +153,12 @@ export function FeaturedShelf({
       if (document.hidden || !visibleRef.current) return;
       if (pausedRef.current) return;
       if (Date.now() - lastClickRef.current < QUIET_AFTER_CLICK_MS) return;
+
+      // Pause only when the reader is *keyboard*-navigating inside the shelf.
+      // A mouse click also focuses a button, so keying off focus alone left the
+      // shelf paused for good — that is what made looping look broken.
+      const focused = document.activeElement;
+      if (keyboardRef.current && rail && focused && rail.contains(focused)) return;
 
       const count = books.length;
       const next = (activeIndexRef.current + 1) % count;
@@ -174,7 +182,7 @@ export function FeaturedShelf({
       clearInterval(timer);
       observer?.disconnect();
     };
-  }, [books.length, goTo]);
+  }, [books.length, goTo, autoplayOn]);
 
   /** Wraps around in both directions, so the shelf never "ends". */
   const step = (direction: 1 | -1) => {
@@ -234,17 +242,11 @@ export function FeaturedShelf({
       <div
         ref={railRef}
         onScroll={handleScroll}
-        onMouseEnter={() => {
-          pausedRef.current = true;
+        onKeyDownCapture={() => {
+          keyboardRef.current = true;
         }}
-        onMouseLeave={() => {
-          pausedRef.current = false;
-        }}
-        onFocusCapture={() => {
-          pausedRef.current = true;
-        }}
-        onBlurCapture={() => {
-          pausedRef.current = false;
+        onMouseDownCapture={() => {
+          keyboardRef.current = false;
         }}
         className="no-scrollbar relative -mx-2 mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto px-2 pt-6 pb-7"
       >
@@ -309,7 +311,8 @@ export function FeaturedShelf({
             />
           </svg>
           <span>
-            The shelf moves on its own — hover to pause.{" "}
+            The shelf moves on its own, one book at a time and without ever stopping — use
+            pause if you want to look.{" "}
             <Link
               href="/library"
               className="text-ink underline decoration-ink/30 hover:decoration-ink"
@@ -323,12 +326,22 @@ export function FeaturedShelf({
         <div className="flex items-center gap-5">
           <p className="text-sm">
             <span className="text-ink-muted">
-              {shown} / {String(total).padStart(2, "0")}
+              {shown} / {String(books.length).padStart(2, "0")}
             </span>{" "}
             <span className="text-ink">books</span>
           </p>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setAutoplayOn((on) => !on)}
+              aria-pressed={autoplayOn}
+              aria-label={autoplayOn ? "Pause the shelf" : "Play the shelf"}
+              className="btn btn-outline btn-sm"
+            >
+              {autoplayOn ? "❚❚ Pause" : "▶ Play"}
+            </button>
+
             <button
               type="button"
               onClick={() => step(-1)}

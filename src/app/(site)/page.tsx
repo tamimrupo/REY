@@ -208,7 +208,7 @@ export default async function HomePage() {
       {shelf.length ? (
         <section className="border-b border-line bg-paper">
           <div className="container-page py-20">
-            <FeaturedShelf books={shelf} total={shelfBooks.total || shelf.length} label={shelfLabel}>
+            <FeaturedShelf books={shelf} label={shelfLabel}>
               <h2 className="mt-3 text-3xl sm:text-4xl">Keep the story going.</h2>
               <p className="mt-5 max-w-md leading-relaxed text-ink-soft">
                 Do not let the story end just yet. Continue with the shelf below, or start somewhere
