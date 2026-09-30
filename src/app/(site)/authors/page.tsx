@@ -28,12 +28,20 @@ export default async function AuthorsPage() {
         <span>Authors</span>
       </nav>
 
-      <div className="mt-8 max-w-2xl">
-        <h1 className="text-4xl font-semibold text-ink">Authors on our shelves</h1>
-        <p className="mt-3 text-ink-soft">
+      <div className="section-rule mt-7">
+        <span className="label-mono">Contributors</span>
+        <span aria-hidden className="h-px flex-1 bg-line" />
+        <span className="label-mono">
           {authors.length} author{authors.length === 1 ? "" : "s"}
-          {seriesCount ? ` · ${seriesCount} series` : ""}. Tap anyone to see everything we hold by
-          them, and what to read next.
+        </span>
+      </div>
+
+      <div className="mt-7 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+        <h1 className="text-4xl sm:text-5xl">Authors on our shelves</h1>
+        <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
+          {seriesCount ? `${seriesCount} series, ` : ""}
+          {authors.length} writers we hold titles by. Tap one to see everything, and what to read
+          next.
         </p>
       </div>
 

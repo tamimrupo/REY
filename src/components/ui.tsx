@@ -73,17 +73,43 @@ export function SectionHeading({
   title,
   description,
   align = "left",
+  index,
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   align?: "left" | "center";
+  /** Catalogue number shown before the label, e.g. "02". */
+  index?: string;
 }) {
+  const centered = align === "center";
+
   return (
-    <div className={align === "center" ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
-      {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-      <h2 className="mt-2 text-3xl font-semibold text-ink sm:text-4xl">{title}</h2>
-      {description ? <p className="mt-3 text-ink-soft">{description}</p> : null}
+    <div className={centered ? "mx-auto max-w-2xl text-center" : "max-w-3xl"}>
+      {eyebrow || index ? (
+        centered ? (
+          <p className="label-mono">
+            {index ? `${index} / ` : ""}
+            {eyebrow}
+          </p>
+        ) : (
+          <div className="section-rule">
+            <span className="label-mono">
+              {index ? `${index} / ` : ""}
+              {eyebrow}
+            </span>
+            <span aria-hidden className="h-px flex-1 bg-line" />
+          </div>
+        )
+      ) : null}
+
+      <h2 className="mt-6 text-3xl sm:text-4xl">{title}</h2>
+
+      {description ? (
+        <p className={`mt-4 text-base leading-relaxed text-ink-soft ${centered ? "" : "max-w-2xl"}`}>
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -21,8 +21,8 @@ export async function SiteHeader() {
         </div>
       ) : null}
 
-      <div className="container-page flex h-16 items-center justify-between gap-4">
-        <div className="flex items-center gap-8">
+      <div className="container-page flex h-[72px] items-center justify-between gap-4">
+        <div className="flex items-center gap-9">
           <Link href="/" aria-label="REY BD — home" className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -30,11 +30,11 @@ export async function SiteHeader() {
               alt="REY BD"
               width={78}
               height={40}
-              className="h-8 w-auto"
+              className="h-9 w-auto"
             />
           </Link>
 
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden items-center gap-7 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}

@@ -36,34 +36,47 @@ export default async function LibraryPage(props: PageProps<"/library">) {
     <>
       {session ? <QuotaBar userId={session.userId} /> : null}
 
-      <section className="border-b border-line bg-cream/60">
-        <div className="container-page py-12">
-          <p className="eyebrow">The library</p>
-          <h1 className="mt-3 text-4xl font-semibold text-ink">Browse every title</h1>
-          <p className="mt-3 max-w-2xl text-ink-soft">
-            {total} title{total === 1 ? "" : "s"} available to members. Search by name, or narrow it
-            down by genre and language.
-          </p>
+      <section className="border-b border-line bg-paper">
+        <div className="container-page pb-9 pt-10">
+          <div className="section-rule">
+            <span className="label-mono">The library</span>
+            <span aria-hidden className="h-px flex-1 bg-line" />
+            <span className="label-mono">
+              {total} title{total === 1 ? "" : "s"}
+            </span>
+          </div>
 
-          <form method="get" className="mt-8 grid gap-3 sm:grid-cols-[2fr_1fr_1fr_auto]">
-            <div>
-              <label className="label" htmlFor="q">
-                Search
+          <div className="mt-7 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+            <h1 className="text-4xl sm:text-5xl">Browse every title</h1>
+            <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
+              Search by name, or narrow it by genre and language. Every title here is included in a
+              plan — pick the ones you want and we deliver them.
+            </p>
+          </div>
+
+          {/* One bar, not five boxes: search, two selects, and the submit. */}
+          <form
+            method="get"
+            className="mt-8 flex flex-wrap items-stretch gap-3 border border-line bg-white p-3"
+          >
+            <div className="min-w-[14rem] flex-1">
+              <label className="sr-only" htmlFor="q">
+                Search title or author
               </label>
               <input
                 id="q"
                 name="q"
                 defaultValue={q}
-                placeholder="Title or author…"
-                className="field"
+                placeholder="Search title or author…"
+                className="field border-0 bg-transparent"
               />
             </div>
 
             <div>
-              <label className="label" htmlFor="genre">
+              <label className="sr-only" htmlFor="genre">
                 Genre
               </label>
-              <select id="genre" name="genre" defaultValue={genre} className="field">
+              <select id="genre" name="genre" defaultValue={genre} className="field w-auto">
                 <option value="">All genres</option>
                 {genres.map((g) => (
                   <option key={g.id} value={g.slug}>
@@ -74,10 +87,10 @@ export default async function LibraryPage(props: PageProps<"/library">) {
             </div>
 
             <div>
-              <label className="label" htmlFor="language">
+              <label className="sr-only" htmlFor="language">
                 Language
               </label>
-              <select id="language" name="language" defaultValue={language} className="field">
+              <select id="language" name="language" defaultValue={language} className="field w-auto">
                 <option value="">All languages</option>
                 {languages.map((l) => (
                   <option key={l} value={l}>
@@ -87,31 +100,38 @@ export default async function LibraryPage(props: PageProps<"/library">) {
               </select>
             </div>
 
-            <div className="flex items-end gap-2">
-              <button type="submit" className="btn btn-primary">
-                Filter
-              </button>
-              {q || genre || language || rarity ? (
-                <Link href="/library" className="btn btn-ghost">
-                  Reset
-                </Link>
-              ) : null}
-            </div>
+            <button type="submit" className="btn btn-primary btn-sm">
+              Filter
+            </button>
           </form>
 
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap items-center gap-2">
             <Link
               href={buildQuery({ q, genre, language })}
-              className={`btn btn-sm ${rarity === "" ? "btn-primary" : "btn-outline"}`}
+              className="chip"
+              data-active={rarity === ""}
             >
               All titles
             </Link>
             <Link
               href={buildQuery({ q, genre, language, rarity: "rare" })}
-              className={`btn btn-sm ${rarity === "rare" ? "btn-primary" : "btn-outline"}`}
+              className="chip"
+              data-active={rarity === "rare"}
             >
               Rare &amp; hard to find
             </Link>
+
+            {q || genre || language || rarity ? (
+              <>
+                <span aria-hidden className="mx-1 h-4 w-px bg-line" />
+                <span className="label-mono">
+                  {total} match{total === 1 ? "" : "es"}
+                </span>
+                <Link href="/library" className="chip ml-auto">
+                  Clear all
+                </Link>
+              </>
+            ) : null}
           </div>
         </div>
       </section>

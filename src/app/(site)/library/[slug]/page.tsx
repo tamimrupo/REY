@@ -82,7 +82,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
 
         <div className="mt-8 grid gap-12 lg:grid-cols-[380px_1fr]">
           <div>
-            <div className="overflow-hidden rounded-2xl border border-line bg-cream">
+            <div className="overflow-hidden rounded-[6px] border border-line bg-cream shadow-[0_18px_40px_-30px_rgba(9,9,9,0.5)]">
               <BookCover book={book} className="aspect-[2/3] w-full" />
             </div>
           </div>
@@ -133,7 +133,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
               <p className="mt-6 max-w-2xl leading-relaxed text-ink-soft">{book.description}</p>
             ) : null}
 
-            <dl className="mt-8 grid max-w-xl grid-cols-2 gap-x-8 gap-y-4 border-y border-line py-6 text-sm">
+            <dl className="mt-10 max-w-xl divide-y divide-line border-y border-ink text-sm">
               {[
                 ["Genre", book.genres?.name],
                 ["Language", book.language],
@@ -145,9 +145,9 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
               ]
                 .filter(([, value]) => Boolean(value))
                 .map(([label, value]) => (
-                  <div key={label as string}>
-                    <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">{label}</dt>
-                    <dd className="mt-1 text-ink">{value}</dd>
+                  <div key={label as string} className="flex items-baseline gap-6 py-3">
+                    <dt className="label-mono w-28 shrink-0">{label}</dt>
+                    <dd className="min-w-0 flex-1 text-ink">{value}</dd>
                   </div>
                 ))}
             </dl>
