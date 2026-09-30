@@ -18,7 +18,7 @@ export function PlanCard({
 
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border bg-white p-6 ${
+      className={`lift relative flex h-full flex-col rounded-2xl border bg-white p-6 ${
         plan.is_popular ? "border-ink shadow-[0_18px_40px_-28px_rgba(22,19,17,0.55)]" : "border-line"
       }`}
     >

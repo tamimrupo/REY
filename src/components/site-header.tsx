@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { MobileMenu, navLinks } from "@/components/mobile-menu";
+import { ScrollElevation } from "@/components/motion";
 import { SearchOverlay } from "@/components/search-overlay";
 import { getSession } from "@/lib/auth";
 import { getAnnouncement } from "@/lib/data";
@@ -9,7 +10,11 @@ export async function SiteHeader() {
   const [session, announcement] = await Promise.all([getSession(), getAnnouncement()]);
 
   return (
-    <header className="relative sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur">
+    <header
+      data-site-header
+      className="relative sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur transition-shadow duration-300 data-[scrolled=true]:shadow-[0_1px_0_#09090914,0_20px_34px_-28px_#09090973]"
+    >
+      <ScrollElevation />
       {announcement.enabled && announcement.text ? (
         <div className="bg-ink px-4 py-2 text-center text-xs tracking-wide text-paper/90">
           {announcement.text}
@@ -34,7 +39,7 @@ export async function SiteHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-ink-soft transition hover:text-ink"
+                className="nav-link text-sm text-ink-soft transition hover:text-ink"
               >
                 {link.label}
               </Link>

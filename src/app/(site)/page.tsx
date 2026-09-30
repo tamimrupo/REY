@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { BookCard } from "@/components/book-card";
 import { FeaturedShelf } from "@/components/featured-shelf";
+import { CountUp, Reveal } from "@/components/motion";
 import { PlanCard } from "@/components/plan-card";
 import { EmptyState, SectionHeading, SetupNotice } from "@/components/ui";
 import {
@@ -86,7 +87,7 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- Hero */}
       <section className="border-b border-line bg-paper">
         <div className="container-page grid items-center gap-14 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
-          <div>
+          <Reveal>
             <p className="eyebrow">Book rental club · Dhaka, Bangladesh</p>
             <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl">
               Choose your plan,
@@ -106,9 +107,9 @@ export default async function HomePage() {
                 Browse the library
               </Link>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="grid grid-cols-3 gap-x-4 gap-y-8">
+          <Reveal delay={110} className="grid grid-cols-3 gap-x-4 gap-y-8">
             {shelfBooks.books.length ? (
               shelfBooks.books.slice(0, 6).map((book) => <BookCard key={book.id} book={book} />)
             ) : (
@@ -132,17 +133,18 @@ export default async function HomePage() {
                 </Link>
               </div>
             )}
-          </div>
+          </Reveal>
         </div>
 
         {/* Proof strip */}
         <div className="border-y border-line bg-cream/60">
           <div className="container-page grid gap-x-10 gap-y-7 py-8 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex items-baseline gap-3">
-                <span className="font-display text-3xl font-bold leading-none tracking-tight text-ink tabular-nums">
-                  {stat.value}
-                </span>
+            {stats.map((stat, index) => (
+              <Reveal key={stat.label} delay={index * 90} className="flex items-baseline gap-3">
+                <CountUp
+                  value={stat.value}
+                  className="font-display text-3xl font-bold leading-none tracking-tight text-ink tabular-nums"
+                />
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold leading-tight text-ink">
                     {stat.label}
@@ -151,7 +153,7 @@ export default async function HomePage() {
                     {stat.detail}
                   </span>
                 </span>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -165,22 +167,28 @@ export default async function HomePage() {
       <section className="border-b border-line bg-paper">
         <div className="container-page py-20">
           <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-            <SectionHeading
-              eyebrow="How it works"
-              title="Three moves from sign-up to your first box"
-              description="We handle the warehousing, the couriers and the chasing. You just decide what to read next."
-            />
+            <Reveal>
+              <SectionHeading
+                eyebrow="How it works"
+                title="Three moves from sign-up to your first box"
+                description="We handle the warehousing, the couriers and the chasing. You just decide what to read next."
+              />
+            </Reveal>
 
             <div className="grid gap-10 sm:grid-cols-3">
-              {steps.map((step) => (
-                <div key={step.number} className="border-t-2 border-ink pt-5">
+              {steps.map((step, index) => (
+                <Reveal
+                  key={step.number}
+                  delay={index * 110}
+                  className="border-t-2 border-ink pt-5"
+                >
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand">{step.number}</p>
                   <h3 className="mt-3 text-lg">{step.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-ink-soft">{step.body}</p>
                   <p className="mt-4 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-ink-muted">
                     {step.tag}
                   </p>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -190,15 +198,19 @@ export default async function HomePage() {
       {/* --------------------------------------------------------------- Plans */}
       <section id="plans" className="border-b border-line bg-cream">
         <div className="container-page py-20">
-          <SectionHeading
-            eyebrow="Membership"
-            title="Plans built around how much you actually read"
-            description={`Every plan includes the refundable deposit, monthly swaps and the full library. The most you can hold at once is ${maxBooks} books.`}
-          />
+          <Reveal>
+            <SectionHeading
+              eyebrow="Membership"
+              title="Plans built around how much you actually read"
+              description={`Every plan includes the refundable deposit, monthly swaps and the full library. The most you can hold at once is ${maxBooks} books.`}
+            />
+          </Reveal>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            {plans.map((plan) => (
-              <PlanCard key={plan.id} plan={plan} features={features} />
+            {plans.map((plan, index) => (
+              <Reveal key={plan.id} delay={index * 110} className="flex">
+                <PlanCard plan={plan} features={features} />
+              </Reveal>
             ))}
           </div>
 
@@ -213,7 +225,7 @@ export default async function HomePage() {
       {/* ------------------------------------------- Featured author shelf */}
       {shelf.length ? (
         <section className="border-b border-line bg-paper">
-          <div className="container-page py-20">
+          <Reveal className="container-page py-20">
             <FeaturedShelf books={shelf} label={shelfLabel}>
               <h2 className="mt-3 text-3xl sm:text-4xl">Keep the story going.</h2>
               <p className="mt-5 max-w-md leading-relaxed text-ink-soft">
@@ -224,7 +236,7 @@ export default async function HomePage() {
                 Start reading <span aria-hidden>↗</span>
               </Link>
             </FeaturedShelf>
-          </div>
+          </Reveal>
         </section>
       ) : (
         <section className="border-b border-line bg-paper">
@@ -242,10 +254,12 @@ export default async function HomePage() {
       {/* -------------------------------------------------------------- Proof */}
       <section className="bg-ink">
         <div className="container-page py-20">
-          <p className="eyebrow text-gold-soft">The club in numbers</p>
-          <h2 className="mt-4 max-w-2xl text-paper">
-            A rental club is only as good as the books on the shelf and the courier at the door.
-          </h2>
+          <Reveal>
+            <p className="eyebrow text-gold-soft">The club in numbers</p>
+            <h2 className="mt-4 max-w-2xl text-paper">
+              A rental club is only as good as the books on the shelf and the courier at the door.
+            </h2>
+          </Reveal>
 
           <dl className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {[
@@ -261,12 +275,18 @@ export default async function HomePage() {
                 detail: "New books out, finished books back",
               },
               { value: "100%", label: "Deposit returned", detail: "Once your books come home" },
-            ].map((item) => (
-              <div key={item.label} className="border-t border-white/20 pt-5">
-                <dt className="text-4xl font-extrabold tracking-tight text-paper">{item.value}</dt>
+            ].map((item, index) => (
+              <Reveal
+                key={item.label}
+                delay={index * 90}
+                className="border-t border-white/20 pt-5"
+              >
+                <dt className="text-4xl font-extrabold tracking-tight text-paper">
+                  <CountUp value={item.value} />
+                </dt>
                 <dd className="mt-2 text-sm font-semibold text-paper">{item.label}</dd>
                 <dd className="mt-1 text-xs text-paper/60">{item.detail}</dd>
-              </div>
+              </Reveal>
             ))}
           </dl>
         </div>
@@ -277,7 +297,7 @@ export default async function HomePage() {
         <section className="border-b border-line bg-cream">
           <div className="container-page py-20">
             <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
-              <div>
+              <Reveal>
                 <SectionHeading
                   eyebrow="Rare & hard to find"
                   title="Not on the shelves? Ask for it."
@@ -286,11 +306,13 @@ export default async function HomePage() {
                 <Link href="/rare" className="btn btn-primary mt-8">
                   Request a book
                 </Link>
-              </div>
+              </Reveal>
 
               <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
-                {rare.books.slice(0, 6).map((book) => (
-                  <BookCard key={book.id} book={book} />
+                {rare.books.slice(0, 6).map((book, index) => (
+                  <Reveal key={book.id} delay={index * 70}>
+                    <BookCard book={book} />
+                  </Reveal>
                 ))}
               </div>
             </div>
@@ -301,7 +323,7 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- CTA */}
       <section className="bg-paper">
         <div className="container-page py-20">
-          <div className="panel px-8 py-14 text-center">
+          <Reveal className="panel px-8 py-14 text-center">
             <p className="eyebrow">Ready when you are</p>
             <h2 className="mx-auto mt-4 max-w-2xl">
               Your next twelve books are one plan away.
@@ -314,7 +336,7 @@ export default async function HomePage() {
                 How it works
               </Link>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

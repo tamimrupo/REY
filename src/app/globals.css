@@ -500,6 +500,75 @@
     height: 1px;
     background: var(--color-line);
   }
+
+  /* ---- Motion ------------------------------------------------------------ */
+  /* Scroll reveal. Nothing is hidden until the browser "arms" it (see
+     components/motion.tsx), so a page whose script never runs — or throws — is
+     simply visible. No orange error, no blank hero. */
+  .reveal[data-armed="true"] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 620ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal[data-armed="true"][data-shown="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* A card that leads somewhere lifts towards the reader. */
+  .lift {
+    transition:
+      transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 220ms;
+  }
+  .lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  /* A hairline that grows under a link, in whatever colour the text already is. */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Anyone who asked their system for less movement gets none of it. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 @utility no-scrollbar {
