@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { BookCard } from "@/components/book-card";
-import { BookCoverImage } from "@/components/book-cover";
 import { FeaturedShelf } from "@/components/featured-shelf";
 import { CountUp, Reveal } from "@/components/motion";
 import { PlanCard } from "@/components/plan-card";
@@ -16,6 +15,26 @@ import {
 import { couriersFor } from "@/lib/quotas";
 import { dhakaDayIndex, pickForToday, rotateForToday } from "@/lib/daily";
 import { money } from "@/lib/format";
+
+/** The open-book glyph that replaces the "o" in the headline. */
+function BookGlyph() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="6 7 20 18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="mx-[0.05em] inline-block h-[0.58em] w-[0.66em] align-baseline"
+    >
+      <path d="M16 9.5v14" />
+      <path d="M16 11c-2.6-2.1-6.2-2.7-9.3-2.3v13c3.1-.4 6.7.2 9.3 2.3" />
+      <path d="M16 11c2.6-2.1 6.2-2.7 9.3-2.3v13c-3.1-.4-6.7.2-9.3 2.3" />
+    </svg>
+  );
+}
 
 export default async function HomePage() {
   const [plans, features, shelfBooks, rare, courierSettings] = await Promise.all([
@@ -103,127 +122,82 @@ export default async function HomePage() {
     <>
       {/* ---------------------------------------------------------------- Hero */}
       <section className="border-b border-line bg-paper">
-        <div className="container-page grid gap-y-14 pb-16 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-x-16 lg:pb-20 lg:pt-16">
-          {/* ---- Left: the statement ---- */}
-          <Reveal className="flex flex-col">
+        {/* ---- Type: headline left, framing copy bottom-right ---- */}
+        <div className="container-page grid gap-y-8 pb-10 pt-10 lg:grid-cols-[1.35fr_0.65fr] lg:items-end lg:gap-x-16 lg:pb-11 lg:pt-14">
+          <Reveal>
             <div className="flex items-center gap-4 border-t border-ink pt-3.5">
               <span className="label-mono !text-ink-soft">Book rental club — Dhaka, Bangladesh</span>
               <span aria-hidden className="h-px flex-1 bg-line" />
               <span className="label-mono hidden !text-ink-soft sm:inline">Est. 2026</span>
             </div>
 
-            <h1 className="mt-9 text-[2.75rem] sm:text-6xl lg:text-[4.25rem]">
-              Choose your plan,
+            <h1 className="mt-8 text-[2.6rem] sm:text-6xl lg:text-[4.5rem]">
+              Find your next great
               <br />
-              pick your books.
+              b
+              <BookGlyph />
+              ok to read.
             </h1>
 
-            <p className="mt-7 max-w-lg text-lg leading-relaxed text-ink-soft">
-              Subscribe monthly, select exactly the titles you want, and we deliver them to your
-              door. Read, return, swap. No shelf to dust, no guilt about the ones you never got to.
-            </p>
-
-            <div className="mt-10 flex flex-wrap gap-3">
-              <Link href="/plans" className="btn btn-primary">
-                Start a plan
+            <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-3">
+              <Link href="/library" className="btn btn-primary">
+                See the library <span aria-hidden>→</span>
               </Link>
-              <Link href="/library" className="btn btn-outline">
-                Browse the library
+              <Link
+                href="/plans"
+                className="label-mono underline decoration-line underline-offset-4 hover:decoration-ink"
+              >
+                Or start a plan from {money(cheapestPlan?.price_monthly ?? 299)}/mo
               </Link>
             </div>
+          </Reveal>
 
-            {/* Facts, not filler: they balance the shelf and answer the questions
-                a first-time visitor actually has. */}
-            <dl className="mt-14 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 sm:grid-cols-4">
+          <Reveal delay={110}>
+            <p className="max-w-sm text-sm leading-relaxed text-ink-soft lg:pb-3">
+              {shelfBooks.total} titles on the shelves — biography, poems, Bangla fiction and the odd
+              classic. Choose two, four or eight a month; we deliver them, you read them, and we
+              collect them when you are done.
+            </p>
+          </Reveal>
+        </div>
+
+        {/* ---- The image: a reading scene from 1880, bled edge to edge ---- */}
+        <div className="border-y border-line bg-cream">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/hero/reader-1880.jpg"
+            alt="Young woman reading at a book stand — painting by Osman Hamdi Bey, 1880"
+            width={1440}
+            height={1131}
+            className="h-[220px] w-full object-cover object-[70%_38%] grayscale contrast-[1.06] sm:h-[300px] lg:h-[380px]"
+          />
+        </div>
+
+        {/* ---- Credit line, and the facts it sits beside ---- */}
+        <div className="relative overflow-hidden">
+          <p
+            aria-hidden
+            className="pointer-events-none absolute -bottom-[0.44em] right-0 select-none font-serif text-[17vw] leading-none text-ink/[0.05]"
+          >
+            REY
+          </p>
+
+          <div className="container-page relative flex flex-wrap items-baseline justify-between gap-x-12 gap-y-6 py-8">
+            <p className="label-mono max-w-[15rem] leading-relaxed">
+              “Young woman reading”, Osman Hamdi Bey, 1880 — public domain
+            </p>
+
+            <dl className="flex flex-wrap gap-x-10 gap-y-5">
               {heroFacts.map((fact) => (
                 <div key={fact.label}>
-                  <dt className="font-serif text-3xl font-semibold leading-none tracking-tight text-ink sm:text-4xl">
+                  <dt className="font-serif text-2xl font-semibold leading-none tracking-tight text-ink">
                     <Money value={fact.value} />
                   </dt>
-                  <dd className="label-mono mt-3">{fact.label}</dd>
+                  <dd className="label-mono mt-2">{fact.label}</dd>
                 </div>
               ))}
             </dl>
-          </Reveal>
-
-          {/* ---- Right: the shelf, presented as a display ---- */}
-          <Reveal delay={110} className="lg:pl-4">
-            <div className="flex items-baseline justify-between gap-4">
-              <span className="label-mono">On the shelf this week</span>
-              {shelfBooks.total ? (
-                <Link
-                  href="/library"
-                  className="label-mono underline decoration-line underline-offset-4 hover:decoration-ink"
-                >
-                  All {shelfBooks.total} →
-                </Link>
-              ) : null}
-            </div>
-
-            {shelfBooks.books.length ? (
-              <div className="mt-12">
-                {/* The middle book forward, the outer two tilted back — a table
-                    display rather than a grid of thumbnails. */}
-                <div className="flex items-end justify-center gap-3 sm:gap-5">
-                  {shelfBooks.books.slice(0, 3).map((book, index) => {
-                    const tilt = index === 0 ? "-rotate-3" : index === 2 ? "rotate-3" : "";
-                    const lift = index === 1 ? "-translate-y-6 sm:-translate-y-9" : "";
-                    // The middle book is the focal point, so it leads in size too.
-                    const size =
-                      index === 1
-                        ? "w-[96px] sm:w-[148px] lg:w-[168px]"
-                        : "w-[84px] sm:w-[130px] lg:w-[142px]";
-                    return (
-                      <Link
-                        key={book.id}
-                        href={`/library/${book.slug}`}
-                        className={`group block shrink-0 transition-transform duration-500 hover:-translate-y-2 ${tilt} ${lift}`}
-                      >
-                        <div
-                          className={`aspect-[2/3] overflow-hidden border border-line bg-cream shadow-[0_30px_54px_-32px_rgba(9,9,9,0.5)] ${size}`}
-                        >
-                          <BookCoverImage
-                            url={book.cover_url}
-                            title={book.title}
-                            author={book.authors?.name}
-                            className="h-full w-full transition duration-500 group-hover:scale-[1.04]"
-                          />
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-
-                {shelfBooks.books[1] ? (
-                  <div className="mt-10 text-center">
-                    <p className="label-mono">Featured this week</p>
-                    <p className="mx-auto mt-2.5 max-w-sm font-serif text-lg leading-snug text-ink">
-                      {shelfBooks.books[1].title}
-                    </p>
-                    <p className="mt-1 text-xs text-ink-muted">
-                      {shelfBooks.books[1].authors?.name ?? "Unknown author"}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            ) : (
-              <div className="mt-10 border border-line bg-cream p-8">
-                <p className="label-mono">Your first box</p>
-                <div className="mt-6 flex items-end gap-2" aria-hidden>
-                  {[68, 92, 56, 80, 64].map((height, index) => (
-                    <span key={index} className="w-6 bg-frost" style={{ height }} />
-                  ))}
-                </div>
-                <p className="mt-6 text-sm leading-relaxed text-ink-soft">
-                  Two to eight titles a month, chosen by you. Add books from the dashboard and they
-                  appear right here.
-                </p>
-                <Link href="/library" className="btn btn-outline btn-sm mt-5">
-                  Open the library
-                </Link>
-              </div>
-            )}
-          </Reveal>
+          </div>
         </div>
       </section>
 
