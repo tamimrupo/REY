@@ -53,7 +53,7 @@ export async function SiteHeader() {
             href={session ? "/account" : "/login"}
             className="btn btn-ghost btn-sm hidden sm:inline-flex"
           >
-            {session ? (session.profile?.full_name?.split(" ")[0] ?? "Account") : "Sign in"}
+            {session ? "My account" : "Sign in"}
           </Link>
           <Link href="/plans" className="btn btn-primary btn-sm hidden sm:inline-flex">
             Start a plan
