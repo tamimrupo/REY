@@ -106,7 +106,17 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
 
             {book.authors?.name ? (
               <p className="mt-4 text-ink-soft">
-                by <span className="font-medium text-ink">{book.authors.name}</span>
+                by{" "}
+                {book.authors.slug ? (
+                  <Link
+                    href={`/author/${book.authors.slug}`}
+                    className="font-medium text-ink underline decoration-ink/30 hover:decoration-ink"
+                  >
+                    {book.authors.name}
+                  </Link>
+                ) : (
+                  <span className="font-medium text-ink">{book.authors.name}</span>
+                )}
               </p>
             ) : null}
 
@@ -161,7 +171,11 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
       {book.authors?.name ? (
         <div className="container-page pb-16">
           <AuthorCard
-            author={{ name: book.authors.name, avatar_url: book.authors.avatar_url }}
+            author={{
+              name: book.authors.name,
+              slug: book.authors.slug,
+              avatar_url: book.authors.avatar_url,
+            }}
             stats={statsParts.join(" · ")}
             bio={authorBio}
             titles={authorTitles}

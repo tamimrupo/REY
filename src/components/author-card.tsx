@@ -15,11 +15,14 @@ export function AuthorCard({
   stats,
   bio,
   titles,
+  linkName = true,
 }: {
-  author: { name: string; avatar_url?: string | null };
+  author: { name: string; slug?: string; avatar_url?: string | null };
   stats: string;
   bio: string;
   titles: Book[];
+  /** Off when the card is already on that author's own page. */
+  linkName?: boolean;
 }) {
   return (
     <section className="card overflow-hidden">
@@ -36,7 +39,18 @@ export function AuthorCard({
         </div>
 
         <div className="min-w-0">
-          <h2 className="text-2xl sm:text-3xl">{author.name}</h2>
+          <h2 className="text-2xl sm:text-3xl">
+            {linkName && author.slug ? (
+              <Link
+                href={`/author/${author.slug}`}
+                className="transition hover:text-ink-muted"
+              >
+                {author.name}
+              </Link>
+            ) : (
+              author.name
+            )}
+          </h2>
           {stats ? <p className="mt-2 text-sm text-ink-muted">{stats}</p> : null}
 
           <div aria-hidden className="mt-5 h-px w-14 bg-ink" />
@@ -48,6 +62,12 @@ export function AuthorCard({
           <p className="mt-2 text-[0.6875rem] uppercase tracking-[0.14em] text-ink-muted">
             Author
           </p>
+
+          {linkName && author.slug ? (
+            <Link href={`/author/${author.slug}`} className="btn btn-outline btn-sm mt-6">
+              All books by {author.name} <span aria-hidden>→</span>
+            </Link>
+          ) : null}
 
           {titles.length ? (
             <div className="mt-7 border-t border-line pt-5">

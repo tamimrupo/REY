@@ -31,6 +31,7 @@ export type Author = {
   name: string;
   slug: string;
   bio: string | null;
+  avatar_url?: string | null;
 };
 
 export type Genre = {
@@ -64,7 +65,12 @@ export type Book = {
   total_copies: number;
   created_at: string;
   // joined
-  authors?: { name: string; avatar_url?: string | null; bio?: string | null } | null;
+  authors?: {
+    name: string;
+    slug?: string;
+    avatar_url?: string | null;
+    bio?: string | null;
+  } | null;
   genres?: { name: string } | null;
 };
 

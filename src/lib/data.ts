@@ -75,7 +75,7 @@ async function compute<T>(run: (sb: any) => Promise<T>, fallback: T): Promise<T>
   }
 }
 
-const BOOK_SELECT = "*, authors(name, avatar_url, bio), genres(name)";
+const BOOK_SELECT = "*, authors(name, slug, avatar_url, bio), genres(name)";
 const BOOK_SELECT_LIST =
   "id, title, slug, cover_url, language, rarity, demand, is_active, total_copies, published_year, author_id, genre_id, authors(name), genres(name)";
 const RENTAL_SELECT = "*, books(id, title, slug, cover_url, authors(name))";
@@ -193,6 +193,14 @@ export async function getGenres(): Promise<Genre[]> {
 
 export async function getAuthors(): Promise<Author[]> {
   return query<Author[]>((sb) => sb.from("authors").select("*").order("name"), []);
+}
+
+/** One author, by the slug in their page URL. */
+export async function getAuthorBySlug(slug: string): Promise<Author | null> {
+  return query<Author | null>(
+    (sb) => sb.from("authors").select("*").eq("slug", slug).maybeSingle(),
+    null,
+  );
 }
 
 export type BookFilters = {

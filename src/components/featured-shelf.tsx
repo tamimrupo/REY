@@ -194,7 +194,16 @@ export function FeaturedShelf({
               <AuthorAvatar author={active.authors} />
               <span>
                 <span className="block font-semibold text-ink">
-                  {active.authors?.name ?? "REY BD"}
+                  {active.authors?.slug ? (
+                    <Link
+                      href={`/author/${active.authors.slug}`}
+                      className="transition hover:underline"
+                    >
+                      {active.authors.name ?? "REY BD"}
+                    </Link>
+                  ) : (
+                    (active.authors?.name ?? "REY BD")
+                  )}
                 </span>
                 <span className="block text-xs text-ink-muted">
                   {active.genres?.name ? `${active.genres.name} · Author` : "Author"}
