@@ -94,13 +94,20 @@ export async function saveBookAction(
     authorId = data?.id ?? null;
   }
 
-  // Optional author photo, used by the round avatar on the home-page shelf.
-  // Only applied when the author is not being reassigned, so switching a book to
-  // a different author can never copy the old photo onto them.
+  // Optional author photo and bio, used by the author card on book pages and the
+  // round avatar on the home shelf. Both are only applied when the author is not
+  // being reassigned, so switching a book to a different author can never copy the
+  // previous author's details onto them.
   const originalAuthorId = str(formData, "original_author_id") || null;
   const authorAvatar = str(formData, "author_avatar_url");
-  if (authorId && authorAvatar && (!originalAuthorId || authorId === originalAuthorId)) {
-    await supabase.from("authors").update({ avatar_url: authorAvatar }).eq("id", authorId);
+  const authorBio = str(formData, "author_bio");
+  const canEditAuthor = !originalAuthorId || authorId === originalAuthorId;
+
+  if (authorId && canEditAuthor && (authorAvatar || authorBio)) {
+    const patch: Record<string, string> = {};
+    if (authorAvatar) patch.avatar_url = authorAvatar;
+    if (authorBio) patch.bio = authorBio;
+    await supabase.from("authors").update(patch).eq("id", authorId);
   }
 
   let genreId = str(formData, "genre_id") || null;

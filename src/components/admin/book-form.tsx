@@ -179,9 +179,17 @@ export function BookForm({
                 placeholder="Author photo URL (optional)"
                 defaultValue={book?.authors?.avatar_url ?? ""}
               />
+              <textarea
+                name="author_bio"
+                rows={4}
+                className="field mt-2"
+                placeholder="Short author bio (optional)"
+                defaultValue={book?.authors?.bio ?? ""}
+              />
               <p className="mt-1 text-xs text-ink-muted">
-                The photo appears in the round avatar beside the home-page shelf. Leave it empty to
-                show the author&apos;s initials instead.
+                The photo appears in the round avatar on the home shelf and in the author card on
+                every book page. The bio fills that card — leave it empty and the card falls back to
+                listing their titles.
               </p>
               <input type="hidden" name="original_author_id" value={book?.author_id ?? ""} />
             </div>

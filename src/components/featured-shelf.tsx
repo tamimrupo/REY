@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import Link from "next/link";
 
 import { BookCover } from "@/components/book-card";
-import { initials } from "@/lib/format";
+import { AvatarImage } from "@/components/avatar-image";
 import type { ShelfBook } from "@/lib/types";
 
 /** How long each book stays centred before the shelf advances on its own. */
@@ -12,32 +12,13 @@ const AUTOPLAY_MS = 4500;
 /** After a manual click, leave the reader alone for a while. */
 const QUIET_AFTER_CLICK_MS = 5000;
 
-/** Round author avatar: photo when we have one, initials when we do not. */
+/** Round author avatar for the shelf panel. */
 function AuthorAvatar({
   author,
 }: {
   author?: { name: string; avatar_url?: string | null } | null;
 }) {
-  if (author?.avatar_url) {
-    return (
-      /* eslint-disable-next-line @next/next/no-img-element */
-      <img
-        src={author.avatar_url}
-        alt=""
-        className="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-line"
-        loading="lazy"
-      />
-    );
-  }
-
-  return (
-    <span
-      aria-hidden
-      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-semibold text-paper"
-    >
-      {initials(author?.name ?? "REY BD")}
-    </span>
-  );
+  return <AvatarImage name={author?.name ?? "REY BD"} url={author?.avatar_url} variant="circle" />;
 }
 
 /**

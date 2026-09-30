@@ -2,11 +2,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToBoxButton } from "@/components/add-to-box-button";
+import { AuthorCard } from "@/components/author-card";
 import { BookCard, BookCover } from "@/components/book-card";
 import { QuotaBar } from "@/components/quota-bar";
 import { StatusPill } from "@/components/ui";
 import { getSession } from "@/lib/auth";
-import { getBookBySlug, getPlans, listBooks } from "@/lib/data";
+import {
+  getAuthorTitles,
+  getBookBySlug,
+  getBorrowCountsByBook,
+  getPlans,
+  listBooks,
+} from "@/lib/data";
 import { money } from "@/lib/format";
 
 export async function generateMetadata(props: PageProps<"/library/[slug]">) {
@@ -20,11 +27,38 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
   const book = await getBookBySlug(slug);
   if (!book) notFound();
 
-  const [plans, related, session] = await Promise.all([
+  const [plans, related, session, authorTitles, borrowCounts] = await Promise.all([
     getPlans(),
     listBooks({ genre: undefined, perPage: 6 }),
     getSession(),
+    book.author_id ? getAuthorTitles(book.author_id, book.id, 5) : Promise.resolve([]),
+    book.author_id
+      ? getBorrowCountsByBook()
+      : Promise.resolve({} as Record<string, number>),
   ]);
+
+  // Honest author stats: how many of their titles we hold, and how often those
+  // have actually been borrowed. No invented star ratings.
+  const authorName = book.authors?.name ?? "this author";
+  const titleCount = authorTitles.length + 1;
+  const borrowTotal =
+    authorTitles.reduce((sum, title) => sum + (borrowCounts[title.id] ?? 0), 0) +
+    (borrowCounts[book.id] ?? 0);
+
+  const statsParts = [`${titleCount} title${titleCount === 1 ? "" : "s"} in the club`];
+  if (borrowTotal > 0) {
+    statsParts.push(`${borrowTotal} borrow${borrowTotal === 1 ? "" : "s"}`);
+  }
+
+  const writtenBio = book.authors?.bio?.trim();
+  const authorBio = writtenBio
+    ? writtenBio
+    : authorTitles.length
+      ? `We hold ${titleCount} titles by ${authorName} in the club, including ${authorTitles
+          .slice(0, 2)
+          .map((title) => title.title)
+          .join(" and ")}. Add one to your box and we will bring it to your door.`
+      : `${authorName} has a title on our shelves. Add it to your box and we will bring it to your door.`;
 
   const cheapest = plans.length
     ? plans.reduce((a, b) => (Number(a.price_monthly) <= Number(b.price_monthly) ? a : b))
@@ -123,6 +157,17 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
           </div>
         </div>
       </div>
+
+      {book.authors?.name ? (
+        <div className="container-page pb-16">
+          <AuthorCard
+            author={{ name: book.authors.name, avatar_url: book.authors.avatar_url }}
+            stats={statsParts.join(" · ")}
+            bio={authorBio}
+            titles={authorTitles}
+          />
+        </div>
+      ) : null}
 
       {others.length ? (
         <section className="border-t border-line">

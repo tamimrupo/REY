@@ -64,7 +64,7 @@ export type Book = {
   total_copies: number;
   created_at: string;
   // joined
-  authors?: { name: string; avatar_url?: string | null } | null;
+  authors?: { name: string; avatar_url?: string | null; bio?: string | null } | null;
   genres?: { name: string } | null;
 };
 

@@ -75,7 +75,7 @@ async function compute<T>(run: (sb: any) => Promise<T>, fallback: T): Promise<T>
   }
 }
 
-const BOOK_SELECT = "*, authors(name, avatar_url), genres(name)";
+const BOOK_SELECT = "*, authors(name, avatar_url, bio), genres(name)";
 const BOOK_SELECT_LIST =
   "id, title, slug, cover_url, language, rarity, demand, is_active, total_copies, published_year, author_id, genre_id, authors(name), genres(name)";
 const RENTAL_SELECT = "*, books(id, title, slug, cover_url, authors(name))";
@@ -303,6 +303,47 @@ export async function getShelfBooks(
     })),
     total: result.total,
   };
+}
+
+/**
+ * The other titles we hold by one author — used by the author card on every
+ * book page.
+ */
+export async function getAuthorTitles(
+  authorId: string,
+  excludeBookId?: string,
+  limit = 6,
+): Promise<Book[]> {
+  return compute(
+    async (sb) => {
+      const { data, error } = await sb
+        .from("books")
+        .select(BOOK_SELECT_LIST)
+        .eq("is_active", true)
+        .eq("author_id", authorId)
+        .order("title", { ascending: true })
+        .limit(limit + 1);
+      if (error) throw new Error(error.message);
+      return ((data ?? []) as Book[])
+        .filter((book) => book.id !== excludeBookId)
+        .slice(0, limit);
+    },
+    [] as Book[],
+  );
+}
+
+/** How many times each book has been borrowed, keyed by book id. */
+export async function getBorrowCountsByBook(): Promise<Record<string, number>> {
+  const rows = await query<{ book_id: string; borrowed: number }[]>(
+    (sb) => sb.rpc("book_borrow_counts"),
+    [],
+  );
+
+  const out: Record<string, number> = {};
+  for (const row of Array.isArray(rows) ? rows : []) {
+    out[row.book_id] = Number(row.borrowed) || 0;
+  }
+  return out;
 }
 
 /**
