@@ -263,6 +263,25 @@ export async function getBookBySlug(slug: string): Promise<Book | null> {
   );
 }
 
+/**
+ * The book featured in the home-page carousel: the newest active title that
+ * actually has a description, so the pull-quote is real text rather than filler.
+ */
+export async function getFeaturedBook(): Promise<Book | null> {
+  return query<Book | null>(
+    (sb) =>
+      sb
+        .from("books")
+        .select(BOOK_SELECT)
+        .eq("is_active", true)
+        .not("description", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    null,
+  );
+}
+
 export async function getBookById(id: string): Promise<Book | null> {
   return query<Book | null>((sb) => sb.from("books").select(BOOK_SELECT).eq("id", id).maybeSingle(), null);
 }
