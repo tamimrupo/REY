@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Installed agent skills: third-party reference material and scripts that
+    // are not part of this project's source (see .claude/skills).
+    ".claude/**",
+    ".agent/**",
   ]),
 ]);
 

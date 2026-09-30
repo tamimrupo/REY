@@ -15,7 +15,7 @@
   --color-ink: #090909;
   --color-ink-deep: #000000;
   --color-ink-soft: #525252;
-  --color-ink-muted: #8a8a8a;
+  --color-ink-muted: #6f6f6f;
 
   /* Accent = black. Kept as `brand` so callers keep working. */
   --color-brand: #090909;
@@ -38,9 +38,10 @@
   --color-gold: #090909;
   --color-gold-soft: #a3a3a3;
 
-  /* Typography: one family. */
+  /* Typography: one UI family, plus a literary serif for display headings. */
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Cormorant Garamond", "Iowan Old Style", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Depth — buttons and cards both carry weight. */
@@ -211,18 +212,31 @@
     text-wrap: balance;
   }
 
+  /* Display headings are set in a serif — the "library" cue the UI review
+     recommended for a book club. h3/h4 stay in the UI sans so small labels keep
+     their crispness, and so does anything asking for `font-display` explicitly. */
+  h1,
+  h2 {
+    font-family: var(--font-serif);
+    font-weight: 600 !important;
+    letter-spacing: -0.012em;
+    /* Tailwind's text-* utilities set line-height: 1, which crowds a
+       high-contrast serif's ascenders and descenders. Forced for that reason. */
+    line-height: 1.08 !important;
+  }
+
   h1 {
     font-size: clamp(2.25rem, 5.2vw, 3.75rem);
-    font-weight: 800;
-    line-height: 0.98;
-    letter-spacing: -0.035em;
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
   }
 
   h2 {
     font-size: clamp(1.75rem, 3.2vw, 2.375rem);
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -0.032em;
+    font-weight: 600;
+    line-height: 1.14;
+    letter-spacing: -0.018em;
   }
 
   h3 {
@@ -239,14 +253,10 @@
     letter-spacing: -0.015em;
   }
 
-  /* Heavy headings are the intent. `!important` because ~113 headings carry a
+  /* Weights are forced with `!important` because ~113 headings carry a
      `font-semibold` utility that would otherwise win. Only weight is forced —
-     size still comes from each element's utility. */
-  h1,
-  h2 {
-    font-weight: 800 !important;
-  }
-
+     size still comes from each element's utility. h1/h2 keep 600 from the rule
+     above: the serif is high-contrast and a synthesised 800 smears it. */
   h3,
   h4 {
     font-weight: 700 !important;
@@ -263,6 +273,14 @@
 
   a {
     text-underline-offset: 3px;
+  }
+
+  /* Keyboard focus must always be obvious — and legible on light *and* dark
+     panels, so the ring takes the colour of the text it sits beside. */
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 

@@ -195,6 +195,48 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* -------------------------------------------------------------- Proof
+          Before the ask, not after it: real club numbers first, plans second. */}
+      <section className="bg-ink">
+        <div className="container-page py-20">
+          <Reveal>
+            <p className="eyebrow text-gold-soft">The club in numbers</p>
+            <h2 className="mt-4 max-w-2xl text-paper">
+              A rental club is only as good as the books on the shelf and the courier at the door.
+            </h2>
+          </Reveal>
+
+          <dl className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                value: String(shelfBooks.total || shelfBooks.books.length),
+                label: "Titles in the library",
+                detail: "And growing every week",
+              },
+              { value: String(plans.length || 3), label: "Ways to join", detail: "2, 4 or 8 books a month" },
+              {
+                value: "2",
+                label: "Trips a month",
+                detail: "New books out, finished books back",
+              },
+              { value: "100%", label: "Deposit returned", detail: "Once your books come home" },
+            ].map((item, index) => (
+              <Reveal
+                key={item.label}
+                delay={index * 90}
+                className="border-t border-white/20 pt-5"
+              >
+                <dt className="text-4xl font-extrabold tracking-tight text-paper">
+                  <CountUp value={item.value} />
+                </dt>
+                <dd className="mt-2 text-sm font-semibold text-paper">{item.label}</dd>
+                <dd className="mt-1 text-xs text-paper/60">{item.detail}</dd>
+              </Reveal>
+            ))}
+          </dl>
+        </div>
+      </section>
+
       {/* --------------------------------------------------------------- Plans */}
       <section id="plans" className="border-b border-line bg-cream">
         <div className="container-page py-20">
@@ -250,47 +292,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-
-      {/* -------------------------------------------------------------- Proof */}
-      <section className="bg-ink">
-        <div className="container-page py-20">
-          <Reveal>
-            <p className="eyebrow text-gold-soft">The club in numbers</p>
-            <h2 className="mt-4 max-w-2xl text-paper">
-              A rental club is only as good as the books on the shelf and the courier at the door.
-            </h2>
-          </Reveal>
-
-          <dl className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                value: String(shelfBooks.total || shelfBooks.books.length),
-                label: "Titles in the library",
-                detail: "And growing every week",
-              },
-              { value: String(plans.length || 3), label: "Ways to join", detail: "2, 4 or 8 books a month" },
-              {
-                value: "2",
-                label: "Trips a month",
-                detail: "New books out, finished books back",
-              },
-              { value: "100%", label: "Deposit returned", detail: "Once your books come home" },
-            ].map((item, index) => (
-              <Reveal
-                key={item.label}
-                delay={index * 90}
-                className="border-t border-white/20 pt-5"
-              >
-                <dt className="text-4xl font-extrabold tracking-tight text-paper">
-                  <CountUp value={item.value} />
-                </dt>
-                <dd className="mt-2 text-sm font-semibold text-paper">{item.label}</dd>
-                <dd className="mt-1 text-xs text-paper/60">{item.detail}</dd>
-              </Reveal>
-            ))}
-          </dl>
-        </div>
-      </section>
 
       {/* --------------------------------------------------------------- Rare */}
       {rare.books.length > 0 ? (

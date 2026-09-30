@@ -167,7 +167,7 @@ export function SearchOverlay() {
                     type="button"
                     onClick={() => setQuery("")}
                     aria-label="Clear search"
-                    className="text-base leading-none hover:text-ink"
+                    className="flex h-7 w-7 items-center justify-center rounded-full text-base leading-none transition hover:bg-surface hover:text-ink"
                   >
                     ✕
                   </button>
