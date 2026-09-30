@@ -9,10 +9,14 @@ export function CmsArticle({
   page: CmsPage;
   children?: React.ReactNode;
 }) {
-  const paragraphs = (page.content ?? "")
+  const raw = (page.content ?? "")
     .split(/\n{2,}/)
     .map((block) => block.trim())
     .filter(Boolean);
+
+  // The stored text may repeat the page title as its first line — the <h1> below
+  // already says it.
+  const blocks = raw[0] && raw[0].toLowerCase() === page.title.toLowerCase() ? raw.slice(1) : raw;
 
   return (
     <article className="container-page max-w-3xl py-16">
@@ -23,11 +27,25 @@ export function CmsArticle({
       ) : null}
 
       <div className="mt-10 space-y-5 text-[0.95rem] leading-relaxed text-ink-soft">
-        {paragraphs.map((block, index) => (
-          <p className="whitespace-pre-line" key={index}>
-            {block}
-          </p>
-        ))}
+        {blocks.map((block, index) => {
+          // "## Heading" keeps long policy documents navigable.
+          if (block.startsWith("## ")) {
+            return (
+              <h2
+                key={index}
+                className="pt-4 font-display text-lg font-semibold leading-snug text-ink"
+              >
+                {block.slice(3).trim()}
+              </h2>
+            );
+          }
+
+          return (
+            <p className="whitespace-pre-line" key={index}>
+              {block}
+            </p>
+          );
+        })}
       </div>
 
       {children}

@@ -5,30 +5,31 @@ import { getSiteSettings } from "@/lib/data";
 
 const columns = [
   {
-    title: "Rent & read",
+    title: "Rent & Read",
     links: [
-      { href: "/plans", label: "Subscription plans" },
-      { href: "/library", label: "Browse the library" },
-      { href: "/how-it-works", label: "How it works" },
-      { href: "/rare", label: "Rare & hard to find" },
+      { href: "/library", label: "Browse Catalog" },
+      { href: "/plans", label: "Subscription Plans" },
+      { href: "/how-it-works", label: "How It Works" },
+      { href: "/p/rental-rules", label: "Rental Rules" },
+      { href: "/p/security-deposit-guide", label: "Security Deposit Guide" },
     ],
   },
   {
     title: "Help",
     links: [
-      { href: "/p/terms-conditions", label: "Terms & conditions" },
-      { href: "/p/privacy-policy", label: "Privacy policy" },
-      { href: "/p/return-refund-deposit-policy", label: "Return & deposit policy" },
-      { href: "/p/shipping-delivery-policy", label: "Shipping & delivery" },
-      { href: "/p/faq", label: "FAQ & help centre" },
+      { href: "/p/terms-conditions", label: "Terms & Conditions" },
+      { href: "/p/privacy-policy", label: "Privacy Policy" },
+      { href: "/p/return-refund-deposit-policy", label: "Return, Refund & Deposit Policy" },
+      { href: "/p/shipping-delivery-policy", label: "Shipping & Delivery Policy" },
     ],
   },
   {
     title: "About",
     links: [
-      { href: "/about-us", label: "About us" },
-      { href: "/contact", label: "Contact" },
-      { href: "/account", label: "My account" },
+      { href: "/about-us", label: "About Us" },
+      { href: "/contact", label: "Contact Us" },
+      { href: "/account", label: "My Account" },
+      { href: "/p/faq", label: "FAQ & Help Center" },
     ],
   },
 ];
