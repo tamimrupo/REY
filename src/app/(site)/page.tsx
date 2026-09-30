@@ -5,7 +5,7 @@ import { BookCoverImage } from "@/components/book-cover";
 import { FeaturedShelf } from "@/components/featured-shelf";
 import { CountUp, Reveal } from "@/components/motion";
 import { PlanCard } from "@/components/plan-card";
-import { EmptyState, SectionHeading, SetupNotice } from "@/components/ui";
+import { EmptyState, SectionHeading, SetupNotice, Money } from "@/components/ui";
 import {
   getCourierSettings,
   getPlanFeatures,
@@ -138,7 +138,7 @@ export default async function HomePage() {
               {heroFacts.map((fact) => (
                 <div key={fact.label}>
                   <dt className="font-serif text-3xl font-semibold leading-none tracking-tight text-ink sm:text-4xl">
-                    {fact.value}
+                    <Money value={fact.value} />
                   </dt>
                   <dd className="label-mono mt-3">{fact.label}</dd>
                 </div>

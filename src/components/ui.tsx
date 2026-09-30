@@ -133,3 +133,25 @@ export function Stat({
     </div>
   );
 }
+
+const CURRENCY_MARKS = ["৳", "$", "€", "£", "¥"];
+
+/**
+ * Money with an optically sized currency mark.
+ *
+ * Neither Playfair Display nor Google's Inter ships the ৳ glyph, so the browser
+ * substitutes a system font that draws it 67% taller than the digits beside it
+ * (measured: 35px of ink against 21px at 36px type). 0.62em lands the mark at
+ * 103% — the same optical height as the numerals.
+ */
+export function Money({ value, className = "" }: { value: string; className?: string }) {
+  const mark = CURRENCY_MARKS.includes(value.trim().charAt(0)) ? value.trim().charAt(0) : "";
+  const amount = mark ? value.trim().slice(1) : value;
+
+  return (
+    <span className={className}>
+      {mark ? <span className="mr-[0.03em] text-[0.62em]">{mark}</span> : null}
+      {amount}
+    </span>
+  );
+}

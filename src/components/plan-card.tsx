@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Money } from "@/components/ui";
 import { money } from "@/lib/format";
 import type { Plan, PlanFeature } from "@/lib/types";
 
@@ -33,7 +34,7 @@ export function PlanCard({
 
       <p className="mt-6 flex items-baseline gap-1">
         <span className="font-display text-4xl font-semibold text-ink">
-          {money(plan.price_monthly)}
+          <Money value={money(plan.price_monthly)} />
         </span>
         <span className="text-sm text-ink-muted">/month</span>
       </p>
