@@ -27,6 +27,7 @@ Built with **Next.js 16 (App Router, Turbopack) + TypeScript + Tailwind CSS v4 +
 - Deposits ledger with refunds
 - Customers / CRM: profiles, roles, internal notes, blocking, lifetime value, rental history
 - Books CRUD with cover upload to Supabase Storage
+- **Book import:** search a title / author / ISBN, preview real covers, and import in one click — the cover is copied into your own storage and physical copies are created automatically
 - Plans & pricing CRUD (price, books per month, deposit, features)
 - Rare book requests
 - CMS pages (policies, about, FAQ) with draft/published
@@ -237,6 +238,8 @@ src/
     admin/             the dashboard (protected by role)
     auth/              callback + signout route handlers
     api/proof/[id]/    signed-URL proxy for payment screenshots
+    api/admin/         book metadata search for the import screen (admin-only)
+    api/cron/          daily maintenance
     layout.tsx         html shell, fonts, metadata
   components/          UI kit, forms, account + admin widgets
   lib/
@@ -266,6 +269,46 @@ payment = verified · order = paid · subscription = active (+ dates) · deposit
 Guard triggers in the database stop a customer from faking any of this by calling the
 Supabase API directly: they can only cancel their own subscription, and any order or
 payment they insert is forced back to `pending`.
+
+---
+
+## Importing books
+
+`/admin/import` offers three ways in, and they all share the same de-duplication
+and copy handling:
+
+| Tab | Use it for |
+| --- | --- |
+| **Search a book** | One title at a time. Type a title, author or ISBN, look at the real covers, then click **Import** — or *Import all* for everything on screen. |
+| **Paste / upload CSV** | Spreadsheets and supplier lists. |
+| **Open Library bulk** | Subject presets, e.g. *Bangla / Bengali* (`language:ben`), for filling a shelf at a time. |
+
+An import fills in: title, subtitle, author (created if new), genre, description,
+publisher, year, pages, language, ISBN and cover.
+
+**Covers are copied into your own `book-covers` bucket** instead of hot-linked, so
+the shop keeps working when Open Library is slow — which it regularly is. Open
+Library renders cover sizes on demand and some are missing or wedged, so the
+importer walks `-L → -M → -S` until one actually delivers bytes.
+
+**Every imported book gets `book_copies` rows** (`slug-01`, `slug-02`, …) matching
+its `total_copies`. Without them fulfilment can never hand out a physical copy:
+`copy_id` silently stays null and the same title can leave the building again and
+again.
+
+Worth knowing:
+
+- Prices are **not** imported — set them in the book form, or via the CSV's `price`
+  column.
+- New titles arrive **unpublished** unless you tick *Publish immediately*.
+- Open Library only indexes Latin letters: search `Humayun Ahmed`, not
+  `হুমায়ূন আহমেদ`. For Bangla titles use the bulk tab's *Bangla / Bengali* preset.
+- Searching by **ISBN** uses the exact edition record (page count, publisher,
+  language). Searching by **title** uses work-level data, which is aggregated across
+  every edition and is occasionally wrong — glance before you publish.
+- Optional: set `GOOGLE_BOOKS_API_KEY` to merge Google Books results as well (richer
+  descriptions). Without a key Google refuses anonymous calls with HTTP 429, so it
+  stays switched off.
 
 ---
 

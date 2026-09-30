@@ -6,7 +6,17 @@ import { requireAdmin } from "@/lib/auth";
 import { getCronSecret, getRentalSettings, getWhatsappSettings } from "@/lib/data";
 import { slugify } from "@/lib/format";
 import { supabaseConfigured } from "@/lib/env";
+import { fetchCandidate, type BookSource } from "@/lib/book-search";
 import { bookSlug, csvToRows, fetchOpenLibrary, normalizeIsbn } from "@/lib/import";
+import {
+  ensureAuthor,
+  ensureGenre,
+  findExistingBook,
+  importCandidate,
+  newImportContext,
+  syncCopies,
+  uniqueSlug,
+} from "@/lib/import-server";
 import { fillTemplate } from "@/lib/quotas";
 import { emailConfigured, queueNotification, sendEmail } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
@@ -1072,75 +1082,22 @@ export async function importBooksAction(
   const supabase = await createClient();
   const publishNow = bool(formData, "publish");
 
-  const authorCache = new Map<string, string>();
-  const genreCache = new Map<string, string>();
+  const ctx = newImportContext(supabase);
   let created = 0;
   let updated = 0;
   let skipped = 0;
 
-  async function authorId(name: string | null | undefined): Promise<string | null> {
-    if (!name) return null;
-    const key = name.trim().toLowerCase();
-    if (!key) return null;
-    if (authorCache.has(key)) return authorCache.get(key)!;
-
-    const { data: existing } = await supabase.from("authors").select("id").eq("slug", slugify(name)).maybeSingle();
-    if (existing?.id) {
-      authorCache.set(key, existing.id);
-      return existing.id;
-    }
-    const { data } = await supabase
-      .from("authors")
-      .insert({ name: name.trim(), slug: slugify(name) || `author-${Date.now()}` })
-      .select("id")
-      .single();
-    if (data?.id) authorCache.set(key, data.id);
-    return data?.id ?? null;
-  }
-
-  async function genreId(name: string | null | undefined): Promise<string | null> {
-    if (!name) return null;
-    const first = name.split(",")[0].trim();
-    const key = first.toLowerCase();
-    if (!key) return null;
-    if (genreCache.has(key)) return genreCache.get(key)!;
-
-    const { data: existing } = await supabase.from("genres").select("id").eq("slug", slugify(first)).maybeSingle();
-    if (existing?.id) {
-      genreCache.set(key, existing.id);
-      return existing.id;
-    }
-    const { data } = await supabase
-      .from("genres")
-      .insert({ name: first, slug: slugify(first) || `genre-${Date.now()}` })
-      .select("id")
-      .single();
-    if (data?.id) genreCache.set(key, data.id);
-    return data?.id ?? null;
-  }
-
   for (const row of rows) {
     const isbn = normalizeIsbn(row.isbn);
 
-    // De-duplicate on ISBN first, then on title.
-    let existingId: string | null = null;
-    if (isbn) {
-      const { data } = await supabase.from("books").select("id").eq("isbn", isbn).maybeSingle();
-      existingId = data?.id ?? null;
-    }
-    if (!existingId) {
-      const { data } = await supabase
-        .from("books")
-        .select("id")
-        .ilike("title", row.title)
-        .maybeSingle();
-      existingId = data?.id ?? null;
-    }
+    // De-duplicate on ISBN first, then on title — same rule as the search screen.
+    const existing = await findExistingBook(ctx, isbn, row.title);
+    const copies = Math.max(1, row.stock ?? 1);
 
-    const payload: Record<string, any> = {
+    const payload: Record<string, unknown> = {
       title: row.title,
-      author_id: await authorId(row.author),
-      genre_id: await genreId(row.genre),
+      author_id: await ensureAuthor(ctx, row.author),
+      genre_id: await ensureGenre(ctx, row.genre),
       description: row.description ?? null,
       cover_url: row.image_url ?? null,
       publisher: row.publisher ?? null,
@@ -1150,30 +1107,34 @@ export async function importBooksAction(
       rarity: row.rarity ?? "common",
       demand: row.demand ?? "medium",
       replacement_value: row.replacement_value ?? row.price ?? 0,
-      total_copies: Math.max(1, row.stock ?? 1),
+      total_copies: copies,
       is_active: publishNow || (row.status ?? "publish") === "publish",
     };
     if (isbn) payload.isbn = isbn;
 
-    if (existingId) {
-      const { error } = await supabase.from("books").update(payload).eq("id", existingId);
-      if (error) skipped += 1;
-      else updated += 1;
-    } else {
-      const slugBase = bookSlug(row.title);
-      let slug = slugBase;
-      let attempt = 1;
-      // Keep slugs unique without failing the whole import.
-      while (true) {
-        const { data: clash } = await supabase.from("books").select("id").eq("slug", slug).maybeSingle();
-        if (!clash) break;
-        attempt += 1;
-        slug = `${slugBase}-${attempt}`;
+    if (existing) {
+      const { error } = await supabase.from("books").update(payload).eq("id", existing.id);
+      if (error) {
+        skipped += 1;
+        continue;
       }
-      const { error } = await supabase.from("books").insert({ ...payload, slug });
-      if (error) skipped += 1;
-      else created += 1;
+      updated += 1;
+      await syncCopies(ctx, existing.id, existing.slug, copies);
+      continue;
     }
+
+    const slug = await uniqueSlug(ctx, bookSlug(row.title));
+    const { data, error } = await supabase
+      .from("books")
+      .insert({ ...payload, slug })
+      .select("id")
+      .single();
+    if (error || !data?.id) {
+      skipped += 1;
+      continue;
+    }
+    created += 1;
+    await syncCopies(ctx, data.id as string, slug, copies);
   }
 
   revalidateAdmin("/admin/books", "/admin/import");
@@ -1218,6 +1179,90 @@ export async function previewImportAction(
     message: `Parsed ${parsed.rows.length} row(s)${
       parsed.skipped ? `, skipped ${parsed.skipped} without a title` : ""
     }:\n${preview}`,
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Search & import                                                             */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Imports the titles picked on the search screen.
+ *
+ * The form only carries `{ source, id }` pairs — every title, author, cover and
+ * description is re-read from the metadata source here, so a tampered form can
+ * never write arbitrary content into the catalogue.
+ */
+export async function importCandidatesAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!supabaseConfigured) return fail(NOT_READY);
+  await requireAdmin();
+
+  let picks: { source: BookSource; id: string }[] = [];
+  try {
+    const parsed: unknown = JSON.parse(str(formData, "picks") || "[]");
+    if (Array.isArray(parsed)) {
+      picks = parsed
+        .map((entry) => {
+          const row = entry as { source?: unknown; id?: unknown };
+          return {
+            source: (row?.source === "google" ? "google" : "openlibrary") as BookSource,
+            id: String(row?.id ?? "").trim(),
+          };
+        })
+        .filter((entry) => entry.id.length > 0 && entry.id.length < 200)
+        .slice(0, 25);
+    }
+  } catch {
+    return fail("Could not read the selection. Search again and retry.");
+  }
+  if (!picks.length) return fail("Pick at least one title to import.");
+
+  const publish = bool(formData, "publish");
+  const supabase = await createClient();
+  const ctx = newImportContext(supabase);
+
+  const imported: string[] = [];
+  let created = 0;
+  let updated = 0;
+  let skipped = 0;
+
+  for (const pick of picks) {
+    const candidate = await fetchCandidate(pick.source, pick.id);
+    if (!candidate) {
+      skipped += 1;
+      continue;
+    }
+
+    const outcome = await importCandidate(ctx, candidate, { publish, rehostCover: true });
+    if (outcome === "created") created += 1;
+    else if (outcome === "updated") updated += 1;
+    else skipped += 1;
+
+    if (outcome !== "skipped") imported.push(candidate.title);
+  }
+
+  revalidateAdmin("/admin/books", "/admin/import");
+  revalidatePath("/library");
+  revalidatePath("/");
+
+  if (!imported.length) {
+    return fail("Nothing was imported — the source stopped answering. Try again in a moment.");
+  }
+
+  const parts: string[] = [];
+  if (created) parts.push(`${created} added`);
+  if (updated) parts.push(`${updated} refreshed`);
+  if (skipped) parts.push(`${skipped} skipped`);
+
+  const list = imported.slice(0, 5).join(", ");
+  const more = imported.length > 5 ? ` and ${imported.length - 5} more` : "";
+
+  return {
+    ok: true,
+    message: `Import finished — ${parts.join(", ")}. ${list}${more}.`,
   };
 }
 
