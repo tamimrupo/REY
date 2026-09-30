@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { MobileMenu, navLinks } from "@/components/mobile-menu";
+import { SearchOverlay } from "@/components/search-overlay";
 import { getSession } from "@/lib/auth";
 import { getAnnouncement } from "@/lib/data";
 
@@ -8,7 +9,7 @@ export async function SiteHeader() {
   const [session, announcement] = await Promise.all([getSession(), getAnnouncement()]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur">
+    <header className="relative sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur">
       {announcement.enabled && announcement.text ? (
         <div className="bg-ink px-4 py-2 text-center text-xs tracking-wide text-paper/90">
           {announcement.text}
@@ -42,9 +43,7 @@ export async function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link href="/library" className="btn btn-ghost btn-sm hidden sm:inline-flex">
-            Search
-          </Link>
+          <SearchOverlay />
           <Link
             href={session ? "/account" : "/login"}
             className="btn btn-ghost btn-sm hidden sm:inline-flex"
