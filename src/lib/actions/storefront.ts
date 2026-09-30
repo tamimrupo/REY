@@ -8,7 +8,6 @@ import { quoteCourier } from "@/lib/quotas";
 import {
   getCourierSettings,
   getMembershipState,
-  getPaymentSettings,
   getPlanBySlug,
 } from "@/lib/data";
 import { supabaseConfigured } from "@/lib/env";
@@ -574,10 +573,6 @@ export async function subscribeNewsletterAction(
   if (error && !error.message.includes("duplicate")) return fail(error.message);
 
   return { ok: true, message: "You are on the list." };
-}
-
-export async function getPaymentTargets() {
-  return getPaymentSettings();
 }
 
 /* -------------------------------------------------------------------------- */

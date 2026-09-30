@@ -38,13 +38,22 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname, searchParams } = request.nextUrl;
+  const { pathname } = request.nextUrl;
   const isPrivate =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/account") ||
     pathname.startsWith("/checkout");
 
-  if (isPrivate && !user) {
+  // A Server Action POST must not be bounced to the login page. React expects an
+  // action response, so a redirect here surfaces as "An unexpected response was
+  // received from the server" — which is what happens when a session expires
+  // with the page still open. Let the request through and let the action's own
+  // requireUser() / requireAdmin() redirect, which the client understands.
+  // Security is unaffected: every action verifies the session itself, and RLS
+  // guards the data regardless.
+  const isServerAction = request.headers.has("next-action");
+
+  if (isPrivate && !user && !isServerAction) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = "";
@@ -58,9 +67,6 @@ export async function proxy(request: NextRequest) {
     url.search = "";
     return NextResponse.redirect(url);
   }
-
-  // `?error=not-admin` is surfaced once on the account page.
-  void searchParams;
 
   return response;
 }
