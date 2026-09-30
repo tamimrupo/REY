@@ -71,6 +71,7 @@ The Silent Patient,Alex Michaelides,9781250301697,"Thriller, Fiction",standard,A
               </label>
               <select
                 id="preset"
+                name="preset"
                 className="field"
                 value={preset}
                 onChange={(event) => setPreset(event.target.value)}
@@ -88,6 +89,7 @@ The Silent Patient,Alex Michaelides,9781250301697,"Thriller, Fiction",standard,A
               </label>
               <input
                 id="query"
+                name="query"
                 className="field"
                 placeholder="subject:bengali OR language:ben"
                 value={query}
@@ -100,6 +102,7 @@ The Silent Patient,Alex Michaelides,9781250301697,"Thriller, Fiction",standard,A
               </label>
               <input
                 id="limit"
+                name="limit"
                 type="number"
                 min={5}
                 max={50}
@@ -114,6 +117,7 @@ The Silent Patient,Alex Michaelides,9781250301697,"Thriller, Fiction",standard,A
               </label>
               <input
                 id="offset"
+                name="offset"
                 type="number"
                 min={0}
                 className="field"
