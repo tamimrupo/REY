@@ -94,6 +94,15 @@ export async function saveBookAction(
     authorId = data?.id ?? null;
   }
 
+  // Optional author photo, used by the round avatar on the home-page shelf.
+  // Only applied when the author is not being reassigned, so switching a book to
+  // a different author can never copy the old photo onto them.
+  const originalAuthorId = str(formData, "original_author_id") || null;
+  const authorAvatar = str(formData, "author_avatar_url");
+  if (authorId && authorAvatar && (!originalAuthorId || authorId === originalAuthorId)) {
+    await supabase.from("authors").update({ avatar_url: authorAvatar }).eq("id", authorId);
+  }
+
   let genreId = str(formData, "genre_id") || null;
   const newGenre = str(formData, "new_genre");
   if (newGenre && !genreId) {

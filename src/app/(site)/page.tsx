@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { BookCard } from "@/components/book-card";
-import { BookCarousel } from "@/components/book-carousel";
+import { FeaturedShelf } from "@/components/featured-shelf";
 import { PlanCard } from "@/components/plan-card";
 import { EmptyState, SectionHeading, SetupNotice } from "@/components/ui";
 import {
@@ -9,16 +9,17 @@ import {
   getFeaturedBook,
   getPlanFeatures,
   getPlans,
+  getShelfBooks,
   listBooks,
 } from "@/lib/data";
 import { couriersFor } from "@/lib/quotas";
-import { initials, money } from "@/lib/format";
+import { money } from "@/lib/format";
 
 export default async function HomePage() {
-  const [plans, features, trending, rare, courierSettings, featured] = await Promise.all([
+  const [plans, features, shelfBooks, rare, courierSettings, featured] = await Promise.all([
     getPlans(),
     getPlanFeatures(),
-    listBooks({ perPage: 16 }),
+    getShelfBooks(14),
     listBooks({ onlyRare: true, perPage: 5 }),
     getCourierSettings(),
     getFeaturedBook(),
@@ -28,10 +29,10 @@ export default async function HomePage() {
   // the rest of the catalogue.
   const shelf = featured
     ? [
-        ...trending.books.filter((book) => book.author_id === featured.author_id),
-        ...trending.books.filter((book) => book.author_id !== featured.author_id),
-      ].slice(0, 14)
-    : trending.books.slice(0, 14);
+        ...shelfBooks.books.filter((book) => book.author_id === featured.author_id),
+        ...shelfBooks.books.filter((book) => book.author_id !== featured.author_id),
+      ]
+    : shelfBooks.books;
 
   const couriers = couriersFor(courierSettings, "outbound");
   const deposit = plans[0]?.security_deposit ?? 500;
@@ -101,8 +102,8 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-3 gap-x-4 gap-y-8">
-            {trending.books.length ? (
-              trending.books.slice(0, 6).map((book) => <BookCard key={book.id} book={book} />)
+            {shelfBooks.books.length ? (
+              shelfBooks.books.slice(0, 6).map((book) => <BookCard key={book.id} book={book} />)
             ) : (
               <div className="col-span-3 rounded-2xl border border-line bg-cream p-8">
                 <p className="eyebrow">Your first box</p>
@@ -199,53 +200,17 @@ export default async function HomePage() {
       {/* ------------------------------------------- Featured author shelf */}
       {featured && shelf.length ? (
         <section className="border-b border-line bg-paper">
-          <div className="container-page pt-20 pb-10">
-            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-              <div>
-                <h2 className="text-3xl sm:text-4xl">Keep the story going.</h2>
-                <p className="mt-5 max-w-md leading-relaxed text-ink-soft">
-                  Do not let the story end just yet. Continue with the shelf below, or start
-                  somewhere new — every title is delivered to your door and collected when you are
-                  done.
-                </p>
-                <Link href="/library" className="btn btn-primary mt-8">
-                  Start reading <span aria-hidden>↗</span>
-                </Link>
-              </div>
-
-              <div className="flex flex-col">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <span
-                      aria-hidden
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-semibold text-paper"
-                    >
-                      {initials(featured.authors?.name ?? "REY BD")}
-                    </span>
-                    <span>
-                      <span className="block font-semibold text-ink">
-                        {featured.authors?.name ?? "REY BD"}
-                      </span>
-                      <span className="block text-xs text-ink-muted">
-                        {featured.genres?.name ? `${featured.genres.name} · Author` : "Author"}
-                      </span>
-                    </span>
-                  </div>
-
-                  <Link href={`/library/${featured.slug}`} className="btn btn-ghost btn-sm">
-                    View book <span aria-hidden>↗</span>
-                  </Link>
-                </div>
-
-                <p className="mt-7 max-w-2xl text-lg leading-relaxed text-ink-soft">
-                  {featured.description}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="container-page pb-20">
-            <BookCarousel books={shelf} total={trending.total || shelf.length} />
+          <div className="container-page py-20">
+            <FeaturedShelf books={shelf} total={shelfBooks.total || shelf.length}>
+              <h2 className="text-3xl sm:text-4xl">Keep the story going.</h2>
+              <p className="mt-5 max-w-md leading-relaxed text-ink-soft">
+                Do not let the story end just yet. Continue with the shelf below, or start somewhere
+                new — every title is delivered to your door and collected when you are done.
+              </p>
+              <Link href="/library" className="btn btn-primary mt-8">
+                Start reading <span aria-hidden>↗</span>
+              </Link>
+            </FeaturedShelf>
           </div>
         </section>
       ) : (
@@ -272,7 +237,7 @@ export default async function HomePage() {
           <dl className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
-                value: String(trending.total || trending.books.length),
+                value: String(shelfBooks.total || shelfBooks.books.length),
                 label: "Titles in the library",
                 detail: "And growing every week",
               },

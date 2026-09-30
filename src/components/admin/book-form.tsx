@@ -173,6 +173,17 @@ export function BookForm({
                 className="field mt-2"
                 placeholder="…or type a new author name"
               />
+              <input
+                name="author_avatar_url"
+                className="field mt-2"
+                placeholder="Author photo URL (optional)"
+                defaultValue={book?.authors?.avatar_url ?? ""}
+              />
+              <p className="mt-1 text-xs text-ink-muted">
+                The photo appears in the round avatar beside the home-page shelf. Leave it empty to
+                show the author&apos;s initials instead.
+              </p>
+              <input type="hidden" name="original_author_id" value={book?.author_id ?? ""} />
             </div>
             <div>
               <label className="label" htmlFor="genre_id">

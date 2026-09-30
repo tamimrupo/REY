@@ -74,7 +74,7 @@ async function compute<T>(run: (sb: any) => Promise<T>, fallback: T): Promise<T>
   }
 }
 
-const BOOK_SELECT = "*, authors(name), genres(name)";
+const BOOK_SELECT = "*, authors(name, avatar_url), genres(name)";
 const BOOK_SELECT_LIST =
   "id, title, slug, cover_url, language, rarity, demand, is_active, total_copies, published_year, author_id, genre_id, authors(name), genres(name)";
 const RENTAL_SELECT = "*, books(id, title, slug, cover_url, authors(name))";
@@ -260,6 +260,28 @@ export async function getBookBySlug(slug: string): Promise<Book | null> {
   return query<Book | null>(
     (sb) => sb.from("books").select(BOOK_SELECT).eq("slug", slug).maybeSingle(),
     null,
+  );
+}
+
+/**
+ * Books for the home-page shelf, with descriptions and author photos included so
+ * the panel beside the rail can update as the active book changes.
+ */
+export async function getShelfBooks(
+  limit = 14,
+): Promise<{ books: Book[]; total: number }> {
+  return compute(
+    async (sb) => {
+      const { data, count, error } = await sb
+        .from("books")
+        .select(BOOK_SELECT, { count: "exact" })
+        .eq("is_active", true)
+        .order("title", { ascending: true })
+        .limit(Math.min(30, Math.max(4, limit)));
+      if (error) throw new Error(error.message);
+      return { books: (data ?? []) as Book[], total: count ?? 0 };
+    },
+    { books: [] as Book[], total: 0 },
   );
 }
 
