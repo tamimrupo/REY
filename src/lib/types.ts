@@ -134,6 +134,9 @@ export type Rental = {
 export const OPEN_RENTAL_STATUSES: RentalStatus[] = ["pending", "out", "returning"];
 export const OUT_RENTAL_STATUSES: RentalStatus[] = ["out", "returning"];
 
+/** A shelf tile: a book plus how many times it has been borrowed. */
+export type ShelfBook = Book & { borrowed?: number };
+
 /* -------------------------------------------------------------------------- */
 /* Shipments — one row per trip                                               */
 /* -------------------------------------------------------------------------- */

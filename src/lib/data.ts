@@ -33,6 +33,7 @@ import {
   type RareRequest,
   type Rental,
   type RentalSettings,
+  type ShelfBook,
   type Shipment,
   type SiteSettings,
   type Subscription,
@@ -264,13 +265,24 @@ export async function getBookBySlug(slug: string): Promise<Book | null> {
 }
 
 /**
- * Books for the home-page shelf, with descriptions and author photos included so
- * the panel beside the rail can update as the active book changes.
+ * Books for the home-page shelf, with descriptions, author photos and a real
+ * borrow count so the panel beside the rail can follow the active book and the
+ * "most borrowed" ranking is genuine rather than decorative.
  */
 export async function getShelfBooks(
   limit = 14,
-): Promise<{ books: Book[]; total: number }> {
-  return compute(
+): Promise<{ books: ShelfBook[]; total: number }> {
+  const counts = await query<{ book_id: string; borrowed: number }[]>(
+    (sb) => sb.rpc("book_borrow_counts"),
+    [],
+  );
+
+  const borrowedByBook = new Map<string, number>();
+  for (const row of Array.isArray(counts) ? counts : []) {
+    borrowedByBook.set(row.book_id, Number(row.borrowed));
+  }
+
+  const result = await compute<{ books: Book[]; total: number }>(
     async (sb) => {
       const { data, count, error } = await sb
         .from("books")
@@ -283,6 +295,14 @@ export async function getShelfBooks(
     },
     { books: [] as Book[], total: 0 },
   );
+
+  return {
+    books: result.books.map((book) => ({
+      ...book,
+      borrowed: borrowedByBook.get(book.id) ?? 0,
+    })),
+    total: result.total,
+  };
 }
 
 /**

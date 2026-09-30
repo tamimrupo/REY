@@ -6,33 +6,40 @@ import { PlanCard } from "@/components/plan-card";
 import { EmptyState, SectionHeading, SetupNotice } from "@/components/ui";
 import {
   getCourierSettings,
-  getFeaturedBook,
   getPlanFeatures,
   getPlans,
   getShelfBooks,
   listBooks,
 } from "@/lib/data";
 import { couriersFor } from "@/lib/quotas";
+import { dhakaDayIndex, pickForToday, rotateForToday } from "@/lib/daily";
 import { money } from "@/lib/format";
 
 export default async function HomePage() {
-  const [plans, features, shelfBooks, rare, courierSettings, featured] = await Promise.all([
+  const [plans, features, shelfBooks, rare, courierSettings] = await Promise.all([
     getPlans(),
     getPlanFeatures(),
     getShelfBooks(14),
     listBooks({ onlyRare: true, perPage: 5 }),
     getCourierSettings(),
-    getFeaturedBook(),
   ]);
 
-  // The shelf leads with the featured author's other titles, then fills up with
-  // the rest of the catalogue.
-  const shelf = featured
-    ? [
-        ...shelfBooks.books.filter((book) => book.author_id === featured.author_id),
-        ...shelfBooks.books.filter((book) => book.author_id !== featured.author_id),
-      ]
-    : shelfBooks.books;
+  // Rank the shelf by real borrow counts, then rotate it once a day so the
+  // line-up looks different every morning.
+  const rankedShelf = [...shelfBooks.books].sort(
+    (a, b) => (b.borrowed ?? 0) - (a.borrowed ?? 0) || a.title.localeCompare(b.title),
+  );
+
+  const dayIndex = dhakaDayIndex();
+  const shelf = rotateForToday(rankedShelf, dayIndex);
+
+  // Label the shelf honestly: only promise "most borrowed" once books have
+  // actually been borrowed.
+  const hasLoans = rankedShelf.some((book) => (book.borrowed ?? 0) > 0);
+  const shelfLabels = hasLoans
+    ? ["Most borrowed this month", "Readers' favourites", "Still in demand", "Back by demand"]
+    : ["Fresh on the shelves", "Recently added", "New in the library", "On the shelves today"];
+  const shelfLabel = pickForToday(shelfLabels, dayIndex);
 
   const couriers = couriersFor(courierSettings, "outbound");
   const deposit = plans[0]?.security_deposit ?? 500;
@@ -198,11 +205,11 @@ export default async function HomePage() {
       </section>
 
       {/* ------------------------------------------- Featured author shelf */}
-      {featured && shelf.length ? (
+      {shelf.length ? (
         <section className="border-b border-line bg-paper">
           <div className="container-page py-20">
-            <FeaturedShelf books={shelf} total={shelfBooks.total || shelf.length}>
-              <h2 className="text-3xl sm:text-4xl">Keep the story going.</h2>
+            <FeaturedShelf books={shelf} total={shelfBooks.total || shelf.length} label={shelfLabel}>
+              <h2 className="mt-3 text-3xl sm:text-4xl">Keep the story going.</h2>
               <p className="mt-5 max-w-md leading-relaxed text-ink-soft">
                 Do not let the story end just yet. Continue with the shelf below, or start somewhere
                 new — every title is delivered to your door and collected when you are done.
