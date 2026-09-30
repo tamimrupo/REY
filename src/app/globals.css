@@ -1,44 +1,128 @@
 @import "tailwindcss";
 
+/* =============================================================================
+   REY BD design tokens
+   Cool, high-trust palette: white + ivory surfaces, deep petrol ink, teal accent.
+   Legacy token names (cream / gold / line) are kept as aliases so existing
+   classes keep working — `gold` now means "accent", not literally gold.
+   ========================================================================== */
 @theme {
-  --color-ink: #161311;
-  --color-ink-soft: #4a443d;
-  --color-ink-muted: #7c7369;
-  --color-paper: #faf7f2;
-  --color-cream: #f2ece2;
-  --color-gold: #b3873c;
-  --color-gold-soft: #e8d9bb;
-  --color-line: #e5dcd0;
+  /* Ink */
+  --color-ink: #022b3a;
+  --color-ink-deep: #03222e;
+  --color-ink-soft: #45585f;
+  --color-ink-muted: #6b7f88;
 
-  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+  /* Accent */
+  --color-brand: #1f7a8c;
+  --color-brand-strong: #155f6e;
+  --color-brand-hover: #022b3a;
+
+  /* Surfaces */
+  --color-paper: #ffffff;
+  --color-surface: #f4f6fb;
+  --color-mist: #eef3f8;
+  --color-frost: #e1e5f2;
+  --color-sky: #bfdbf7;
+
+  /* Lines + feedback */
+  --color-line: #d6dde8;
+  --color-danger: #9a2a2a;
+
+  /* Legacy aliases — map the old warm names onto the new palette */
+  --color-cream: #f4f6fb;
+  --color-gold: #1f7a8c;
+  --color-gold-soft: #bfdbf7;
+
+  /* Typography: one family, like the reference. */
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --radius-card: 14px;
+  /* Depth */
+  --radius-card: 16px;
+  --shadow-card: 0 1px 2px #022b3a0f, 0 20px 40px -24px #022b3a38;
+  --shadow-paper: 0 1px 2px #022b3a0d, 0 24px 48px -32px #022b3a40;
+  --shadow-lift: 0 2px 4px #022b3a14, 0 40px 80px -40px #022b3a4d;
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
     background-color: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: -0.011em;
     font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
   }
 
+  /* Tight, heavy headings with negative tracking — the reference's signature. */
   h1,
   h2,
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 600;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 5.2vw, 3.75rem);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 3.2vw, 2.375rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.032em;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 650;
+    line-height: 1.3;
     letter-spacing: -0.015em;
   }
 
+  /* Heavy headings are the design intent (the reference uses 800 for h1/h2 and
+     ~750 for h3). `!important` is deliberate: about a hundred headings carry a
+     `font-semibold` utility, which would otherwise win and render every page
+     noticeably lighter. Only the weight is forced — size still comes from the
+     utility on each element, so pages stay free to scale headings themselves. */
+  h1,
+  h2 {
+    font-weight: 800 !important;
+  }
+
+  h3,
+  h4 {
+    font-weight: 700 !important;
+  }
+
+  strong {
+    font-weight: 650;
+  }
+
   ::selection {
-    background: var(--color-gold-soft);
+    background: var(--color-sky);
+    color: var(--color-ink-deep);
   }
 
   a {
@@ -49,57 +133,64 @@
 @layer components {
   .container-page {
     width: 100%;
-    max-width: 82rem;
+    max-width: 76rem;
     margin-inline: auto;
-    padding-inline: 1.25rem;
+    padding-inline: 1.5rem;
   }
 
+  /* ---- Buttons: pills, solid petrol, 14px/600 ---------------------------- */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     border-radius: 999px;
-    padding: 0.7rem 1.4rem;
+    padding: 0.75rem 1.375rem;
     font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
     transition:
-      background-color 150ms ease,
-      color 150ms ease,
-      border-color 150ms ease,
-      opacity 150ms ease;
+      background-color 150ms cubic-bezier(0, 0, 0.2, 1),
+      color 150ms cubic-bezier(0, 0, 0.2, 1),
+      border-color 150ms cubic-bezier(0, 0, 0.2, 1),
+      box-shadow 150ms cubic-bezier(0, 0, 0.2, 1),
+      opacity 150ms;
     cursor: pointer;
+    white-space: nowrap;
   }
 
   .btn:disabled {
-    opacity: 0.55;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 
   .btn-primary {
     background-color: var(--color-ink);
-    color: var(--color-paper);
+    color: #fff;
+    box-shadow: 0 10px 24px -14px rgb(2 43 58 / 0.45);
   }
   .btn-primary:hover:not(:disabled) {
-    background-color: #322c26;
+    background-color: var(--color-brand-hover);
+    box-shadow: 0 14px 30px -14px rgb(2 43 58 / 0.5);
   }
 
   .btn-gold {
-    background-color: var(--color-gold);
+    background-color: var(--color-brand);
     color: #fff;
   }
   .btn-gold:hover:not(:disabled) {
-    background-color: #9c7331;
+    background-color: var(--color-brand-strong);
   }
 
   .btn-outline {
     border: 1px solid var(--color-line);
-    background-color: transparent;
+    background-color: #fff;
     color: var(--color-ink);
   }
   .btn-outline:hover:not(:disabled) {
-    background-color: var(--color-cream);
+    border-color: var(--color-ink);
+    background-color: var(--color-mist);
   }
 
   .btn-ghost {
@@ -107,54 +198,64 @@
   }
   .btn-ghost:hover:not(:disabled) {
     color: var(--color-ink);
-    background-color: var(--color-cream);
+    background-color: var(--color-mist);
   }
 
   .btn-sm {
-    padding: 0.45rem 0.9rem;
+    padding: 0.5rem 0.9rem;
     font-size: 0.8125rem;
   }
 
+  /* ---- Surfaces ---------------------------------------------------------- */
   .card {
     background: #fff;
     border: 1px solid var(--color-line);
     border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
   }
 
+  .panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+
+  /* ---- Forms ------------------------------------------------------------- */
   .field {
     width: 100%;
     border: 1px solid var(--color-line);
     border-radius: 10px;
     background: #fff;
-    padding: 0.6rem 0.8rem;
-    font-size: 0.9rem;
+    padding: 0.625rem 0.8125rem;
+    font-size: 0.9375rem;
     color: var(--color-ink);
     outline: none;
+    transition: border-color 150ms, box-shadow 150ms;
   }
   .field:focus {
-    border-color: var(--color-gold);
-    box-shadow: 0 0 0 3px rgba(179, 135, 60, 0.15);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgb(31 122 140 / 0.15);
   }
   .field::placeholder {
-    color: #a89f93;
+    color: #9aa9b0;
   }
 
   .label {
     display: block;
     font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-ink-muted);
-    margin-bottom: 0.35rem;
+    letter-spacing: 0.01em;
+    color: var(--color-ink-soft);
+    margin-bottom: 0.375rem;
   }
 
+  /* Small uppercase kicker above a section heading. */
   .eyebrow {
     font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
+    font-weight: 650;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-gold);
+    color: var(--color-brand);
   }
 
   .pill {
@@ -162,14 +263,14 @@
     align-items: center;
     gap: 0.3rem;
     border-radius: 999px;
-    padding: 0.15rem 0.6rem;
+    padding: 0.18rem 0.6rem;
     font-size: 0.6875rem;
     font-weight: 600;
-    letter-spacing: 0.02em;
-    --tw-ring-inset: inset;
+    letter-spacing: 0;
     box-shadow: inset 0 0 0 1px currentColor;
   }
 
+  /* ---- Tables ------------------------------------------------------------ */
   .table-wrap {
     overflow-x: auto;
     border: 1px solid var(--color-line);
@@ -188,21 +289,33 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-ink-muted);
-    font-weight: 600;
+    font-weight: 650;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--color-line);
     white-space: nowrap;
+    background: var(--color-surface);
   }
   .table td {
     padding: 0.8rem 1rem;
-    border-bottom: 1px solid #f1ece4;
+    border-bottom: 1px solid var(--color-mist);
     vertical-align: middle;
   }
   .table tr:last-child td {
     border-bottom: none;
   }
   .table tbody tr:hover {
-    background: #fdfbf8;
+    background: var(--color-surface);
+  }
+
+  /* ---- Layout helpers ---------------------------------------------------- */
+  .section {
+    padding-block: 5rem;
+  }
+
+  /* Thin rule used between stacked content blocks. */
+  .rule {
+    height: 1px;
+    background: var(--color-line);
   }
 }
 

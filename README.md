@@ -112,6 +112,34 @@ Then sign out and back in and visit `/admin`.
 
 ---
 
+## Design system
+
+Tokens live in **`src/app/globals.css`** (`@theme`). Change them there and the whole site
+follows — no need to touch individual pages.
+
+| Token | Value | Used for |
+| --- | --- | --- |
+| `--color-ink` | `#022b3a` | body text, headings, primary buttons |
+| `--color-ink-soft` | `#45585f` | secondary copy |
+| `--color-ink-muted` | `#6b7f88` | captions, table headers |
+| `--color-brand` | `#1f7a8c` | eyebrows, links, accents |
+| `--color-surface` (`cream`) | `#f4f6fb` | alternating section bands |
+| `--color-mist` / `--color-frost` | `#eef3f8` / `#e1e5f2` | book-cover placeholders |
+| `--color-line` | `#d6dde8` | borders |
+| `--shadow-card`, `--shadow-paper` | | elevation |
+
+**Typography:** one family (Inter, loaded in `src/app/layout.tsx`). Headings are 800 weight with
+tight negative tracking (h1 `-0.035em`); body is 16px / 1.6 at `-0.011em`. Buttons are pills;
+cards are 16px radius with a soft petrol-tinted shadow.
+
+> The token names `gold` and `cream` are **legacy aliases** kept so existing classes keep working —
+> `gold` now means the teal accent, `cream` means the light surface. Prefer `brand` and `surface`
+> in new code.
+
+Reusable classes: `.container-page`, `.section`, `.card`, `.panel`, `.rule`,
+`.btn` + `-primary` / `-gold` / `-outline` / `-ghost` / `-sm`, `.field`, `.label`, `.eyebrow`,
+`.pill`, `.table`, `.table-wrap`.
+
 ## Verification & email that actually arrives
 
 Three different things get called "verification". Two are already handled:

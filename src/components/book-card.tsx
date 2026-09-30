@@ -19,7 +19,7 @@ export function BookCard({ book, badge }: { book: Book; badge?: string }) {
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full w-full flex-col justify-between bg-gradient-to-b from-cream to-[#e7dccb] p-4">
+          <div className="flex h-full w-full flex-col justify-between bg-gradient-to-b from-mist to-frost p-4">
             <span className="text-[0.6rem] uppercase tracking-[0.2em] text-ink-muted">
               {genre ?? "REY"}
             </span>
@@ -55,7 +55,7 @@ export function BookCover({ book, className = "" }: { book: Book; className?: st
     );
   }
   return (
-    <div className={`flex items-center justify-center bg-gradient-to-b from-cream to-[#e7dccb] p-3 text-center ${className}`}>
+    <div className={`flex items-center justify-center bg-gradient-to-b from-mist to-frost p-3 text-center ${className}`}>
       <span className="font-display text-sm font-semibold leading-snug text-ink">{book.title}</span>
     </div>
   );
