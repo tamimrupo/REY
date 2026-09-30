@@ -502,7 +502,11 @@ export async function listPayments(status?: string): Promise<Payment[]> {
     (sb) => {
       let q = sb
         .from("payments")
-        .select("*, orders(order_number, total, type), profiles(full_name, phone)")
+        // `payments` has two FKs to profiles (user_id and verified_by), so the
+        // embed must name the relationship or PostgREST errors out.
+        .select(
+          "*, orders(order_number, total, type), profiles!payments_user_id_fkey(full_name, phone)",
+        )
         .order("created_at", { ascending: false })
         .limit(200);
       if (status) q = q.eq("status", status);
