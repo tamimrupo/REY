@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { deleteBookAction, toggleBookActiveAction } from "@/lib/actions/admin";
+import { BookCoverImage } from "@/components/book-cover";
 import { StatusPill } from "@/components/ui";
 import { getAuthors, getGenres, listBooks } from "@/lib/data";
 
@@ -72,10 +73,12 @@ export default async function AdminBooksPage(props: PageProps<"/admin/books">) {
               <tr key={book.id}>
                 <td className="w-12">
                   <div className="h-14 w-10 overflow-hidden rounded border border-line bg-cream">
-                    {book.cover_url ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={book.cover_url} alt="" className="h-full w-full object-cover" />
-                    ) : null}
+                    <BookCoverImage
+                      url={book.cover_url}
+                      title={book.title}
+                      size="sm"
+                      className="h-full w-full"
+                    />
                   </div>
                 </td>
                 <td className="max-w-[18rem]">

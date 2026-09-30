@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 
 import { ActionForm } from "@/components/forms/action-form";
+import { BookCoverImage } from "@/components/book-cover";
 import { Alert, StatusPill } from "@/components/ui";
 import { SubmitButton } from "@/components/forms/submit-button";
 import {
@@ -23,10 +24,12 @@ function BookLine({ rental }: { rental: Rental }) {
   return (
     <li className="flex items-center gap-4 py-3">
       <div className="h-16 w-11 shrink-0 overflow-hidden rounded border border-line bg-cream">
-        {rental.books?.cover_url ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={rental.books.cover_url} alt="" className="h-full w-full object-cover" />
-        ) : null}
+        <BookCoverImage
+          url={rental.books?.cover_url}
+          title={rental.books?.title ?? "Book"}
+          size="sm"
+          className="h-full w-full"
+        />
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-ink">{rental.books?.title ?? "Book"}</p>

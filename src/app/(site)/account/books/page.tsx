@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Alert, EmptyState, StatusPill } from "@/components/ui";
+import { BookCoverImage } from "@/components/book-cover";
 import { ReturnForm, type CourierOption } from "@/components/account/box-forms";
 import { requireUser } from "@/lib/auth";
 import {
@@ -67,10 +68,12 @@ export default async function MyBooksPage(props: PageProps<"/account/books">) {
               return (
                 <li key={rental.id} className="flex items-center gap-4 py-3">
                   <div className="h-16 w-11 shrink-0 overflow-hidden rounded border border-line bg-cream">
-                    {rental.books?.cover_url ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={rental.books.cover_url} alt="" className="h-full w-full object-cover" />
-                    ) : null}
+                    <BookCoverImage
+                      url={rental.books?.cover_url}
+                      title={rental.books?.title ?? "Book"}
+                      size="sm"
+                      className="h-full w-full"
+                    />
                   </div>
                   <div className="min-w-0 flex-1">
                     <Link

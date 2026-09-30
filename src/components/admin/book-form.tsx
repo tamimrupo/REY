@@ -3,15 +3,18 @@
 import { useState } from "react";
 
 import { ActionForm } from "@/components/forms/action-form";
+import { BookCoverImage } from "@/components/book-cover";
 import { createClient } from "@/lib/supabase/client";
 import { saveBookAction } from "@/lib/actions/admin";
 import type { Author, Book, Genre } from "@/lib/types";
 
 function CoverUpload({
   value,
+  title,
   onChange,
 }: {
   value: string;
+  title: string;
   onChange: (next: string) => void;
 }) {
   const [uploading, setUploading] = useState(false);
@@ -45,14 +48,7 @@ function CoverUpload({
 
       <div className="flex flex-wrap items-start gap-4">
         <div className="h-40 w-28 shrink-0 overflow-hidden rounded-lg border border-line bg-cream">
-          {value ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={value} alt="Cover preview" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center text-[0.6rem] uppercase tracking-[0.14em] text-ink-muted">
-              No cover
-            </div>
-          )}
+          <BookCoverImage url={value} title={title} size="md" className="h-full w-full" />
         </div>
 
         <div className="space-y-3">
@@ -318,7 +314,7 @@ export function BookForm({
         </div>
 
         <div className="space-y-5">
-          <CoverUpload value={coverUrl} onChange={setCoverUrl} />
+          <CoverUpload value={coverUrl} title={book?.title || "New book"} onChange={setCoverUrl} />
 
           <div>
             <span className="label">Rarity</span>

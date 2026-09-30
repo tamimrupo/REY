@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 
 import { SubmitButton } from "@/components/forms/submit-button";
+import { CoverPlaceholder } from "@/components/book-cover";
 import { Alert } from "@/components/ui";
 import { importCandidatesAction } from "@/lib/actions/admin";
 import type { BookSearchRow } from "@/lib/book-search";
@@ -145,14 +146,15 @@ export function BookSearchImport() {
                 key={`${row.source}-${row.id}`}
                 className="flex gap-4 rounded-xl border border-line bg-white p-3"
               >
-                <div className="h-24 w-16 shrink-0 overflow-hidden rounded-lg border border-line bg-surface">
+                <div className="relative h-24 w-16 shrink-0 overflow-hidden rounded-lg border border-line bg-surface">
+                  <CoverPlaceholder title={row.title} size="sm" />
                   {row.coverUrl ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={row.coverUrl}
                       alt=""
                       loading="lazy"
-                      className="h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-cover"
                       onError={(event) => {
                         // Open Library wedges on some sizes; step down instead
                         // of showing a blank box.
@@ -163,11 +165,7 @@ export function BookSearchImport() {
                         else img.style.visibility = "hidden";
                       }}
                     />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-center text-[0.55rem] uppercase tracking-[0.12em] text-ink-muted">
-                      No cover
-                    </div>
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="min-w-0 flex-1">

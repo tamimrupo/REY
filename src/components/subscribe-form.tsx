@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import Link from "next/link";
 
+import { BookCoverImage } from "@/components/book-cover";
 import { Alert } from "@/components/ui";
 import { startSubscriptionAction } from "@/lib/actions/storefront";
 import { money } from "@/lib/format";
@@ -132,24 +133,12 @@ export function SubscribeForm({
                 }`}
               >
                 <div className="aspect-[2/3] w-full overflow-hidden bg-cream">
-                  {book.cover_url ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={book.cover_url}
-                      alt={book.title}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex h-full flex-col justify-between p-3">
-                      <span className="text-[0.6rem] uppercase tracking-[0.18em] text-ink-muted">
-                        {book.genre ?? "REY"}
-                      </span>
-                      <span className="font-display text-xs font-semibold leading-snug text-ink">
-                        {book.title}
-                      </span>
-                    </div>
-                  )}
+                  <BookCoverImage
+                    url={book.cover_url}
+                    title={book.title}
+                    label={book.genre}
+                    className="h-full w-full"
+                  />
                 </div>
                 <div className="p-3">
                   <p className="line-clamp-2 text-xs font-medium leading-snug text-ink">
