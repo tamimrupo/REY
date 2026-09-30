@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { DepositForm } from "@/components/admin/delivery-forms";
+import { DepositForm } from "@/components/admin/shipment-forms";
 import { EmptyState, Stat, StatusPill } from "@/components/ui";
 import { listDeposits } from "@/lib/data";
 import { formatDate, money } from "@/lib/format";

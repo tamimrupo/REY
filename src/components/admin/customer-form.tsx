@@ -1,10 +1,16 @@
 "use client";
 
 import { ActionForm } from "@/components/forms/action-form";
-import { saveCustomerAction } from "@/lib/actions/admin";
+import { messageCustomerAction, saveCustomerAction } from "@/lib/actions/admin";
 import type { Profile } from "@/lib/types";
 
-export function CustomerForm({ profile }: { profile: Profile }) {
+export function CustomerForm({
+  profile,
+  couriers,
+}: {
+  profile: Profile;
+  couriers: { key: string; label: string }[];
+}) {
   return (
     <ActionForm action={saveCustomerAction} submitLabel="Save customer" pendingLabel="Saving…">
       <input type="hidden" name="id" value={profile.id} />
@@ -39,11 +45,25 @@ export function CustomerForm({ profile }: { profile: Profile }) {
           </p>
         </div>
         <div>
-          <span className="label">Account</span>
-          <label className="mt-2 flex items-center gap-2 text-sm">
+          <label className="label" htmlFor="courier_preference">
+            Preferred courier
+          </label>
+          <select
+            id="courier_preference"
+            name="courier_preference"
+            className="field"
+            defaultValue={profile.courier_preference ?? "steadfast"}
+          >
+            {couriers.map((courier) => (
+              <option key={courier.key} value={courier.key}>
+                {courier.label}
+              </option>
+            ))}
+          </select>
+          <span className="mt-2 flex items-center gap-2 text-sm">
             <input type="checkbox" name="is_blocked" defaultChecked={profile.is_blocked} />
             Block from placing new orders
-          </label>
+          </span>
         </div>
       </div>
 
@@ -59,6 +79,33 @@ export function CustomerForm({ profile }: { profile: Profile }) {
           defaultValue={profile.notes ?? ""}
           placeholder="Damaged a book, prefers phone calls, repeat customer…"
         />
+      </div>
+    </ActionForm>
+  );
+}
+
+/** One-off message to this customer; lands in the Notifications outbox. */
+export function MessageCustomerForm({ userId }: { userId: string }) {
+  return (
+    <ActionForm
+      action={messageCustomerAction}
+      submitLabel="Add to outbox"
+      pendingLabel="Saving…"
+      submitClassName="btn btn-outline btn-sm"
+      className="space-y-3"
+    >
+      <input type="hidden" name="user_id" value={userId} />
+      <div>
+        <label className="label" htmlFor="msg_subject">
+          Subject (used for email)
+        </label>
+        <input id="msg_subject" name="subject" className="field" placeholder="About your return" />
+      </div>
+      <div>
+        <label className="label" htmlFor="msg_body">
+          Message
+        </label>
+        <textarea id="msg_body" name="body" rows={3} className="field" required />
       </div>
     </ActionForm>
   );

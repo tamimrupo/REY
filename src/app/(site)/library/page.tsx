@@ -1,7 +1,9 @@
 import Link from "next/link";
 
 import { BookCard } from "@/components/book-card";
+import { QuotaBar } from "@/components/quota-bar";
 import { EmptyState } from "@/components/ui";
+import { getSession } from "@/lib/auth";
 import { getGenres, getLanguages, listBooks } from "@/lib/data";
 
 export const metadata = { title: "Library" };
@@ -23,14 +25,17 @@ export default async function LibraryPage(props: PageProps<"/library">) {
   const rarity = typeof search.rarity === "string" ? search.rarity : "";
   const page = Number(typeof search.page === "string" ? search.page : "1") || 1;
 
-  const [{ books, total, pages }, genres, languages] = await Promise.all([
+  const [{ books, total, pages }, genres, languages, session] = await Promise.all([
     listBooks({ q, genre, language, rarity, page, perPage: 24 }),
     getGenres(),
     getLanguages(),
+    getSession(),
   ]);
 
   return (
     <>
+      {session ? <QuotaBar userId={session.userId} /> : null}
+
       <section className="border-b border-line bg-cream/60">
         <div className="container-page py-12">
           <p className="eyebrow">The library</p>

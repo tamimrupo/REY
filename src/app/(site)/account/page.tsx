@@ -2,12 +2,8 @@ import Link from "next/link";
 
 import { Alert, EmptyState, Stat, StatusPill } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
-import {
-  getActiveSubscription,
-  getMyDeposits,
-  getMyOrders,
-  getSelectingCycle,
-} from "@/lib/data";
+import { getMembershipState, getMyDeposits, getMyOrders } from "@/lib/data";
+import { daysLeft, rentalStatusLabel } from "@/lib/quotas";
 import { formatDate, money } from "@/lib/format";
 
 export const metadata = { title: "My account" };
@@ -16,18 +12,23 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
   const session = await requireUser("/account");
   const search = await props.searchParams;
 
-  const [subscription, orders, deposits] = await Promise.all([
-    getActiveSubscription(session.userId),
+  const [state, orders, deposits] = await Promise.all([
+    getMembershipState(session.userId),
     getMyOrders(session.userId),
     getMyDeposits(session.userId),
   ]);
 
-  const cycle = subscription ? await getSelectingCycle(subscription.id) : null;
-  const plan = subscription?.plans;
+  const plan = state.plan;
+  const subscription = state.subscription;
   const pendingPayment = orders.find((order) => order.status === "pending_payment");
   const heldDeposit = deposits
     .filter((deposit) => deposit.status === "held")
     .reduce((sum, deposit) => sum + Number(deposit.amount), 0);
+  const left = daysLeft(subscription?.current_period_end);
+  const booksBorrowed = orders.reduce(
+    (sum, order) => sum + (order.order_items?.filter((item) => item.book_id).length ?? 0),
+    0,
+  );
 
   return (
     <div className="space-y-8">
@@ -43,7 +44,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
           Hello {session.profile?.full_name?.split(" ")[0] || "there"}
         </h1>
         <p className="mt-2 text-sm text-ink-soft">
-          Everything about your membership, boxes and deliveries in one place.
+          Your membership, boxes, books and deliveries in one place.
         </p>
       </div>
 
@@ -53,11 +54,24 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
             <div>
               <p className="font-semibold">Order {pendingPayment.order_number} needs payment.</p>
               <p className="mt-1">
-                Finish checkout to activate your membership and queue your first delivery.
+                Finish checkout to activate your membership and queue your delivery.
               </p>
             </div>
             <Link href={`/checkout/${pendingPayment.id}`} className="btn btn-primary btn-sm">
               Complete checkout
+            </Link>
+          </div>
+        </Alert>
+      ) : null}
+
+      {state.overdue ? (
+        <Alert tone="error">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="font-semibold">
+              You have overdue books. Return them to keep picking new titles.
+            </p>
+            <Link href="/account/books" className="btn btn-outline btn-sm">
+              Return books
             </Link>
           </div>
         </Alert>
@@ -76,40 +90,63 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
             <StatusPill status={subscription.status} />
           </div>
 
-          <dl className="mt-6 grid gap-6 border-t border-line pt-6 sm:grid-cols-3">
-            <div>
-              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Next billing</dt>
-              <dd className="mt-1 text-ink">{formatDate(subscription.next_billing_date)}</dd>
-            </div>
+          <dl className="mt-6 grid gap-6 border-t border-line pt-6 sm:grid-cols-4">
             <div>
               <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Period ends</dt>
               <dd className="mt-1 text-ink">{formatDate(subscription.current_period_end)}</dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">This month</dt>
+              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Slots used</dt>
               <dd className="mt-1 text-ink">
-                {cycle
-                  ? `${cycle.cycle_picks?.length ?? 0} of ${plan.books_per_month} picked`
-                  : "All set"}
+                {state.used} of {state.quota} · {state.remaining} left
               </dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Books with you</dt>
+              <dd className="mt-1 text-ink">{state.out.length}</dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">In your box</dt>
+              <dd className="mt-1 text-ink">{state.box.length}</dd>
             </div>
           </dl>
 
-          {cycle ? (
+          {state.box.length ? (
             <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-              <p className="font-semibold">Time to pick your books</p>
-              <p className="mt-1">
-                Choose {plan.books_per_month} titles for cycle #{cycle.cycle_number}.
+              <p className="font-semibold">
+                {state.box.length} book{state.box.length === 1 ? "" : "s"} waiting in your box
               </p>
-              <Link href="/account/picks" className="btn btn-primary btn-sm mt-3">
-                Pick my books
+              <p className="mt-1">
+                {state.remaining > 0
+                  ? `${state.remaining} slot${state.remaining === 1 ? "" : "s"} still free this month.`
+                  : "Your box is full — confirm it and we will dispatch."}
+              </p>
+              <Link href="/account/box" className="btn btn-primary btn-sm mt-3">
+                Review my box
+              </Link>
+            </div>
+          ) : null}
+
+          {left !== null && left <= 3 ? (
+            <div className="mt-6 rounded-xl border border-line bg-cream/60 p-4 text-sm text-ink-soft">
+              <p className="font-semibold text-ink">
+                {left < 0
+                  ? `Your plan ended on ${formatDate(subscription.current_period_end)}.`
+                  : `Your plan renews in ${left} day${left === 1 ? "" : "s"}.`}
+              </p>
+              <p className="mt-1">Renew to keep your books out and keep picking.</p>
+              <Link href="/account/membership" className="btn btn-outline btn-sm mt-3">
+                Renew membership
               </Link>
             </div>
           ) : null}
 
           <div className="mt-6 flex flex-wrap gap-3 border-t border-line pt-6">
-            <Link href="/account/membership" className="btn btn-outline btn-sm">
-              Manage membership
+            <Link href="/account/box" className="btn btn-primary btn-sm">
+              Pick this month&apos;s books
+            </Link>
+            <Link href="/account/books" className="btn btn-outline btn-sm">
+              My books
             </Link>
             <Link href="/library" className="btn btn-outline btn-sm">
               Browse the library
@@ -127,15 +164,33 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
 
       <div className="grid gap-5 sm:grid-cols-3">
         <Stat label="Refundable deposit held" value={money(heldDeposit)} />
-        <Stat label="Orders" value={orders.length} />
-        <Stat
-          label="Books borrowed all-time"
-          value={orders.reduce(
-            (sum, order) => sum + (order.order_items?.filter((item) => item.book_id).length ?? 0),
-            0,
-          )}
-        />
+        <Stat label="Books with you" value={state.out.length} />
+        <Stat label="Books borrowed all-time" value={booksBorrowed} />
       </div>
+
+      {state.rentals.length ? (
+        <div className="card p-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-ink">Currently on loan</h2>
+            <Link href="/account/books" className="text-sm text-ink-soft hover:text-gold">
+              Manage returns
+            </Link>
+          </div>
+          <ul className="mt-4 divide-y divide-line">
+            {[...state.box, ...state.out].slice(0, 6).map((rental) => (
+              <li key={rental.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <div>
+                  <p className="text-sm font-medium text-ink">{rental.books?.title ?? "Book"}</p>
+                  <p className="text-xs text-ink-muted">
+                    {rental.due_at ? `Due ${formatDate(rental.due_at)}` : "—"}
+                  </p>
+                </div>
+                <StatusPill status={rental.status} label={rentalStatusLabel(rental.status)} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <div className="card p-6">
         <div className="flex items-center justify-between">

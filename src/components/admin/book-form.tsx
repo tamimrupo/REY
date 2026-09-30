@@ -292,6 +292,54 @@ export function BookForm({
             </div>
           </div>
 
+          <div>
+            <label className="label" htmlFor="demand">
+              Demand
+            </label>
+            <select id="demand" name="demand" className="field" defaultValue={book?.demand ?? "medium"}>
+              <option value="high">High — publish first</option>
+              <option value="medium">Medium — publish after high moves</option>
+              <option value="low">Low — keep hidden / rare</option>
+            </select>
+            <p className="mt-1 text-xs text-ink-muted">
+              Used by &quot;Publish all high-demand books&quot; after a bulk import.
+            </p>
+          </div>
+
+          <div>
+            <label className="label" htmlFor="replacement_value">
+              Replacement value ৳
+            </label>
+            <input
+              id="replacement_value"
+              name="replacement_value"
+              type="number"
+              step="1"
+              min={0}
+              className="field"
+              defaultValue={book?.replacement_value ?? 0}
+            />
+            <p className="mt-1 text-xs text-ink-muted">
+              Charged if a member loses this copy.
+            </p>
+          </div>
+
+          <div>
+            <label className="label" htmlFor="weight_grams">
+              Weight (grams)
+            </label>
+            <input
+              id="weight_grams"
+              name="weight_grams"
+              type="number"
+              step="10"
+              min={0}
+              className="field"
+              defaultValue={book?.weight_grams ?? ""}
+              placeholder="for BD Post Book Post limits"
+            />
+          </div>
+
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="is_active" defaultChecked={book?.is_active ?? true} />
             Visible in the library

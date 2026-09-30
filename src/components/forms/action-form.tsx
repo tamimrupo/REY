@@ -22,7 +22,7 @@ export function ActionForm({
   footer,
 }: {
   action: Action;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   submitLabel: string;
   pendingLabel?: string;
   className?: string;

@@ -36,11 +36,13 @@ export default async function PaymentsPage() {
                 <StatusPill
                   status={deposit.status}
                   label={
-                    deposit.status === "held"
-                      ? "Held · refundable"
-                      : deposit.status === "refunded"
-                        ? "Refunded"
-                        : "Forfeited"
+                    deposit.status === "refunded"
+                      ? "Refunded"
+                      : deposit.status === "forfeited"
+                        ? "Forfeited"
+                        : deposit.refund_requested_at
+                          ? "Refund requested"
+                          : "Held · refundable"
                   }
                 />
               </li>

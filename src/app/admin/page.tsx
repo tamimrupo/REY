@@ -54,15 +54,72 @@ export default async function AdminOverviewPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Titles live" value={stats.titles} />
-        <Stat label="Deposits held" value={money(stats.held_deposits)} hint="Refundable on exit" />
-        <Stat label="Open requests" value={stats.open_requests} hint="Rare book requests" />
         <Stat
-          label="Deposits to refund"
-          value={money(0)}
-          hint="Mark refunds under Deposits"
+          label="Books out"
+          value={stats.books_out}
+          hint={`${stats.overdue_rentals} overdue`}
+        />
+        <Stat
+          label="To dispatch"
+          value={stats.to_ship}
+          hint="Trips waiting in the warehouse"
+        />
+        <Stat
+          label="Returns in progress"
+          value={stats.returns_pending}
+          hint="Pickups booked or at the post office"
+        />
+        <Stat
+          label="Notifications queued"
+          value={stats.notifications_queued}
+          hint="Renewals and nudges to send"
         />
       </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Stat label="Titles live" value={stats.titles} />
+        <Stat label="Deposits held" value={money(stats.held_deposits)} hint="Refundable on exit" />
+        <Stat
+          label="Refunds requested"
+          value={stats.deposits_requested}
+          hint="Deposits waiting to go back"
+        />
+        <Stat label="Open requests" value={stats.open_requests} hint="Rare book requests" />
+      </div>
+
+      {stats.to_ship + stats.returns_pending + stats.notifications_queued > 0 ? (
+        <section className="card border-amber-200 bg-amber-50/60 p-6">
+          <h2 className="text-lg font-semibold text-ink">Needs a human</h2>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {stats.to_ship > 0 ? (
+              <Link href="/admin/shipments?status=pending" className="btn btn-primary btn-sm">
+                Dispatch {stats.to_ship} trip{stats.to_ship === 1 ? "" : "s"}
+              </Link>
+            ) : null}
+            {stats.returns_pending > 0 ? (
+              <Link href="/admin/shipments?type=return" className="btn btn-outline btn-sm">
+                Collect {stats.returns_pending} return
+                {stats.returns_pending === 1 ? "" : "s"}
+              </Link>
+            ) : null}
+            {stats.overdue_rentals > 0 ? (
+              <Link href="/admin/rentals?filter=overdue" className="btn btn-outline btn-sm">
+                Chase {stats.overdue_rentals} overdue book
+                {stats.overdue_rentals === 1 ? "" : "s"}
+              </Link>
+            ) : null}
+            {stats.notifications_queued > 0 ? (
+              <Link href="/admin/notifications?status=queued" className="btn btn-outline btn-sm">
+                Send {stats.notifications_queued} message
+                {stats.notifications_queued === 1 ? "" : "s"}
+              </Link>
+            ) : null}
+            <Link href="/admin/diagnostics" className="btn btn-ghost btn-sm">
+              Run diagnostics
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       <div className="grid gap-6 xl:grid-cols-2">
         <section className="card p-6">

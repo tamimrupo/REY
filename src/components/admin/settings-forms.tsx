@@ -2,10 +2,14 @@
 
 import { ActionForm } from "@/components/forms/action-form";
 import { saveSimpleSettingAction } from "@/lib/actions/admin";
+import { money } from "@/lib/format";
 import type {
-  DeliverySettings,
+  CourierSettings,
   PaymentSettings,
+  RentalSettings,
   SiteSettings,
+  WarehouseSettings,
+  WhatsappSettings,
 } from "@/lib/types";
 
 export function SiteSettingsForm({ site }: { site: SiteSettings }) {
@@ -127,30 +131,10 @@ export function PaymentSettingsForm({ payments }: { payments: PaymentSettings })
           const method = payments.methods[index];
           return (
             <div key={index} className="grid gap-2 sm:grid-cols-4">
-              <input
-                name={`method_key_${index}`}
-                className="field"
-                placeholder="bkash"
-                defaultValue={method?.key ?? ""}
-              />
-              <input
-                name={`method_label_${index}`}
-                className="field"
-                placeholder="bKash"
-                defaultValue={method?.label ?? ""}
-              />
-              <input
-                name={`method_number_${index}`}
-                className="field"
-                placeholder="017XXXXXXXX"
-                defaultValue={method?.number ?? ""}
-              />
-              <input
-                name={`method_type_${index}`}
-                className="field"
-                placeholder="Personal"
-                defaultValue={method?.type ?? ""}
-              />
+              <input name={`method_key_${index}`} className="field" placeholder="bkash" defaultValue={method?.key ?? ""} />
+              <input name={`method_label_${index}`} className="field" placeholder="bKash" defaultValue={method?.label ?? ""} />
+              <input name={`method_number_${index}`} className="field" placeholder="017XXXXXXXX" defaultValue={method?.number ?? ""} />
+              <input name={`method_type_${index}`} className="field" placeholder="Personal" defaultValue={method?.type ?? ""} />
             </div>
           );
         })}
@@ -162,61 +146,181 @@ export function PaymentSettingsForm({ payments }: { payments: PaymentSettings })
   );
 }
 
-export function DeliverySettingsForm({ delivery }: { delivery: DeliverySettings }) {
+/**
+ * Courier rates: the real charge and the percentage the customer covers.
+ * Example: charge 80, percent 50 → the customer pays ৳40 and the shop pays ৳40.
+ */
+export function CourierSettingsForm({ couriers }: { couriers: CourierSettings }) {
   const rows = [0, 1, 2, 3, 4];
 
   return (
-    <ActionForm
-      action={saveSimpleSettingAction}
-      submitLabel="Save couriers"
-      pendingLabel="Saving…"
-    >
-      <input type="hidden" name="key" value="delivery" />
-      <input type="hidden" name="kind" value="delivery" />
+    <ActionForm action={saveSimpleSettingAction} submitLabel="Save couriers" pendingLabel="Saving…">
+      <input type="hidden" name="key" value="couriers" />
+      <input type="hidden" name="kind" value="couriers" />
 
       <div className="space-y-3">
+        <div className="hidden gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-ink-muted sm:grid sm:grid-cols-5">
+          <span>Key</span>
+          <span>Label</span>
+          <span>Charge ৳</span>
+          <span>Customer %</span>
+          <span>Return ৳</span>
+        </div>
         {rows.map((index) => {
-          const method = delivery.methods[index];
+          const method = couriers.methods[index];
+          const charge = method?.charge ?? 0;
+          const percent = method?.percent ?? 50;
           return (
-            <div key={index} className="grid gap-2 sm:grid-cols-4">
-              <input
-                name={`courier_key_${index}`}
-                className="field"
-                placeholder="steadfast"
-                defaultValue={method?.key ?? ""}
-              />
-              <input
-                name={`courier_label_${index}`}
-                className="field"
-                placeholder="Steadfast"
-                defaultValue={method?.label ?? ""}
-              />
-              <input
-                name={`courier_fee_${index}`}
-                type="number"
-                className="field"
-                placeholder="40"
-                defaultValue={method?.fee ?? ""}
-              />
-              <input
-                name={`courier_note_${index}`}
-                className="field"
-                placeholder="50% off"
-                defaultValue={method?.note ?? ""}
-              />
+            <div key={index} className="grid gap-2 sm:grid-cols-5">
+              <input name={`courier_key_${index}`} className="field" placeholder="steadfast" defaultValue={method?.key ?? ""} />
+              <input name={`courier_label_${index}`} className="field" placeholder="Steadfast" defaultValue={method?.label ?? ""} />
+              <input name={`courier_charge_${index}`} type="number" step="1" className="field" defaultValue={method?.charge ?? ""} />
+              <input name={`courier_percent_${index}`} type="number" step="1" min={0} max={100} className="field" defaultValue={method?.percent ?? ""} />
+              <input name={`courier_return_${index}`} type="number" step="1" className="field" defaultValue={method?.return_charge ?? ""} />
+              {method ? (
+                <p className="text-xs text-emerald-700 sm:col-span-5">
+                  Customer pays {money(Math.round(charge * (percent / 100) * 100) / 100)} of{" "}
+                  {money(charge)} · shop covers {money(Math.round((charge - charge * (percent / 100)) * 100) / 100)}
+                </p>
+              ) : null}
             </div>
           );
         })}
+        <p className="text-xs text-ink-muted">
+          Leave a row blank to remove that courier. Return ৳ is used when the customer sends books back.
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-line bg-cream/40 p-4">
+        <p className="text-sm font-semibold text-ink">BD Post (Book Post)</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <div>
+            <label className="label" htmlFor="bdpost_label">
+              Label
+            </label>
+            <input id="bdpost_label" name="bdpost_label" className="field" defaultValue={couriers.bdpost.label} />
+          </div>
+          <div>
+            <label className="label" htmlFor="bdpost_charge">
+              Charge ৳
+            </label>
+            <input id="bdpost_charge" name="bdpost_charge" type="number" step="1" className="field" defaultValue={couriers.bdpost.charge} />
+          </div>
+          <div>
+            <label className="label" htmlFor="bdpost_max_kg">
+              Max weight (kg)
+            </label>
+            <input id="bdpost_max_kg" name="bdpost_max_kg" type="number" step="0.5" className="field" defaultValue={couriers.bdpost.max_kg} />
+          </div>
+        </div>
+        <div className="mt-3">
+          <label className="label" htmlFor="bdpost_rules">
+            Book Packet rules shown to customers
+          </label>
+          <textarea id="bdpost_rules" name="bdpost_rules" rows={6} className="field" defaultValue={couriers.bdpost.rules} />
+        </div>
       </div>
     </ActionForm>
   );
 }
 
-export function DepositSettingsForm({
-  deposit,
-}: {
-  deposit: { amount: number; note: string };
-}) {
+export function RentalSettingsForm({ rental }: { rental: RentalSettings }) {
+  return (
+    <ActionForm action={saveSimpleSettingAction} submitLabel="Save rental rules" pendingLabel="Saving…">
+      <input type="hidden" name="key" value="rental" />
+      <input type="hidden" name="kind" value="rental" />
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div>
+          <label className="label" htmlFor="duration_days">
+            Plan length (days)
+          </label>
+          <input id="duration_days" name="duration_days" type="number" min={1} className="field" defaultValue={rental.duration_days} />
+        </div>
+        <div>
+          <label className="label" htmlFor="renew_notice_days">
+            Renewal reminder (days before)
+          </label>
+          <input id="renew_notice_days" name="renew_notice_days" type="number" min={1} max={30} className="field" defaultValue={rental.renew_notice_days} />
+        </div>
+        <div>
+          <label className="label" htmlFor="max_parallel_rentals">
+            Max books out at once (0 = plan limit)
+          </label>
+          <input id="max_parallel_rentals" name="max_parallel_rentals" type="number" min={0} className="field" defaultValue={rental.max_parallel_rentals} />
+        </div>
+      </div>
+
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" name="block_overdue" defaultChecked={rental.block_overdue} />
+        Block new picks while a customer has overdue books
+      </label>
+    </ActionForm>
+  );
+}
+
+export function WhatsappSettingsForm({ whatsapp }: { whatsapp: WhatsappSettings }) {
+  return (
+    <ActionForm action={saveSimpleSettingAction} submitLabel="Save messages" pendingLabel="Saving…">
+      <input type="hidden" name="key" value="whatsapp" />
+      <input type="hidden" name="kind" value="whatsapp" />
+
+      <div className="sm:max-w-xs">
+        <label className="label" htmlFor="country_code">
+          Country code
+        </label>
+        <input id="country_code" name="country_code" className="field" defaultValue={whatsapp.country_code} />
+      </div>
+
+      <div>
+        <label className="label" htmlFor="renew_text">
+          Renewal reminder — placeholders: {`{name}`} {`{plan}`} {`{expires}`} {`{days}`} {`{renew}`}
+        </label>
+        <textarea id="renew_text" name="renew_text" rows={3} className="field" defaultValue={whatsapp.renew_text} />
+      </div>
+
+      <div>
+        <label className="label" htmlFor="order_text">
+          Dispatch message — placeholders: {`{name}`} {`{books}`} {`{order}`} {`{tracking}`}
+        </label>
+        <textarea id="order_text" name="order_text" rows={3} className="field" defaultValue={whatsapp.order_text} />
+      </div>
+    </ActionForm>
+  );
+}
+
+export function WarehouseSettingsForm({ warehouse }: { warehouse: WarehouseSettings }) {
+  return (
+    <ActionForm action={saveSimpleSettingAction} submitLabel="Save warehouse" pendingLabel="Saving…">
+      <input type="hidden" name="key" value="warehouse" />
+      <input type="hidden" name="kind" value="warehouse" />
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="label" htmlFor="wh_name">
+            Name on the return slip
+          </label>
+          <input id="wh_name" name="name" className="field" defaultValue={warehouse.name} />
+        </div>
+        <div>
+          <label className="label" htmlFor="wh_phone">
+            Phone on the return slip
+          </label>
+          <input id="wh_phone" name="phone" className="field" defaultValue={warehouse.phone} />
+        </div>
+      </div>
+
+      <div>
+        <label className="label" htmlFor="wh_address">
+          Return address
+        </label>
+        <textarea id="wh_address" name="address" rows={3} className="field" defaultValue={warehouse.address} />
+      </div>
+    </ActionForm>
+  );
+}
+
+export function DepositSettingsForm({ deposit }: { deposit: { amount: number; note: string } }) {
   return (
     <ActionForm action={saveSimpleSettingAction} submitLabel="Save deposit" pendingLabel="Saving…">
       <input type="hidden" name="key" value="deposit" />
@@ -226,14 +330,7 @@ export function DepositSettingsForm({
         <label className="label" htmlFor="amount">
           Refundable deposit (৳)
         </label>
-        <input
-          id="amount"
-          name="amount"
-          type="number"
-          step="1"
-          className="field sm:max-w-xs"
-          defaultValue={deposit.amount}
-        />
+        <input id="amount" name="amount" type="number" step="1" className="field sm:max-w-xs" defaultValue={deposit.amount} />
       </div>
 
       <div>

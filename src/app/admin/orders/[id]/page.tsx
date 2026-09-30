@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { DeliveryForm } from "@/components/admin/delivery-forms";
+import { ShipmentForm } from "@/components/admin/shipment-forms";
 import { StatusSelect } from "@/components/admin/status-select";
 import { StatusPill } from "@/components/ui";
 import { setOrderStatusAction } from "@/lib/actions/admin";
 import { getOrder } from "@/lib/data";
+import { SHIPMENT_TYPE_LABELS } from "@/lib/quotas";
 import { formatDateTime, humanize, money } from "@/lib/format";
 
 export const metadata = { title: "Order" };
@@ -18,7 +19,7 @@ export default async function AdminOrderPage(props: PageProps<"/admin/orders/[id
   const order = (await getOrder(id)) as any;
   if (!order) notFound();
 
-  const deliveries: any[] = order.deliveries ?? [];
+  const deliveries: any[] = order.shipments ?? [];
   const payments: any[] = order.payments ?? [];
   const address = order.addresses;
 
@@ -154,27 +155,29 @@ export default async function AdminOrderPage(props: PageProps<"/admin/orders/[id
       </div>
 
       <section className="card p-6">
-        <h2 className="text-lg font-semibold text-ink">Deliveries</h2>
+        <h2 className="text-lg font-semibold text-ink">Shipments</h2>
         {deliveries.length ? (
           <div className="mt-4 space-y-4">
-            {deliveries.map((delivery: any) => (
-              <details key={delivery.id} className="rounded-xl border border-line p-4">
+            {deliveries.map((shipment: any) => (
+              <details key={shipment.id} className="rounded-xl border border-line p-4">
                 <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3">
                   <span className="text-sm text-ink">
-                    <span className="capitalize">{delivery.courier}</span> ·{" "}
-                    {delivery.tracking_code || "no tracking code"}
+                    {SHIPMENT_TYPE_LABELS[shipment.type as "outbound" | "swap" | "return"]} ·{" "}
+                    <span className="capitalize">{shipment.courier}</span> ·{" "}
+                    {shipment.tracking || shipment.bdpost_receipt || "no tracking code"}
                   </span>
-                  <StatusPill status={delivery.status} />
+                  <StatusPill status={shipment.status} />
                 </summary>
                 <div className="mt-5">
-                  <DeliveryForm delivery={delivery} />
+                  <ShipmentForm shipment={shipment} />
                 </div>
               </details>
             ))}
           </div>
         ) : (
           <p className="mt-3 text-sm text-ink-muted">
-            No delivery created yet — one is added automatically when a payment is verified.
+            No shipment yet. One is created when the customer confirms a box; the first trip is
+            queued when you verify their payment.
           </p>
         )}
       </section>

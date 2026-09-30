@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 
 import { SubscribeForm, type PickBook } from "@/components/subscribe-form";
 import { requireUser } from "@/lib/auth";
-import { getAddresses, getDeliverySettings, getPlanBySlug, getPlanFeatures, listBooks } from "@/lib/data";
+import { getAddresses, getCourierSettings, getPlanBySlug, getPlanFeatures, listBooks } from "@/lib/data";
+import { couriersFor } from "@/lib/quotas";
 import { money } from "@/lib/format";
 
 export async function generateMetadata(props: PageProps<"/subscribe/[slug]">) {
@@ -15,12 +16,12 @@ export default async function SubscribePage(props: PageProps<"/subscribe/[slug]"
   const { slug } = await props.params;
   const session = await requireUser(`/subscribe/${slug}`);
 
-  const [plan, features, catalog, addresses, delivery] = await Promise.all([
+  const [plan, features, catalog, addresses, courierSettings] = await Promise.all([
     getPlanBySlug(slug),
     getPlanFeatures(),
     listBooks({ perPage: 60 }),
     getAddresses(session.userId),
-    getDeliverySettings(),
+    getCourierSettings(),
   ]);
 
   if (!plan || !plan.is_active) notFound();
@@ -64,8 +65,8 @@ export default async function SubscribePage(props: PageProps<"/subscribe/[slug]"
           plan={plan}
           books={books}
           addresses={addresses}
-          couriers={delivery.methods}
-          defaultCourier={delivery.methods[0]?.key ?? "steadfast"}
+          couriers={couriersFor(courierSettings, "outbound")}
+          defaultCourier={courierSettings.methods[0]?.key ?? "steadfast"}
         />
       </div>
     </div>

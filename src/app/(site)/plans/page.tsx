@@ -2,17 +2,23 @@ import Link from "next/link";
 
 import { PlanCard } from "@/components/plan-card";
 import { EmptyState, SectionHeading } from "@/components/ui";
-import { getDeliverySettings, getPlanFeatures, getPlans } from "@/lib/data";
+import { getCourierSettings, getPlanFeatures, getPlans } from "@/lib/data";
+import { couriersFor } from "@/lib/quotas";
 import { money } from "@/lib/format";
 
 export const metadata = { title: "Subscription plans" };
 
 export default async function PlansPage() {
-  const [plans, features, delivery] = await Promise.all([
+  const [plans, features, courierSettings] = await Promise.all([
     getPlans(),
     getPlanFeatures(),
-    getDeliverySettings(),
+    getCourierSettings(),
   ]);
+
+  const deliveryOptions = couriersFor(courierSettings, "outbound");
+  const minDelivery = deliveryOptions.length
+    ? Math.min(...deliveryOptions.map((option) => option.charge))
+    : 0;
 
   return (
     <>
@@ -62,12 +68,12 @@ export default async function PlansPage() {
                 <div>
                   <p className="font-medium text-ink">{plan.name}</p>
                   <p className="mt-0.5 text-xs text-ink-muted">
-                    {money(plan.price_monthly)} plan + {money(plan.security_deposit)} deposit + ৳40
-                    delivery
+                    {money(plan.price_monthly)} plan + {money(plan.security_deposit)} deposit +{" "}
+                    {money(minDelivery)} delivery
                   </p>
                 </div>
                 <p className="font-display text-lg font-semibold text-ink">
-                  {money(Number(plan.price_monthly) + Number(plan.security_deposit) + 40)}
+                  {money(Number(plan.price_monthly) + Number(plan.security_deposit) + minDelivery)}
                 </p>
               </div>
             ))}
@@ -78,17 +84,23 @@ export default async function PlansPage() {
       <section className="container-page py-16">
         <SectionHeading
           eyebrow="Delivery"
-          title="Four couriers, discounted rates"
-          description="Choose whoever reaches you fastest. Check your package before you accept it."
+          title="Four couriers, and we split the cost"
+          description="Each courier has a rate, and you only pay your share. BD Post is free when the Book Post rules are followed, and you can check the package before you accept it."
         />
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {delivery.methods.map((method) => (
-            <div key={method.key} className="card p-5">
-              <p className="font-medium text-ink">{method.label}</p>
+          {deliveryOptions.map((option) => (
+            <div key={option.key} className="card p-5">
+              <p className="font-medium text-ink">{option.label}</p>
               <p className="mt-1 font-display text-2xl font-semibold text-ink">
-                {method.fee === 0 ? "Free" : money(method.fee)}
+                {option.charge === 0 ? "Free" : money(option.charge)}
               </p>
-              {method.note ? <p className="mt-1 text-xs text-gold">{method.note}</p> : null}
+              <p className="mt-1 text-xs text-ink-muted">
+                {courierSettings.methods.find((m) => m.key === option.key)
+                  ? `Your share of the ${money(
+                      courierSettings.methods.find((m) => m.key === option.key)?.charge ?? 0,
+                    )} courier charge`
+                  : "Return option"}
+              </p>
             </div>
           ))}
         </div>

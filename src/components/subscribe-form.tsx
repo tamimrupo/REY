@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Alert } from "@/components/ui";
 import { startSubscriptionAction } from "@/lib/actions/storefront";
 import { money } from "@/lib/format";
-import type { Address, DeliveryMethod, Plan } from "@/lib/types";
+import type { Address, Plan } from "@/lib/types";
 
 export type PickBook = {
   id: string;
@@ -15,6 +15,13 @@ export type PickBook = {
   author: string | null;
   genre: string | null;
   language: string | null;
+};
+
+export type CourierOption = {
+  key: string;
+  label: string;
+  charge: number;
+  note: string;
 };
 
 export function SubscribeForm({
@@ -27,7 +34,7 @@ export function SubscribeForm({
   plan: Plan;
   books: PickBook[];
   addresses: Address[];
-  couriers: DeliveryMethod[];
+  couriers: CourierOption[];
   defaultCourier: string;
 }) {
   const [state, formAction, pending] = useActionState(startSubscriptionAction, null);
@@ -40,7 +47,7 @@ export function SubscribeForm({
   );
 
   const limit = plan.books_per_month;
-  const fee = couriers.find((c) => c.key === courier)?.fee ?? 40;
+  const fee = couriers.find((c) => c.key === courier)?.charge ?? 0;
   const deposit = plan.security_deposit;
   const total = Number(plan.price_monthly) + Number(deposit) + fee;
   const isFull = selected.length === limit;
@@ -244,11 +251,14 @@ export function SubscribeForm({
                     <span className="text-ink">{option.label}</span>
                   </span>
                   <span className="text-xs text-ink-muted">
-                    {option.fee === 0 ? "Free" : money(option.fee)}
+                    {option.charge === 0 ? "Free" : money(option.charge)}
                   </span>
                 </label>
               ))}
             </div>
+            <p className="mt-2 text-xs text-ink-muted">
+              We cover part of the courier cost — you only pay your share.
+            </p>
           </div>
 
           {/* ---------------------------------------------------- Address */}

@@ -1,0 +1,10 @@
+# Minimal Supabase CLI config for this project.
+# Only `project_id` is required so that:
+#   npx supabase link --project-ref dldhibwxltrvzoqtiyqz
+#   npx supabase db push
+# already know which project they are talking to.
+#
+# If you ever want the full generated config, run `npx supabase init` in a
+# clean folder and copy the file over.
+
+project_id = "dldhibwxltrvzoqtiyqz"

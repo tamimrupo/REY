@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
-import { getSiteSettings } from "@/lib/data";
+import { getSiteSettingsForMetadata } from "@/lib/data";
 
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const site = await getSiteSettings();
+  const site = await getSiteSettingsForMetadata();
   return {
     title: {
       default: `${site.name} — Book rental club in Bangladesh`,

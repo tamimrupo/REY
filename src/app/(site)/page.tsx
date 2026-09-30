@@ -53,12 +53,10 @@ export default async function HomePage() {
             </dl>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-x-4 gap-y-8">
             {trending.books.length ? (
-              trending.books.slice(0, 6).map((book, index) => (
-                <div key={book.id} className={index % 2 === 1 ? "translate-y-6" : ""}>
-                  <BookCard book={book} />
-                </div>
+              trending.books.slice(0, 6).map((book) => (
+                <BookCard key={book.id} book={book} />
               ))
             ) : (
               <div className="col-span-3 rounded-2xl border border-line bg-white/70 p-8">

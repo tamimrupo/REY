@@ -1,32 +1,38 @@
+"use client";
+
 import { ActionForm } from "@/components/forms/action-form";
-import { saveDeliveryAction, refundDepositAction } from "@/lib/actions/admin";
-import type { Delivery, Deposit } from "@/lib/types";
-import { formatDate, money } from "@/lib/format";
+import { refundDepositAction, saveShipmentAction } from "@/lib/actions/admin";
+import { money } from "@/lib/format";
+import { SHIPMENT_STATUS_FLOW } from "@/lib/quotas";
+import type { Deposit, Shipment } from "@/lib/types";
 
-const couriers = ["steadfast", "pathao", "redx", "bdpost", "other"];
-const statuses = ["pending", "dispatched", "in_transit", "delivered", "returned", "failed"];
+const COURIERS = ["steadfast", "pathao", "redx", "bdpost", "other"];
 
-export function DeliveryForm({ delivery }: { delivery: Delivery }) {
+/**
+ * One trip in, one trip out. Marking a shipment `shipped`/`delivered` puts the
+ * outbound books in the customer's hands; `completed` books the returns back in.
+ */
+export function ShipmentForm({ shipment }: { shipment: Shipment }) {
   return (
     <ActionForm
-      action={saveDeliveryAction}
-      submitLabel="Save delivery"
+      action={saveShipmentAction}
+      submitLabel="Save trip"
       pendingLabel="Saving…"
       className="grid gap-4 sm:grid-cols-2"
     >
-      <input type="hidden" name="id" value={delivery.id} />
+      <input type="hidden" name="id" value={shipment.id} />
 
       <div>
-        <label className="label" htmlFor={`courier-${delivery.id}`}>
+        <label className="label" htmlFor={`courier-${shipment.id}`}>
           Courier
         </label>
         <select
-          id={`courier-${delivery.id}`}
+          id={`courier-${shipment.id}`}
           name="courier"
-          defaultValue={delivery.courier}
+          defaultValue={shipment.courier}
           className="field capitalize"
         >
-          {couriers.map((courier) => (
+          {COURIERS.map((courier) => (
             <option key={courier} value={courier}>
               {courier}
             </option>
@@ -35,44 +41,59 @@ export function DeliveryForm({ delivery }: { delivery: Delivery }) {
       </div>
 
       <div>
-        <label className="label" htmlFor={`status-${delivery.id}`}>
+        <label className="label" htmlFor={`status-${shipment.id}`}>
           Status
         </label>
         <select
-          id={`status-${delivery.id}`}
+          id={`status-${shipment.id}`}
           name="status"
-          defaultValue={delivery.status}
+          defaultValue={shipment.status}
           className="field capitalize"
         >
-          {statuses.map((status) => (
+          {SHIPMENT_STATUS_FLOW.map((status) => (
             <option key={status} value={status}>
-              {status.replace("_", " ")}
+              {status.replace(/_/g, " ")}
             </option>
           ))}
         </select>
+        <p className="mt-1 text-xs text-ink-muted">
+          `shipped` hands the books over · `completed` books the returns back in.
+        </p>
       </div>
 
       <div>
-        <label className="label" htmlFor={`tracking-${delivery.id}`}>
+        <label className="label" htmlFor={`tracking-${shipment.id}`}>
           Tracking code
         </label>
         <input
-          id={`tracking-${delivery.id}`}
-          name="tracking_code"
+          id={`tracking-${shipment.id}`}
+          name="tracking"
           className="field"
-          defaultValue={delivery.tracking_code ?? ""}
+          defaultValue={shipment.tracking ?? ""}
         />
       </div>
 
       <div>
-        <label className="label" htmlFor={`notes-${delivery.id}`}>
+        <label className="label" htmlFor={`receipt-${shipment.id}`}>
+          BD Post receipt
+        </label>
+        <input
+          id={`receipt-${shipment.id}`}
+          name="bdpost_receipt"
+          className="field"
+          defaultValue={shipment.bdpost_receipt ?? ""}
+        />
+      </div>
+
+      <div className="sm:col-span-2">
+        <label className="label" htmlFor={`notes-${shipment.id}`}>
           Notes
         </label>
         <input
-          id={`notes-${delivery.id}`}
+          id={`notes-${shipment.id}`}
           name="notes"
           className="field"
-          defaultValue={delivery.notes ?? ""}
+          defaultValue={shipment.notes ?? ""}
         />
       </div>
     </ActionForm>
@@ -80,6 +101,8 @@ export function DeliveryForm({ delivery }: { delivery: Delivery }) {
 }
 
 export function DepositForm({ deposit }: { deposit: Deposit }) {
+  const requested = Boolean(deposit.refund_requested_at);
+
   return (
     <ActionForm
       action={refundDepositAction}
@@ -92,19 +115,18 @@ export function DepositForm({ deposit }: { deposit: Deposit }) {
       <div>
         <span className="label">Amount</span>
         <p className="py-2 text-sm text-ink">{money(deposit.amount)}</p>
-        <p className="text-xs text-ink-muted">Held since {formatDate(deposit.created_at)}</p>
+        <p className="text-xs text-ink-muted">
+          {requested
+            ? `Refund requested ${new Date(deposit.refund_requested_at as string).toLocaleDateString("en-GB")}`
+            : "Not requested yet"}
+        </p>
       </div>
 
       <div>
         <label className="label" htmlFor={`status-${deposit.id}`}>
           Status
         </label>
-        <select
-          id={`status-${deposit.id}`}
-          name="status"
-          defaultValue={deposit.status}
-          className="field"
-        >
+        <select id={`status-${deposit.id}`} name="status" defaultValue={deposit.status} className="field">
           <option value="held">Held</option>
           <option value="refunded">Refunded</option>
           <option value="forfeited">Forfeited</option>

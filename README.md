@@ -57,16 +57,40 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 ### 2. Create the database
 
-In the Supabase dashboard open the **SQL Editor** and run, in order:
+Pick either route — they do the same thing. Run **every** file in `supabase/migrations/` in
+filename order.
+
+**Route A — the Supabase dashboard (no password needed)**
+
+Open the **SQL Editor**, then for each file: open it, select all, copy, paste into a new query,
+and press **Run**. Do them in order.
+
+**Route B — the Supabase CLI**
+
+```bash
+npx supabase login
+npx supabase link --project-ref <your-project-ref>   # asks for your database password
+npx supabase db push
+```
+
+> On Windows, PowerShell blocks `npm`/`npx` scripts by default. Use **cmd.exe** or
+> **Git Bash** for those commands (or write `npx.cmd` instead of `npx`).
+>
+> If you forget your database password, reset it under **Settings → Database**.
+> Route A avoids needing it at all.
 
 | File | What it does |
 | --- | --- |
-| `supabase/migrations/0001_init.sql` | Tables, enums, RLS policies, guard triggers, storage buckets, analytics function |
-| `supabase/migrations/0002_seed.sql` | 3 plans, 16 genres, 16 starter books, 8 CMS pages, default settings |
+| `20260930120000_init.sql` | Tables, enums, RLS policies, guard triggers, storage buckets |
+| `20260930120100_seed.sql` | 3 plans, 16 genres, 16 authors, 16 books, 8 CMS pages, default settings |
+| `20260930120200_rentals_shipments.sql` | Rentals, swaps, shipments, deposits, notification outbox, cron maintenance, courier pricing |
+| `20260930130000_hardening.sql` | Foreign-key and partial indexes; RLS policies rewritten for performance |
+| `20260930140000_policy_cleanup.sql` | Merges overlapping INSERT policies |
+| `20260930150000_function_privileges.sql` | Revokes the default `PUBLIC` grant on functions; least-privilege grants |
+| `20260930160000_admin_promotion_fix.sql` | Lets direct SQL access promote an admin (the SQL Editor has no JWT, so the old guard silently reverted it) |
 
-Both files are safe to re-run.
-
-> If you have the Supabase CLI and Docker instead: `supabase db push`.
+Every file is safe to re-run. The last three are hardening/tuning and are applied
+automatically by `supabase db push`.
 
 ### 3. Run it
 
@@ -169,9 +193,11 @@ payment they insert is forced back to `pending`.
 
 ## Next steps worth considering
 
-- Renewal automation: a Supabase cron (`pg_cron`) that rolls cycles over and creates renewal
-  orders when `next_billing_date` arrives.
-- SSLCommerz / aamarPay integration to replace manual verification with automated payments.
-- SMS/email notifications when a box is dispatched (Steadfast has a webhook).
-- Library import: bulk-add books from a CSV or an Open Library export.
-- Replace the 60-title picker with a debounced search endpoint once the catalog grows.
+- Automated payments: SSLCommerz / aamarPay, to replace manual TrxID approval.
+- Courier webhooks: Steadfast/Pathao callbacks so a shipment marks itself delivered instead of
+  you updating it by hand.
+- A debounced server-side search endpoint for the box picker once the catalog outgrows the
+  first 24–60 titles it loads today.
+- Sitemap + structured data (Book/AggregateOffer) for Google Shopping style listings.
+- Multi-copy reservations: `add_to_box()` already refuses a title whose copies are all out, but
+  it does not hold a specific copy for a customer until dispatch.

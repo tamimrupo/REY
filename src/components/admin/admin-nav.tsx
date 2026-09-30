@@ -10,7 +10,8 @@ const groups: { title: string; items: { href: string; label: string }[] }[] = [
       { href: "/admin", label: "Overview" },
       { href: "/admin/orders", label: "Orders" },
       { href: "/admin/subscriptions", label: "Subscriptions" },
-      { href: "/admin/deliveries", label: "Deliveries" },
+      { href: "/admin/shipments", label: "Shipments" },
+      { href: "/admin/rentals", label: "Books out" },
     ],
   },
   {
@@ -25,6 +26,7 @@ const groups: { title: string; items: { href: string; label: string }[] }[] = [
     items: [
       { href: "/admin/customers", label: "Customers" },
       { href: "/admin/requests", label: "Rare requests" },
+      { href: "/admin/notifications", label: "Notifications" },
     ],
   },
   {
@@ -32,13 +34,15 @@ const groups: { title: string; items: { href: string; label: string }[] }[] = [
     items: [
       { href: "/admin/books", label: "Books" },
       { href: "/admin/plans", label: "Plans" },
+      { href: "/admin/import", label: "Import books" },
     ],
   },
   {
-    title: "Content",
+    title: "System",
     items: [
-      { href: "/admin/pages", label: "Pages" },
+      { href: "/admin/diagnostics", label: "Diagnostics" },
       { href: "/admin/settings", label: "Settings" },
+      { href: "/admin/pages", label: "Pages" },
     ],
   },
 ];

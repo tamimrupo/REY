@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AddToBoxButton } from "@/components/add-to-box-button";
 import { BookCard, BookCover } from "@/components/book-card";
+import { QuotaBar } from "@/components/quota-bar";
 import { StatusPill } from "@/components/ui";
+import { getSession } from "@/lib/auth";
 import { getBookBySlug, getPlans, listBooks } from "@/lib/data";
 import { money } from "@/lib/format";
 
@@ -17,9 +20,10 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
   const book = await getBookBySlug(slug);
   if (!book) notFound();
 
-  const [plans, related] = await Promise.all([
+  const [plans, related, session] = await Promise.all([
     getPlans(),
     listBooks({ genre: undefined, perPage: 6 }),
+    getSession(),
   ]);
 
   const cheapest = plans.length
@@ -30,6 +34,8 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
 
   return (
     <>
+      {session ? <QuotaBar userId={session.userId} /> : null}
+
       <div className="container-page py-10">
         <nav className="text-xs text-ink-muted">
           <Link href="/library" className="hover:text-ink">
@@ -93,20 +99,26 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
                 ))}
             </dl>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <AddToBoxButton
+                bookId={book.id}
+                back={`/library/${book.slug}`}
+                className="btn btn-primary"
+                label="Add to my box"
+              />
               {cheapest ? (
-                <Link href={`/subscribe/${cheapest.slug}`} className="btn btn-primary">
-                  Add to a plan from {money(cheapest.price_monthly)}/mo
+                <Link href={`/subscribe/${cheapest.slug}`} className="btn btn-outline">
+                  Join from {money(cheapest.price_monthly)}/mo
                 </Link>
               ) : null}
-              <Link href="/plans" className="btn btn-outline">
+              <Link href="/plans" className="btn btn-ghost">
                 Compare plans
               </Link>
             </div>
 
             <p className="mt-4 text-xs text-ink-muted">
-              Members pick their titles each month. Not a member yet? Choose a plan and build your
-              first box.
+              Members pick their titles each month — put this in your box and confirm it when you
+              are ready. Not a member yet? Choose a plan and build your first box.
             </p>
           </div>
         </div>
