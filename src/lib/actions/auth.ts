@@ -44,16 +44,55 @@ export async function signUpAction(
     },
   });
 
-  if (error) return fail(error.message);
+  if (error) {
+    // Supabase refuses the whole signup when its mailer is throttled, so this
+    // error is the difference between "try again later" and "you are losing
+    // customers". Point at the cause.
+    if (/rate limit|too many|429/i.test(error.message)) {
+      return fail(
+        "Too many confirmation emails have been sent from this project just now. Supabase's built-in mailer only allows a few per hour. Wait a few minutes — and connect your own SMTP before launch (Brevo is free; see the README).",
+      );
+    }
+    if (/already registered|already exists|already been registered/i.test(error.message)) {
+      return fail("That email already has an account. Try signing in, or reset your password.");
+    }
+    return fail(error.message);
+  }
 
   // Email confirmation turned off → straight in.
   if (data.session) redirect(next);
 
-  return {
-    ok: true,
-    message:
-      "Account created. Check your inbox for a confirmation link, then sign in.",
-  };
+  // Confirmation required → send them to a dedicated screen with a resend button.
+  redirect(`/verify-email?email=${encodeURIComponent(email)}`);
+}
+
+/** Re-sends the sign-up confirmation email. */
+export async function resendConfirmationAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!supabaseConfigured) return fail(NOT_READY);
+
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) return fail("Enter your email address.");
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: `${siteUrl}/auth/callback?next=%2Faccount` },
+  });
+
+  if (error) {
+    if (/rate limit|too many|429/i.test(error.message)) {
+      return fail(
+        "Too many emails have been sent just now. Supabase's built-in mailer allows only a few per hour — wait a few minutes, or connect your own SMTP (Brevo is free).",
+      );
+    }
+    return fail(error.message);
+  }
+
+  return { ok: true, message: "Sent. Check your inbox and your spam folder." };
 }
 
 export async function signInAction(
@@ -70,7 +109,16 @@ export async function signInAction(
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return fail(error.message);
+  if (error) {
+    // The most common support question in the first week: "it says wrong
+    // password but I just signed up". It is almost always an unconfirmed email.
+    if (/not confirmed/i.test(error.message)) {
+      return fail(
+        "Your email is not confirmed yet. Open the link we emailed you — or use “Resend confirmation” below.",
+      );
+    }
+    return fail(error.message);
+  }
 
   redirect(next);
 }

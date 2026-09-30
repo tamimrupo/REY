@@ -22,7 +22,7 @@ import {
   getWarehouseSettings,
   getWhatsappSettings,
 } from "@/lib/data";
-import { emailConfigured } from "@/lib/notify";
+import { emailConfigured, emailProviderLabel } from "@/lib/notify";
 
 export const metadata = { title: "Settings" };
 
@@ -99,13 +99,16 @@ export default async function AdminSettingsPage() {
         <div className="mt-4">
           {emailConfigured ? (
             <Alert tone="success">
-              Email sending is on (RESEND_API_KEY detected). Queued messages can be emailed from the
-              outbox.
+              Email sending is on via <strong>{emailProviderLabel()}</strong>. Queued messages can be
+              emailed straight from the outbox.
             </Alert>
           ) : (
             <Alert tone="info">
-              Email is optional. Add <code className="rounded bg-white/60 px-1">RESEND_API_KEY</code>{" "}
-              to send emails automatically; otherwise send from the outbox with one click on WhatsApp.
+              Email is optional. Add <code className="rounded bg-white/60 px-1">BREVO_API_KEY</code>{" "}
+              + <code className="rounded bg-white/60 px-1">BREVO_SENDER_EMAIL</code> (or{" "}
+              <code className="rounded bg-white/60 px-1">RESEND_API_KEY</code>) to email
+              notifications; otherwise send from the outbox with one click on WhatsApp. See the
+              README for the Brevo setup.
             </Alert>
           )}
         </div>

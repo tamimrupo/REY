@@ -1,8 +1,9 @@
 import Link from "next/link";
 
 import { PaymentReview } from "@/components/admin/payment-review";
-import { EmptyState, StatusPill } from "@/components/ui";
+import { Alert, EmptyState, StatusPill } from "@/components/ui";
 import { listPayments } from "@/lib/data";
+import { phonesMatch } from "@/lib/phone";
 import { formatDateTime, money } from "@/lib/format";
 
 export const metadata = { title: "Payments" };
@@ -14,10 +15,42 @@ const filters = [
   ["rejected", "Rejected"],
 ];
 
+/**
+ * Free fraud signal: did this bKash/Nagad payment come from the number the
+ * customer registered with? People legitimately pay from a family member's
+ * phone, so this flags for review rather than blocking anything.
+ */
+function SenderMatch({
+  sender,
+  profilePhone,
+}: {
+  sender: string | null;
+  profilePhone: string | null | undefined;
+}) {
+  const match = phonesMatch(sender, profilePhone);
+  if (match === false) {
+    return (
+      <span className="mt-1 block text-xs font-medium text-amber-700">
+        ⚠ Different number than the profile
+      </span>
+    );
+  }
+  if (match === true) {
+    return <span className="mt-1 block text-xs text-emerald-700">Matches profile phone</span>;
+  }
+  return null;
+}
+
 export default async function AdminPaymentsPage(props: PageProps<"/admin/payments">) {
   const search = await props.searchParams;
   const status = typeof search.status === "string" ? search.status : "";
   const payments = await listPayments(status || undefined);
+
+  const mismatched = payments.filter(
+    (payment) =>
+      payment.status === "pending" &&
+      phonesMatch(payment.sender_number, payment.profiles?.phone) === false,
+  );
 
   return (
     <div className="space-y-6">
@@ -42,6 +75,19 @@ export default async function AdminPaymentsPage(props: PageProps<"/admin/payment
           </Link>
         ))}
       </div>
+
+      {mismatched.length > 0 ? (
+        <Alert tone="warning">
+          <p className="font-semibold">
+            {mismatched.length} payment{mismatched.length === 1 ? "" : "s"} came from a different
+            number than the customer&apos;s profile phone.
+          </p>
+          <p className="mt-1">
+            Not proof of fraud — people often pay from a family member&apos;s bKash. Check against
+            your statement, and hold the order if anything feels off.
+          </p>
+        </Alert>
+      ) : null}
 
       {payments.length === 0 ? (
         <EmptyState title="No payments here" description="Nothing matches this filter yet." />
@@ -76,6 +122,10 @@ export default async function AdminPaymentsPage(props: PageProps<"/admin/payment
                     {payment.sender_number ? (
                       <span className="block text-xs text-ink-muted">{payment.sender_number}</span>
                     ) : null}
+                    <SenderMatch
+                      sender={payment.sender_number}
+                      profilePhone={payment.profiles?.phone}
+                    />
                   </td>
                   <td>
                     <span className="font-mono text-xs text-ink">{payment.trx_id ?? "—"}</span>

@@ -14,6 +14,7 @@ import {
   getCustomerSubscriptions,
 } from "@/lib/data";
 import { SHIPMENT_TYPE_LABELS, isOverdue, rentalStatusLabel, whatsappLink } from "@/lib/quotas";
+import { phonesMatch } from "@/lib/phone";
 import { formatDate, money } from "@/lib/format";
 
 export const metadata = { title: "Customer" };
@@ -234,6 +235,16 @@ export default async function AdminCustomerPage(props: PageProps<"/admin/custome
                   <span className="text-ink-soft">
                     <span className="capitalize">{payment.method}</span> ·{" "}
                     <span className="font-mono text-xs">{payment.trx_id ?? "—"}</span>
+                    {payment.sender_number ? (
+                      <span className="block text-xs text-ink-muted">
+                        from {payment.sender_number}
+                        {phonesMatch(payment.sender_number, customer.phone) === false ? (
+                          <span className="ml-1 font-medium text-amber-700">
+                            ⚠ not the profile number
+                          </span>
+                        ) : null}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="flex items-center gap-2">
                     <span className="text-ink">{money(payment.amount)}</span>

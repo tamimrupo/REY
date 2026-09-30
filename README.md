@@ -112,6 +112,50 @@ Then sign out and back in and visit `/admin`.
 
 ---
 
+## Verification & email that actually arrives
+
+Three different things get called "verification". Two are already handled:
+
+| Kind | How it works |
+| --- | --- |
+| **Payment** | Customer pays by bKash/Nagad, submits the TrxID, you approve it in Payments |
+| **Delivery** | The courier calls before handover and the customer checks the package |
+| **Account** | Email confirmation link (Supabase), plus a free phone check on payments |
+
+**Account verification.** Supabase emails a confirmation link on sign-up and the app shows a
+"check your inbox" screen with a resend button. Two things to know:
+
+1. Supabase's built-in mailer is limited to a handful of emails per hour and often lands in spam.
+   **Connect your own SMTP before taking real sign-ups** (below).
+2. Phone numbers are collected at sign-up and used by couriers, but they are **not** OTP-verified.
+   Instead, the Payments screen compares the **bKash/Nagad sender number** with the customer's
+   profile phone and flags a mismatch for you to review. It is free, needs no SMS credits, and
+   catches the common case. Add real SMS OTP later only if you start seeing fake accounts (a local
+   BD gateway is ~৳0.5/SMS, but Supabase does not support those natively, so it needs a custom
+   function).
+
+### Email that actually arrives (Brevo)
+
+Brevo's free tier covers 300 emails/day, which is plenty at the start.
+
+1. Create an account at **brevo.com** → **Senders & IPs → Senders** → add
+   `hello@yourdomain.com` and click the verification link they send.
+2. **SMTP & API → SMTP** tab. Note the server (`smtp-relay.brevo.com`), port `587`, your login
+   email, and generate an **SMTP key**.
+3. In Supabase: **Authentication → Emails → SMTP settings** → enable custom SMTP and paste those
+   values, with the sender name/email set to your verified sender.
+4. Supabase **Authentication → Rate Limits** → raise "Emails per hour", so your own SMTP is the
+   limit rather than Supabase's shared mailer.
+5. Supabase **Authentication → URL Configuration** → set Site URL to your domain and add
+   `https://yourdomain.com/auth/callback` under Redirect URLs, or confirmation and password-reset
+   links will bounce to localhost.
+6. Optional, for the admin outbox: **SMTP & API → API Keys** → create a key, put it in
+   `BREVO_API_KEY`, and set `BREVO_SENDER_EMAIL` to your verified sender. Renewal and dispatch
+   messages can then be emailed from the outbox in one click.
+
+> **Why the confirmation link bounces to localhost:** it points at `NEXT_PUBLIC_SITE_URL`. Set that
+> to your real domain on Vercel, and make sure the same URL is in Supabase's Redirect URLs.
+
 ## Deploy to Vercel
 
 1. Push this folder to a GitHub repository.

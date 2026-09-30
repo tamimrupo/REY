@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ActionForm } from "@/components/forms/action-form";
 import {
   forgotPasswordAction,
+  resendConfirmationAction,
   signInAction,
   signUpAction,
 } from "@/lib/actions/auth";
@@ -96,6 +97,32 @@ export function ForgotPasswordForm() {
           Email
         </label>
         <input id="email" name="email" type="email" required className="field" />
+      </div>
+    </ActionForm>
+  );
+}
+
+/** Used on the "check your inbox" screen and as a fallback on the login page. */
+export function ResendConfirmationForm({ email = "" }: { email?: string }) {
+  return (
+    <ActionForm
+      action={resendConfirmationAction}
+      submitLabel="Resend confirmation email"
+      pendingLabel="Sending…"
+      submitClassName="btn btn-outline"
+    >
+      <div>
+        <label className="label" htmlFor="resend-email">
+          Email
+        </label>
+        <input
+          id="resend-email"
+          name="email"
+          type="email"
+          required
+          className="field"
+          defaultValue={email}
+        />
       </div>
     </ActionForm>
   );

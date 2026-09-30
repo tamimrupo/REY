@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { LoginForm } from "@/components/auth-forms";
+import { LoginForm, ResendConfirmationForm } from "@/components/auth-forms";
 import { SetupNotice } from "@/components/ui";
 
 export const metadata = { title: "Sign in" };
@@ -30,6 +30,18 @@ export default async function LoginPage(props: PageProps<"/login">) {
           Create an account
         </Link>
       </p>
+
+      <details className="mt-6 rounded-xl border border-line bg-white/60 p-4">
+        <summary className="cursor-pointer text-sm text-ink-soft">
+          Never got the confirmation email?
+        </summary>
+        <p className="mt-3 text-sm text-ink-soft">
+          Accounts must be confirmed before the first sign-in. Send yourself a fresh link:
+        </p>
+        <div className="mt-4">
+          <ResendConfirmationForm />
+        </div>
+      </details>
     </div>
   );
 }

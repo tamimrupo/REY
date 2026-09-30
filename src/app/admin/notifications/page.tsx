@@ -5,7 +5,7 @@ import { EmptyState, Stat, StatusPill } from "@/components/ui";
 import { markNotificationDoneAction, runMaintenanceAction } from "@/lib/actions/admin";
 import { ActionForm } from "@/components/forms/action-form";
 import { getWhatsappSettings, listNotifications } from "@/lib/data";
-import { emailConfigured } from "@/lib/notify";
+import { emailConfigured, emailProviderLabel } from "@/lib/notify";
 import { whatsappLink } from "@/lib/quotas";
 import { formatDateTime } from "@/lib/format";
 
@@ -46,7 +46,11 @@ export default async function AdminNotificationsPage(props: PageProps<"/admin/no
         <Stat
           label="Email delivery"
           value={emailConfigured ? "On" : "Off"}
-          hint={emailConfigured ? "RESEND_API_KEY is set" : "Add RESEND_API_KEY to send automatically"}
+          hint={
+            emailConfigured
+              ? `Sending via ${emailProviderLabel()}`
+              : "Add BREVO_API_KEY or RESEND_API_KEY to send automatically"
+          }
         />
       </div>
 
