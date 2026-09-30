@@ -1,0 +1,35 @@
+import Link from "next/link";
+
+import { RegisterForm } from "@/components/auth-forms";
+import { SetupNotice } from "@/components/ui";
+
+export const metadata = { title: "Create account" };
+
+export default async function RegisterPage(props: PageProps<"/register">) {
+  const search = await props.searchParams;
+  const next = typeof search.next === "string" ? search.next : "/account";
+
+  return (
+    <div>
+      <h1 className="text-3xl font-semibold text-ink">Join the club</h1>
+      <p className="mt-2 text-sm text-ink-soft">
+        It is free to create an account. You only pay when you pick a plan.
+      </p>
+
+      <div className="mt-6">
+        <SetupNotice />
+      </div>
+
+      <div className="mt-8">
+        <RegisterForm next={next} />
+      </div>
+
+      <p className="mt-6 text-sm text-ink-soft">
+        Already a member?{" "}
+        <Link href="/login" className="font-medium text-ink underline hover:text-gold">
+          Sign in
+        </Link>
+      </p>
+    </div>
+  );
+}
