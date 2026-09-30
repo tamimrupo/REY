@@ -136,14 +136,20 @@ export default async function HomePage() {
         </div>
 
         {/* Proof strip */}
-        <div className="border-t border-line bg-cream">
-          <div className="container-page grid gap-6 py-7 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="border-y border-line bg-cream/60">
+          <div className="container-page grid gap-x-10 gap-y-7 py-8 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label} className="flex items-baseline gap-3">
-                <span className="text-2xl font-extrabold tracking-tight text-ink">{stat.value}</span>
-                <span>
-                  <span className="block text-sm font-semibold text-ink">{stat.label}</span>
-                  <span className="block text-xs text-ink-muted">{stat.detail}</span>
+                <span className="font-display text-3xl font-bold leading-none tracking-tight text-ink tabular-nums">
+                  {stat.value}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold leading-tight text-ink">
+                    {stat.label}
+                  </span>
+                  <span className="mt-1 block text-xs leading-snug text-ink-muted">
+                    {stat.detail}
+                  </span>
                 </span>
               </div>
             ))}
