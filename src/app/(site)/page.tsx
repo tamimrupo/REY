@@ -102,57 +102,63 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------------------------------------------------------------- Hero */}
-      <section className="border-b border-line bg-paper">
-        <div className="container-page grid gap-y-14 pb-16 pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-x-16 lg:pb-20 lg:pt-16">
+      <section className="relative overflow-hidden border-b border-ink bg-ink">
+        {/* A soft pool of light so the black has depth rather than reading flat. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_-10%,rgba(255,255,255,0.10),transparent_62%)]"
+        />
+        <div className="container-page relative grid gap-y-14 pb-16 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-x-16 lg:pb-24 lg:pt-20">
           {/* ---- Left: the statement ---- */}
           <Reveal className="flex flex-col">
-            <div className="section-rule">
-              <span className="label-mono">Book rental club — Dhaka, Bangladesh</span>
-              <span className="label-mono ml-auto hidden sm:inline">Est. 2026</span>
+            <div className="flex items-center gap-4 border-t border-white/25 pt-3.5">
+              <span className="label-mono !text-paper/60">Book rental club — Dhaka, Bangladesh</span>
+              <span aria-hidden className="h-px flex-1 bg-white/15" />
+              <span className="label-mono hidden !text-paper/60 sm:inline">Est. 2026</span>
             </div>
 
-            <h1 className="mt-8 text-[2.75rem] sm:text-6xl lg:text-7xl">
+            <h1 className="mt-9 text-[2.75rem] text-paper sm:text-6xl lg:text-[4.5rem]">
               Choose your plan,
               <br />
               pick your books.
             </h1>
 
-            <p className="mt-7 max-w-lg text-lg leading-relaxed text-ink-soft">
+            <p className="mt-7 max-w-lg text-lg leading-relaxed text-paper/70">
               Subscribe monthly, select exactly the titles you want, and we deliver them to your
               door. Read, return, swap. No shelf to dust, no guilt about the ones you never got to.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-3">
-              <Link href="/plans" className="btn btn-primary">
+              <Link href="/plans" className="btn btn-invert">
                 Start a plan
               </Link>
-              <Link href="/library" className="btn btn-outline">
+              <Link href="/library" className="btn btn-on-dark">
                 Browse the library
               </Link>
             </div>
 
-            {/* Facts, not filler: they balance the shelf and answer the three
-                questions a new visitor actually has. */}
-            <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-ink pt-5 sm:grid-cols-4 lg:pt-6">
+            {/* Facts, not filler: they balance the shelf and answer the questions
+                a first-time visitor actually has. */}
+            <dl className="mt-14 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-white/25 pt-6 sm:grid-cols-4">
               {heroFacts.map((fact) => (
                 <div key={fact.label}>
-                  <dt className="font-serif text-2xl font-semibold leading-none tracking-tight text-ink sm:text-3xl">
+                  <dt className="font-serif text-3xl font-semibold leading-none tracking-tight text-paper sm:text-4xl">
                     {fact.value}
                   </dt>
-                  <dd className="label-mono mt-2.5 !text-ink-muted">{fact.label}</dd>
+                  <dd className="label-mono mt-3 !text-paper/55">{fact.label}</dd>
                 </div>
               ))}
             </dl>
           </Reveal>
 
-          {/* ---- Right: the shelf ---- */}
-          <Reveal delay={110} className="lg:border-l lg:border-line lg:pl-12">
+          {/* ---- Right: the shelf, presented as a display ---- */}
+          <Reveal delay={110} className="lg:pl-4">
             <div className="flex items-baseline justify-between gap-4">
-              <span className="label-mono">On the shelf this week</span>
+              <span className="label-mono !text-paper/60">On the shelf this week</span>
               {shelfBooks.total ? (
                 <Link
                   href="/library"
-                  className="label-mono underline decoration-line underline-offset-4 hover:decoration-ink"
+                  className="label-mono !text-paper/60 underline decoration-white/25 underline-offset-4 hover:!text-paper"
                 >
                   All {shelfBooks.total} →
                 </Link>
@@ -160,46 +166,68 @@ export default async function HomePage() {
             </div>
 
             {shelfBooks.books.length ? (
-              <div className="mt-7">
-                <div className="grid grid-cols-3 gap-x-5 border-t border-line pt-6">
-                  {shelfBooks.books.slice(0, 3).map((book, index) => (
-                    <Link key={book.id} href={`/library/${book.slug}`} className="group block">
-                      <div className="relative aspect-[2/3] overflow-hidden border border-line bg-cream">
-                        <BookCoverImage
-                          url={book.cover_url}
-                          title={book.title}
-                          author={book.authors?.name}
-                          className="h-full w-full transition duration-500 group-hover:scale-[1.03]"
-                        />
-                      </div>
-                      <p className="label-mono mt-3">{String(index + 1).padStart(2, "0")}</p>
-                      <p className="mt-1 line-clamp-2 text-sm font-medium leading-snug text-ink">
-                        {book.title}
-                      </p>
-                      <p className="mt-0.5 truncate text-xs text-ink-muted">
-                        {book.authors?.name ?? "Unknown author"}
-                      </p>
-                    </Link>
-                  ))}
+              <div className="mt-12">
+                {/* The middle book forward, the outer two tilted back — a table
+                    display rather than a grid of thumbnails. */}
+                <div className="flex items-end justify-center gap-3 sm:gap-5">
+                  {shelfBooks.books.slice(0, 3).map((book, index) => {
+                    const tilt = index === 0 ? "-rotate-3" : index === 2 ? "rotate-3" : "";
+                    const lift = index === 1 ? "-translate-y-6 sm:-translate-y-9" : "";
+                    // The middle book is the focal point, so it leads in size too.
+                    const size =
+                      index === 1
+                        ? "w-[96px] sm:w-[148px] lg:w-[168px]"
+                        : "w-[84px] sm:w-[130px] lg:w-[142px]";
+                    return (
+                      <Link
+                        key={book.id}
+                        href={`/library/${book.slug}`}
+                        className={`group block shrink-0 transition-transform duration-500 hover:-translate-y-2 ${tilt} ${lift}`}
+                      >
+                        <div
+                          className={`aspect-[2/3] overflow-hidden border border-white/15 bg-cream shadow-[0_36px_64px_-30px_rgba(0,0,0,0.95)] ${size}`}
+                        >
+                          <BookCoverImage
+                            url={book.cover_url}
+                            title={book.title}
+                            author={book.authors?.name}
+                            className="h-full w-full transition duration-500 group-hover:scale-[1.04]"
+                          />
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
+
+                {shelfBooks.books[1] ? (
+                  <div className="mt-10 text-center">
+                    <p className="label-mono !text-paper/45">Featured this week</p>
+                    <p className="mx-auto mt-2.5 max-w-sm font-serif text-lg leading-snug text-paper">
+                      {shelfBooks.books[1].title}
+                    </p>
+                    <p className="mt-1 text-xs text-paper/55">
+                      {shelfBooks.books[1].authors?.name ?? "Unknown author"}
+                    </p>
+                  </div>
+                ) : null}
               </div>
             ) : (
-              <div className="mt-7 border border-line bg-cream p-8">
-                <p className="label-mono">Your first box</p>
+              <div className="mt-10 border border-white/15 p-8">
+                <p className="label-mono !text-paper/60">Your first box</p>
                 <div className="mt-6 flex items-end gap-2" aria-hidden>
                   {[68, 92, 56, 80, 64].map((height, index) => (
                     <span
                       key={index}
-                      className="w-6 bg-gradient-to-b from-mist to-frost ring-1 ring-line"
+                      className="w-6 bg-white/15"
                       style={{ height }}
                     />
                   ))}
                 </div>
-                <p className="mt-6 text-sm leading-relaxed text-ink-soft">
+                <p className="mt-6 text-sm leading-relaxed text-paper/70">
                   Two to eight titles a month, chosen by you. Add books from the dashboard and they
                   appear right here.
                 </p>
-                <Link href="/library" className="btn btn-outline btn-sm mt-5">
+                <Link href="/library" className="btn btn-on-dark btn-sm mt-5">
                   Open the library
                 </Link>
               </div>

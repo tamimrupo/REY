@@ -456,6 +456,37 @@
   }
 
   /* Filter and option chips: rectangles, hairline borders, no ceremony. */
+  /* Inverted buttons for the dark hero: white pill on ink, and a ghost
+     outline that stays legible on black. Shadows kept, as the brief requires. */
+  .btn-invert {
+    background-color: #fff;
+    color: var(--color-ink);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.4),
+      0 14px 30px -12px rgb(0 0 0 / 0.75);
+  }
+  .btn-invert:hover:not(:disabled) {
+    background-color: #f2f2f2;
+    transform: translateY(-1px);
+    box-shadow:
+      0 2px 5px rgb(0 0 0 / 0.45),
+      0 20px 40px -14px rgb(0 0 0 / 0.8);
+  }
+  .btn-invert:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-on-dark {
+    border: 1px solid rgb(255 255 255 / 0.28);
+    color: #fff;
+    background-color: transparent;
+  }
+  .btn-on-dark:hover:not(:disabled) {
+    border-color: #fff;
+    background-color: rgb(255 255 255 / 0.08);
+    transform: translateY(-1px);
+  }
+
   .chip {
     display: inline-flex;
     align-items: center;
