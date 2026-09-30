@@ -12,9 +12,11 @@ import {
   getBookBySlug,
   getBorrowCountsByBook,
   getPlans,
-  listBooks,
+  getReadNext,
+  getSeriesBooks,
 } from "@/lib/data";
 import { money } from "@/lib/format";
+import type { Book } from "@/lib/types";
 
 export async function generateMetadata(props: PageProps<"/library/[slug]">) {
   const { slug } = await props.params;
@@ -27,14 +29,15 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
   const book = await getBookBySlug(slug);
   if (!book) notFound();
 
-  const [plans, related, session, authorTitles, borrowCounts] = await Promise.all([
+  const [plans, session, authorTitles, borrowCounts, seriesBooks, readNext] = await Promise.all([
     getPlans(),
-    listBooks({ genre: undefined, perPage: 6 }),
     getSession(),
     book.author_id ? getAuthorTitles(book.author_id, book.id, 5) : Promise.resolve([]),
     book.author_id
       ? getBorrowCountsByBook()
       : Promise.resolve({} as Record<string, number>),
+    book.series ? getSeriesBooks(book.series) : Promise.resolve<Book[]>([]),
+    getReadNext(book),
   ]);
 
   // Honest author stats: how many of their titles we hold, and how often those
@@ -63,8 +66,6 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
   const cheapest = plans.length
     ? plans.reduce((a, b) => (Number(a.price_monthly) <= Number(b.price_monthly) ? a : b))
     : null;
-
-  const others = related.books.filter((b) => b.id !== book.id).slice(0, 6);
 
   return (
     <>
@@ -117,6 +118,14 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
                 ) : (
                   <span className="font-medium text-ink">{book.authors.name}</span>
                 )}
+              </p>
+            ) : null}
+
+            {book.series ? (
+              <p className="mt-3 text-sm text-ink-muted">
+                {book.series_order ? `Book ${book.series_order}` : "Part"} of the{" "}
+                <span className="font-medium text-ink">{book.series}</span> series
+                {seriesBooks.length > 1 ? ` · ${seriesBooks.length} in the club` : ""}
               </p>
             ) : null}
 
@@ -183,13 +192,29 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
         </div>
       ) : null}
 
-      {others.length ? (
+      {readNext.length ? (
         <section className="border-t border-line">
           <div className="container-page py-16">
-            <h2 className="text-2xl font-semibold text-ink">More from the shelves</h2>
-            <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
-              {others.map((item) => (
-                <BookCard key={item.id} book={item} />
+            <h2 className="text-2xl font-semibold text-ink">Read this next</h2>
+
+            <div className="mt-9 space-y-12">
+              {readNext.map((section) => (
+                <div key={section.title}>
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <h3 className="text-lg font-semibold text-ink">{section.title}</h3>
+                    {section.hint ? (
+                      <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">
+                        {section.hint}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-5 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+                    {section.books.map((item) => (
+                      <BookCard key={item.id} book={item} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>

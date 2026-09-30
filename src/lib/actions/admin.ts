@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/auth";
 import { getCronSecret, getRentalSettings, getWhatsappSettings } from "@/lib/data";
-import { slugify } from "@/lib/format";
+import { seriesName, slugify } from "@/lib/format";
 import { supabaseConfigured } from "@/lib/env";
 import { fetchCandidate, type BookSource } from "@/lib/book-search";
 import { bookSlug, csvToRows, fetchOpenLibrary, normalizeIsbn } from "@/lib/import";
@@ -151,6 +151,8 @@ export async function saveBookAction(
     demand: ["high", "medium", "low"].includes(demandRaw) ? demandRaw : "medium",
     replacement_value: num(formData, "replacement_value", 0),
     weight_grams: num(formData, "weight_grams", 0) || null,
+    series: seriesName(str(formData, "series")),
+    series_order: num(formData, "series_order", 0) || null,
     is_active: bool(formData, "is_active"),
     total_copies: Math.max(1, num(formData, "total_copies", 1)),
     updated_at: new Date().toISOString(),
@@ -1108,6 +1110,8 @@ export async function importBooksAction(
       demand: row.demand ?? "medium",
       replacement_value: row.replacement_value ?? row.price ?? 0,
       total_copies: copies,
+      series: seriesName(row.series),
+      series_order: row.series_order ?? null,
       is_active: publishNow || (row.status ?? "publish") === "publish",
     };
     if (isbn) payload.isbn = isbn;

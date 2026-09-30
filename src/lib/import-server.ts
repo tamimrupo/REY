@@ -9,7 +9,7 @@
 import type { createClient } from "@/lib/supabase/server";
 import { bookSlug, normalizeIsbn } from "@/lib/import";
 import { downloadImage, coverVariants, extensionFor, pickGenre, type BookCandidate } from "@/lib/book-search";
-import { slugify } from "@/lib/format";
+import { slugify, seriesName } from "@/lib/format";
 
 export type Db = Awaited<ReturnType<typeof createClient>>;
 
@@ -85,6 +85,34 @@ export async function ensureAuthor(ctx: ImportContext, name: string | null | und
     return data.id as string;
   }
   return null;
+}
+
+/**
+ * Fills in an author portrait from the metadata source.
+ *
+ * Imported authors used to arrive as bare initials. This copies Open Library's
+ * portrait into our own storage, and never touches an author who already has a
+ * photo — the admin's choice always wins.
+ */
+export async function ensureAuthorPhoto(
+  ctx: ImportContext,
+  authorId: string,
+  photoUrl: string | null | undefined,
+  name: string,
+): Promise<void> {
+  if (!photoUrl) return;
+
+  const { data } = await ctx.supabase
+    .from("authors")
+    .select("avatar_url")
+    .eq("id", authorId)
+    .maybeSingle();
+  if (data?.avatar_url) return;
+
+  const stored = await saveCoverToStorage(ctx, photoUrl, { title: name }, "author");
+  if (!stored) return;
+
+  await ctx.supabase.from("authors").update({ avatar_url: stored }).eq("id", authorId);
 }
 
 /** Finds or creates the genre. Accepts "Thriller, Fiction" and uses the first. */
@@ -233,11 +261,16 @@ export async function importCandidate(
       : (await saveCoverToStorage(ctx, candidate.coverUrl, { isbn, title })) ?? candidate.coverUrl;
 
   const copies = options.copies ?? IMPORT_DEFAULTS.copies;
+  const authorId = await ensureAuthor(ctx, candidate.authors[0]);
+
+  if (authorId && candidate.authorPhoto) {
+    await ensureAuthorPhoto(ctx, authorId, candidate.authorPhoto, candidate.authors[0] ?? "");
+  }
 
   const payload: Record<string, unknown> = {
     title,
     subtitle: candidate.subtitle,
-    author_id: await ensureAuthor(ctx, candidate.authors[0]),
+    author_id: authorId,
     genre_id: await ensureGenre(ctx, pickGenre(candidate.subjects)),
     description: candidate.description,
     publisher: candidate.publisher,
@@ -252,6 +285,14 @@ export async function importCandidate(
   };
   if (isbn) payload.isbn = isbn;
   if (cover) payload.cover_url = cover;
+
+  // Only touch series info when the source supplied some: a series the admin
+  // typed by hand must survive a later re-import from a source that is silent.
+  const series = seriesName(candidate.series);
+  if (series) {
+    payload.series = series;
+    if (candidate.seriesOrder) payload.series_order = candidate.seriesOrder;
+  }
 
   if (existing) {
     // Publishing is opt-in; never silently unpublish something on an update.

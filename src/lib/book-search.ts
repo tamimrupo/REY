@@ -32,6 +32,12 @@ export type BookCandidate = {
   coverUrl: string | null;
   /** How many editions exist — a rough popularity signal. */
   editions: number | null;
+  /** Series this book belongs to, when the source says so. */
+  series: string | null;
+  /** Reading position inside that series, when it can be worked out. */
+  seriesOrder: number | null;
+  /** Portrait for the first author, when the source has one. */
+  authorPhoto: string | null;
 };
 
 export type SearchOutcome = {
@@ -262,10 +268,70 @@ function yearFrom(value: unknown): number | null {
  * missing or wedged. `-M` is the reliable workhorse for previews; the importer
  * upgrades to `-L` with a fallback chain.
  */
+/**
+ * Pulls a series out of Open Library's subject tags: "series:Harry_Potter" or
+ * "series: A Song of Ice and Fire #2". Only the explicit "series:" form counts —
+ * anything else is too speculative to put on a book page.
+ */
+export function pickSeries(
+  subjects: string[] | null | undefined,
+): { name: string; order: number | null } | null {
+  for (const raw of subjects ?? []) {
+    const match = String(raw).match(/^\s*series\s*[:/]\s*(.+)$/i);
+    if (!match) continue;
+
+    let name = match[1].replace(/_/g, " ").replace(/\s+/g, " ").trim();
+    let order: number | null = null;
+
+    const trailing = name.match(/#\s*(\d+)\s*$/);
+    if (trailing) {
+      order = Number(trailing[1]);
+      name = name.replace(/#\s*\d+\s*$/, "").trim();
+    }
+
+    if (!name || name.length > 80) continue;
+    return { name, order };
+  }
+  return null;
+}
+
+/**
+ * Reading position from a title that states it — "Book 3", "Part 2", "#4".
+ * Deliberately conservative: a bare number in a title ("1984") is not an order.
+ */
+export function guessSeriesOrder(title: string | null | undefined): number | null {
+  const value = String(title ?? "");
+  const match =
+    value.match(/#\s*(\d{1,3})\b/) ??
+    value.match(/\b(?:book|part|volume|vol)\.?\s*(\d{1,3})\b/i);
+  if (!match) return null;
+  const order = Number(match[1]);
+  return Number.isFinite(order) && order > 0 ? order : null;
+}
+
+/** Series name/position for a candidate, from the source's own metadata. */
+function seriesFields(
+  subjects: string[] | null | undefined,
+  title: string,
+): { series: string | null; seriesOrder: number | null } {
+  const found = pickSeries(subjects);
+  return {
+    series: found?.name ?? null,
+    seriesOrder: guessSeriesOrder(title) ?? found?.order ?? null,
+  };
+}
+
 export function openLibraryCoverUrl(coverId: unknown, size: "S" | "M" | "L" = "M"): string | null {
   const id = Number(coverId);
   if (!Number.isFinite(id) || id <= 0) return null;
   return `https://covers.openlibrary.org/b/id/${id}-${size}.jpg`;
+}
+
+/** Author portraits live under a different path than book covers. */
+export function openLibraryAuthorPhoto(photoId: unknown, size: "S" | "M" | "L" = "M"): string | null {
+  const id = Number(photoId);
+  if (!Number.isFinite(id) || id <= 0) return null;
+  return `https://covers.openlibrary.org/a/id/${id}-${size}.jpg`;
 }
 
 /**
@@ -273,7 +339,7 @@ export function openLibraryCoverUrl(coverId: unknown, size: "S" | "M" | "L" = "M
  * attempt — there is nothing to cascade.
  */
 export function coverVariants(url: string): { url: string; timeoutMs: number }[] {
-  const match = url.match(/^(https:\/\/covers\.openlibrary\.org\/b\/id\/\d+)-[SML]\.jpg$/i);
+  const match = url.match(/^(https:\/\/covers\.openlibrary\.org\/[ab]\/id\/\d+)-[SML]\.jpg$/i);
   if (!match) return [{ url, timeoutMs: 8000 }];
 
   return ["L", "M", "S"].map((size) => ({
@@ -323,6 +389,8 @@ export function mapOpenLibraryDoc(doc: OpenLibraryDoc): BookCandidate | null {
     description: cleanText(firstSentence(doc.first_sentence)),
     coverUrl: openLibraryCoverUrl(doc.cover_i),
     editions: doc.edition_count ?? null,
+    authorPhoto: null,
+    ...seriesFields(doc.subject, title),
   };
 }
 
@@ -362,6 +430,8 @@ export function mapOpenLibraryWork(work: OpenLibraryWork, id: string): BookCandi
     description,
     coverUrl: openLibraryCoverUrl(work.covers?.[0]),
     editions: null,
+    authorPhoto: null,
+    ...seriesFields(work.subjects, title),
   };
 }
 
@@ -464,6 +534,10 @@ export function mapGoogleVolume(volume: GoogleVolume): BookCandidate | null {
     description: cleanText(info?.description),
     coverUrl: upgradeGoogleCover(info?.imageLinks?.thumbnail ?? info?.imageLinks?.smallThumbnail),
     editions: null,
+    // volumes.list has no series field; Google's answer would need another call.
+    series: null,
+    seriesOrder: null,
+    authorPhoto: null,
   };
 }
 
@@ -652,23 +726,29 @@ export async function fetchCandidate(source: BookSource, id: string): Promise<Bo
   }
 
   // Author names live behind a second call — worth it, the card shows them.
+  // The same response carries the portrait Open Library holds for them.
   const authorKeys = (work.authors ?? [])
     .map((entry) => entry.author?.key)
     .filter((key): key is string => Boolean(key))
     .slice(0, 3);
 
-  const names = await Promise.all(
+  const people = await Promise.all(
     authorKeys.map(async (key) => {
       const authorId = key.replace(/^\/authors\//, "");
-      const payload = await fetchJson<{ name?: string }>(
+      const payload = await fetchJson<{ name?: string; photos?: number[] }>(
         `https://openlibrary.org/authors/${encodeURIComponent(authorId)}.json`,
         10_000,
         86_400,
       );
-      return cleanText(payload?.name);
+      return {
+        name: cleanText(payload?.name),
+        photo: openLibraryAuthorPhoto(payload?.photos?.[0], "M"),
+      };
     }),
   );
-  candidate.authors = names.filter((name): name is string => Boolean(name));
+
+  candidate.authors = people.map((person) => person.name).filter((name): name is string => Boolean(name));
+  candidate.authorPhoto = people.find((person) => person.photo)?.photo ?? null;
   candidate.subjects = (work.subjects ?? []).slice(0, 6);
 
   return candidate;

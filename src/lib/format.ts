@@ -30,6 +30,18 @@ export function formatDateTime(value: string | null | undefined): string {
   })}`;
 }
 
+/**
+ * Series names are matched case-insensitively (and with LIKE), so strip the
+ * wildcard characters and collapse whitespace before storing one.
+ */
+export function seriesName(value: string | null | undefined): string | null {
+  const clean = String(value ?? "")
+    .replace(/[%_]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return clean ? clean.slice(0, 80) : null;
+}
+
 export function slugify(input: string): string {
   return input
     .toLowerCase()

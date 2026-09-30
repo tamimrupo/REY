@@ -5,6 +5,7 @@ import { AuthorCard } from "@/components/author-card";
 import { BookCard } from "@/components/book-card";
 import { EmptyState } from "@/components/ui";
 import { getAuthorBySlug, getAuthorTitles, getBorrowCountsByBook } from "@/lib/data";
+import type { Book } from "@/lib/types";
 
 export async function generateMetadata(props: PageProps<"/author/[slug]">) {
   const { slug } = await props.params;
@@ -30,7 +31,36 @@ export default async function AuthorPage(props: PageProps<"/author/[slug]">) {
   ]);
 
   const borrowTotal = books.reduce((sum, book) => sum + (borrowCounts[book.id] ?? 0), 0);
+
+  // Group the catalogue: a recurring character's novels belong together and read
+  // in order, everything else stays a flat shelf.
+  const seriesGroups = new Map<string, Book[]>();
+  const standalone: Book[] = [];
+  for (const item of books) {
+    if (item.series) {
+      const list = seriesGroups.get(item.series) ?? [];
+      list.push(item);
+      seriesGroups.set(item.series, list);
+    } else {
+      standalone.push(item);
+    }
+  }
+
+  const groups = [...seriesGroups.entries()]
+    .map(([name, list]) => ({
+      name,
+      books: [...list].sort(
+        (a, b) =>
+          (a.series_order ?? Number.MAX_SAFE_INTEGER) -
+            (b.series_order ?? Number.MAX_SAFE_INTEGER) || a.title.localeCompare(b.title),
+      ),
+    }))
+    .sort((a, b) => b.books.length - a.books.length || a.name.localeCompare(b.name));
+
   const statsParts = [`${books.length} title${books.length === 1 ? "" : "s"} in the club`];
+  if (groups.length) {
+    statsParts.push(`${groups.length} series`);
+  }
   if (borrowTotal > 0) {
     statsParts.push(`${borrowTotal} borrow${borrowTotal === 1 ? "" : "s"}`);
   }
@@ -72,10 +102,48 @@ export default async function AuthorPage(props: PageProps<"/author/[slug]">) {
         </div>
 
         {books.length ? (
-          <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
-            {books.map((book) => (
-              <BookCard key={book.id} book={book} />
+          <div className="mt-8 space-y-12">
+            {groups.map((group) => (
+              <div key={group.name}>
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3">
+                  <h3 className="text-lg font-semibold text-ink">{group.name} series</h3>
+                  <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">
+                    {group.books.length} book{group.books.length === 1 ? "" : "s"} · read in order
+                  </p>
+                </div>
+                <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+                  {group.books.map((item) => (
+                    <BookCard
+                      key={item.id}
+                      book={item}
+                      badge={item.series_order ? `Book ${item.series_order}` : undefined}
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
+
+            {standalone.length ? (
+              <div>
+                {groups.length ? (
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3">
+                    <h3 className="text-lg font-semibold text-ink">Standalone</h3>
+                    <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">
+                      {standalone.length} book{standalone.length === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                ) : null}
+                <div
+                  className={`grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 ${
+                    groups.length ? "mt-6" : ""
+                  }`}
+                >
+                  {standalone.map((item) => (
+                    <BookCard key={item.id} book={item} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="mt-8">

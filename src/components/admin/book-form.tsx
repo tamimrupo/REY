@@ -222,6 +222,39 @@ export function BookForm({
             />
           </div>
 
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="label" htmlFor="series">
+                Series
+              </label>
+              <input
+                id="series"
+                name="series"
+                className="field"
+                placeholder="Himu"
+                defaultValue={book?.series ?? ""}
+              />
+            </div>
+            <div>
+              <label className="label" htmlFor="series_order">
+                Position in series
+              </label>
+              <input
+                id="series_order"
+                name="series_order"
+                type="number"
+                min={1}
+                className="field"
+                placeholder="1"
+                defaultValue={book?.series_order ?? ""}
+              />
+              <p className="mt-1 text-xs text-ink-muted">
+                Books sharing a series name are grouped on the author page, and the book page offers
+                &quot;read this next&quot; in order. Leave empty if the order is unknown.
+              </p>
+            </div>
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label className="label" htmlFor="language">

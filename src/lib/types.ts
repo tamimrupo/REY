@@ -63,6 +63,10 @@ export type Book = {
   weight_grams: number | null;
   is_active: boolean;
   total_copies: number;
+  /** Series the book belongs to, e.g. "Himu" — drives "read this next". */
+  series: string | null;
+  /** Position within the series, 1-based. Null when nobody has said. */
+  series_order: number | null;
   created_at: string;
   // joined
   authors?: {

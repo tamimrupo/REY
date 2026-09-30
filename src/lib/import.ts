@@ -23,6 +23,8 @@ export type ImportRow = {
   language?: string | null;
   pages?: number | null;
   status?: string | null;
+  series?: string | null;
+  series_order?: number | null;
 };
 
 export const IMPORT_HEADERS = [
@@ -39,6 +41,8 @@ export const IMPORT_HEADERS = [
   "year",
   "language",
   "status",
+  "series",
+  "series_order",
 ];
 
 /** Minimal RFC-4180 CSV parser: handles quotes, escaped quotes and newlines. */
@@ -142,6 +146,8 @@ export function csvToRows(text: string): { rows: ImportRow[]; skipped: number; e
       language: get("language") || null,
       pages: number(get("pages")),
       status: get("status") || null,
+      series: get("series") || null,
+      series_order: number(get("series_order")),
     });
   }
 

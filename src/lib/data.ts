@@ -77,7 +77,7 @@ async function compute<T>(run: (sb: any) => Promise<T>, fallback: T): Promise<T>
 
 const BOOK_SELECT = "*, authors(name, slug, avatar_url, bio), genres(name)";
 const BOOK_SELECT_LIST =
-  "id, title, slug, cover_url, language, rarity, demand, is_active, total_copies, published_year, author_id, genre_id, authors(name), genres(name)";
+  "id, title, slug, cover_url, language, rarity, demand, is_active, total_copies, published_year, series, series_order, author_id, genre_id, authors(name), genres(name)";
 const RENTAL_SELECT = "*, books(id, title, slug, cover_url, authors(name))";
 const SHIPMENT_SELECT =
   "*, profiles(full_name, phone), addresses(*), orders(order_number), shipment_items(*, rentals(*, books(id, title, slug, cover_url, authors(name))))";
@@ -338,6 +338,178 @@ export async function getAuthorTitles(
     },
     [] as Book[],
   );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Series & suggestions                                                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Every book we hold in one series, in reading order: known positions first,
+ * then the rest by year. Series names match case-insensitively.
+ */
+export async function getSeriesBooks(series: string, limit = 24): Promise<Book[]> {
+  const name = series?.trim();
+  if (!name) return [];
+
+  return compute(
+    async (sb) => {
+      const { data, error } = await sb
+        .from("books")
+        .select(BOOK_SELECT_LIST)
+        .eq("is_active", true)
+        .ilike("series", name)
+        .order("series_order", { ascending: true, nullsFirst: false })
+        .order("published_year", { ascending: true, nullsFirst: false })
+        .limit(limit);
+      if (error) throw new Error(error.message);
+      return (data ?? []) as Book[];
+    },
+    [] as Book[],
+  );
+}
+
+/** Other titles on the same shelf — the last rung of the suggestion ladder. */
+export async function getGenreBooks(genreId: string, excludeId: string, limit = 4): Promise<Book[]> {
+  return compute(
+    async (sb) => {
+      const { data, error } = await sb
+        .from("books")
+        .select(BOOK_SELECT_LIST)
+        .eq("is_active", true)
+        .eq("genre_id", genreId)
+        .neq("id", excludeId)
+        .order("title", { ascending: true })
+        .limit(limit);
+      if (error) throw new Error(error.message);
+      return (data ?? []) as Book[];
+    },
+    [] as Book[],
+  );
+}
+
+export type ReadNextSection = {
+  title: string;
+  hint?: string;
+  books: Book[];
+};
+
+/**
+ * The "read this next" ladder on a book page: finish the series first, then the
+ * author's other titles, then the shelf it sits on. Every suggestion is real
+ * catalogue data — nothing randomised, nothing invented.
+ */
+export async function getReadNext(book: Book, perSection = 4): Promise<ReadNextSection[]> {
+  const sections: ReadNextSection[] = [];
+  const seen = new Set<string>([book.id]);
+  const fresh = (books: Book[]) => books.filter((item) => !seen.has(item.id)).slice(0, perSection);
+  const remember = (books: Book[]) => books.forEach((item) => seen.add(item.id));
+
+  const order = book.series_order;
+
+  if (book.series) {
+    const inSeries = (await getSeriesBooks(book.series)).filter((item) => item.id !== book.id);
+    // With a known position, offer what comes after; otherwise the whole series.
+    const nextUp =
+      order != null
+        ? inSeries.filter((item) => item.series_order == null || item.series_order > order)
+        : [];
+    const pick = fresh(nextUp.length ? nextUp : inSeries);
+
+    if (pick.length) {
+      sections.push({
+        title: nextUp.length
+          ? `Next in the ${book.series} series`
+          : `More in the ${book.series} series`,
+        hint: order != null ? `You are on book ${order}` : undefined,
+        books: pick,
+      });
+      remember(pick);
+    }
+  }
+
+  if (book.author_id) {
+    const titles = await getAuthorTitles(book.author_id, undefined, 8);
+    const pick = fresh(titles);
+    if (pick.length) {
+      sections.push({ title: `More by ${book.authors?.name ?? "this author"}`, books: pick });
+      remember(pick);
+    }
+  }
+
+  if (book.genre_id) {
+    const alike = await getGenreBooks(book.genre_id, book.id, perSection * 2);
+    const pick = fresh(alike);
+    if (pick.length) {
+      sections.push({
+        title: book.genres?.name ? `More ${book.genres.name.toLowerCase()}` : "More from this shelf",
+        books: pick,
+      });
+      remember(pick);
+    }
+  }
+
+  // Nothing in common yet (a lonely title in a new genre, a one-book author):
+  // offer the newest arrivals rather than ending the page on nothing.
+  if (!sections.length) {
+    const newest = await getNewestBooks(book.id, perSection);
+    if (newest.length) sections.push({ title: "More from the shelves", books: newest });
+  }
+
+  return sections;
+}
+
+/** Newest arrivals — the last-resort suggestion so a page is never a dead end. */
+export async function getNewestBooks(excludeId: string, limit = 4): Promise<Book[]> {
+  return compute(
+    async (sb) => {
+      const { data, error } = await sb
+        .from("books")
+        .select(BOOK_SELECT_LIST)
+        .eq("is_active", true)
+        .neq("id", excludeId)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+      if (error) throw new Error(error.message);
+      return (data ?? []) as Book[];
+    },
+    [] as Book[],
+  );
+}
+
+export type AuthorSummary = { author: Author; titles: number; series: string[] };
+
+/** Authors we actually hold books by, busiest first — for the /authors index. */
+export async function getAuthorsWithCounts(): Promise<AuthorSummary[]> {
+  const [authors, rows] = await Promise.all([
+    getAuthors(),
+    query<{ author_id: string | null; series: string | null }[]>(
+      (sb) => sb.from("books").select("author_id, series").eq("is_active", true),
+      [],
+    ),
+  ]);
+
+  const titles = new Map<string, number>();
+  const seriesByAuthor = new Map<string, Set<string>>();
+
+  for (const row of Array.isArray(rows) ? rows : []) {
+    if (!row.author_id) continue;
+    titles.set(row.author_id, (titles.get(row.author_id) ?? 0) + 1);
+    if (row.series) {
+      const set = seriesByAuthor.get(row.author_id) ?? new Set<string>();
+      set.add(row.series);
+      seriesByAuthor.set(row.author_id, set);
+    }
+  }
+
+  return authors
+    .map((author) => ({
+      author,
+      titles: titles.get(author.id) ?? 0,
+      series: [...(seriesByAuthor.get(author.id) ?? [])].sort(),
+    }))
+    .filter((entry) => entry.titles > 0)
+    .sort((a, b) => b.titles - a.titles || a.author.name.localeCompare(b.author.name));
 }
 
 /** How many times each book has been borrowed, keyed by book id. */

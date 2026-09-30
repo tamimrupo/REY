@@ -13,6 +13,11 @@ Built with **Next.js 16 (App Router, Turbopack) + TypeScript + Tailwind CSS v4 +
 
 - Home, plan comparison, how-it-works, about, contact, rare books, policies/FAQ (CMS-driven)
 - Library catalog with search, genre/language filters, pagination and book detail pages
+- **Authors** (`/authors`): the whole roster with photos and title counts; each author page carries
+  their card — photo, stats, bio, signature — plus every book we hold by them
+- **Series & "read this next":** a book that belongs to a series shows its position ("Book 1 of the
+  Himu series") and the book page suggests what to read next — next in the series, then more by the
+  author, then the shelf it sits on
 - **Subscribe flow:** pick a plan → choose exactly N books → pick a courier → add an address → order created
 - **Manual payments:** customer pays by bKash / Nagad / Rocket, submits the TrxID (and an optional screenshot), and waits for verification
 - Account area: membership, monthly book picks, orders, payments, deposits, addresses, profile & password
@@ -233,7 +238,7 @@ confirmation and password-reset emails will bounce back to localhost.
 ```
 src/
   app/
-    (site)/            storefront (home, plans, library, subscribe, checkout, account…)
+    (site)/            storefront (home, plans, library, authors, subscribe, checkout, account…)
     (auth)/            login, register, forgot password
     admin/             the dashboard (protected by role)
     auth/              callback + signout route handlers
@@ -309,6 +314,27 @@ Worth knowing:
 - Optional: set `GOOGLE_BOOKS_API_KEY` to merge Google Books results as well (richer
   descriptions). Without a key Google refuses anonymous calls with HTTP 429, so it
   stays switched off.
+
+### Series and reading order
+
+When Open Library tags a work `series:…`, the importer records the series name, and
+takes the reading position from the title when it says so ("Book 3", "Part 2", "#4")
+or from a `#n` in the series tag itself.
+
+Bangla series have no such data — Open Library knows nothing about Himu, Misir Ali or
+Shuvro — so those are set by hand: open the book in the dashboard and fill **Series**
+plus **Position in series**. Books sharing a series name are then grouped and ordered
+on the author page, and the book page offers the next part. Try it with *Moyurakkhi*
+(Himu #1) and *Himu Remande* (Himu #16).
+
+The CSV accepts `series` and `series_order` columns too.
+
+### Author photos
+
+A new author's portrait is copied from Open Library into your storage when one
+exists, so imported authors arrive with a face instead of initials. An author who
+already has a photo is never overwritten — set or change it in the book form's
+*Author photo URL* field, and that choice sticks.
 
 ---
 
