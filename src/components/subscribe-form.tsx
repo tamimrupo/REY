@@ -89,9 +89,7 @@ export function SubscribeForm({
           </div>
           <span
             className={`pill ${
-              isFull
-                ? "bg-emerald-50 text-emerald-700"
-                : "bg-amber-50 text-amber-700"
+              isFull ? "tone-good" : "tone-progress"
             }`}
           >
             {selected.length} / {limit} selected

@@ -16,11 +16,14 @@ export function Alert({
   tone?: "info" | "success" | "error" | "warning";
   children: React.ReactNode;
 }) {
+  // Monochrome: severity is carried by contrast, not hue.
+  // errors invert to black; warnings sit on a tinted panel; success gets a
+  // strong black border; info stays soft.
   const tones = {
-    info: "border-sky-200 bg-sky-50 text-sky-900",
-    success: "border-emerald-200 bg-emerald-50 text-emerald-900",
-    error: "border-rose-200 bg-rose-50 text-rose-900",
-    warning: "border-amber-200 bg-amber-50 text-amber-900",
+    info: "border-line bg-surface text-ink",
+    success: "border-ink bg-white text-ink",
+    warning: "border-ink bg-surface text-ink",
+    error: "border-ink bg-ink text-paper",
   } as const;
 
   return (

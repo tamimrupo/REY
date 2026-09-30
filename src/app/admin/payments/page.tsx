@@ -28,15 +28,18 @@ function SenderMatch({
   profilePhone: string | null | undefined;
 }) {
   const match = phonesMatch(sender, profilePhone);
+
+  // Monochrome hierarchy: a mismatch is a solid black chip (unmissable), a match
+  // is quiet grey text. Both used to rely on red/green, which this theme forbids.
   if (match === false) {
     return (
-      <span className="mt-1 block text-xs font-medium text-amber-700">
+      <span className="mt-1 inline-flex items-center gap-1 rounded bg-ink px-1.5 py-0.5 text-[0.6875rem] font-semibold text-paper">
         ⚠ Different number than the profile
       </span>
     );
   }
   if (match === true) {
-    return <span className="mt-1 block text-xs text-emerald-700">Matches profile phone</span>;
+    return <span className="mt-1 block text-xs text-ink-muted">Matches profile phone</span>;
   }
   return null;
 }

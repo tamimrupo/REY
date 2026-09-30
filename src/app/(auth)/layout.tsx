@@ -6,11 +6,15 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex min-h-screen">
       <div className="hidden w-1/2 flex-col justify-between bg-ink p-12 text-paper lg:flex">
-        <Link href="/" className="font-display text-3xl font-semibold">
-          REY
-          <span className="ml-1 align-super text-xs font-sans font-semibold tracking-[0.2em] text-gold">
-            BD
-          </span>
+        <Link href="/" aria-label="REY BD — home">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/rey-logo-white.svg"
+            alt="REY BD"
+            width={78}
+            height={40}
+            className="h-9 w-auto"
+          />
         </Link>
 
         <div>

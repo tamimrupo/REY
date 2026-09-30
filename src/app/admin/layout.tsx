@@ -17,9 +17,16 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-[110rem] items-center justify-between gap-4 px-5">
           <div className="flex items-center gap-4">
-            <Link href="/admin" className="font-display text-xl font-semibold">
-              REY
-              <span className="ml-2 text-[0.65rem] font-sans font-semibold uppercase tracking-[0.16em] text-gold">
+            <Link href="/admin" className="flex items-center gap-3" aria-label="REY dashboard">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/brand/rey-logo-black.svg"
+                alt="REY"
+                width={78}
+                height={40}
+                className="h-6 w-auto"
+              />
+              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink-muted">
                 Dashboard
               </span>
             </Link>

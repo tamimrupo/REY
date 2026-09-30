@@ -114,31 +114,61 @@ Then sign out and back in and visit `/admin`.
 
 ## Design system
 
-Tokens live in **`src/app/globals.css`** (`@theme`). Change them there and the whole site
-follows — no need to touch individual pages.
+**Monochrome: black, white and neutral greys. No colour, by instruction.**
+
+Tokens live in **`src/app/globals.css`** (`@theme`). Change them there and the whole site follows —
+no need to touch individual pages.
 
 | Token | Value | Used for |
 | --- | --- | --- |
-| `--color-ink` | `#022b3a` | body text, headings, primary buttons |
-| `--color-ink-soft` | `#45585f` | secondary copy |
-| `--color-ink-muted` | `#6b7f88` | captions, table headers |
-| `--color-brand` | `#1f7a8c` | eyebrows, links, accents |
-| `--color-surface` (`cream`) | `#f4f6fb` | alternating section bands |
-| `--color-mist` / `--color-frost` | `#eef3f8` / `#e1e5f2` | book-cover placeholders |
-| `--color-line` | `#d6dde8` | borders |
+| `--color-ink` | `#090909` | body text, headings, primary buttons (matches the logo) |
+| `--color-ink-deep` | `#000000` | hard black |
+| `--color-ink-soft` | `#525252` | secondary copy |
+| `--color-ink-muted` | `#8a8a8a` | captions, table headers |
+| `--color-paper` | `#ffffff` | page background |
+| `--color-surface` (`cream`) | `#f5f5f5` | alternating section bands |
+| `--color-frost` | `#ececec` | problem pills |
+| `--color-line` | `#e5e5e5` | borders |
 | `--shadow-card`, `--shadow-paper` | | elevation |
 
-**Typography:** one family (Inter, loaded in `src/app/layout.tsx`). Headings are 800 weight with
-tight negative tracking (h1 `-0.035em`); body is 16px / 1.6 at `-0.011em`. Buttons are pills;
-cards are 16px radius with a soft petrol-tinted shadow.
+Every grey is **purely neutral** (`r === g === b`), so nothing has a blue or warm cast.
 
-> The token names `gold` and `cream` are **legacy aliases** kept so existing classes keep working —
-> `gold` now means the teal accent, `cream` means the light surface. Prefer `brand` and `surface`
-> in new code.
+### The monochrome lock
+
+At the bottom of the `@theme` block, every colour family Tailwind ships (`rose`, `emerald`,
+`amber`, `sky`, `blue`, `violet`, …) is remapped onto greys. So `text-rose-600` renders black and
+`bg-amber-50` renders light grey. This is deliberate: colour cannot creep back in from a stray
+class. **Use the semantic tokens (`ink`, `surface`, `frost`, `line`) in new code.**
+
+Because hue is gone, status meaning is carried by **fill** instead:
+
+| Treatment | Class | Meaning |
+| --- | --- | --- |
+| Solid black | `.tone-good` | done — active, paid, verified, delivered |
+| Outlined | `.tone-progress` | in progress — pending, packed, shipped |
+| Grey + ring | `.tone-problem` | needs attention — cancelled, rejected, overdue |
+| Light grey | `.tone-neutral` | informational |
+
+Alerts follow the same logic: errors invert to black, warnings sit on a tinted panel, success gets
+a black border, info stays soft.
+
+### Logo
+
+`public/brand/rey-logo-black.svg` (header, dashboard) and `public/brand/rey-logo-white.svg`
+(footer, auth panel) — the original REY wordmark, served locally rather than hot-linked.
+
+### Typography & components
+
+One family (Inter). Headings are 800 weight with tight negative tracking (h1 `-0.035em`); body is
+16px / 1.6 at `-0.011em`. Buttons are pills with real shadows (they lift on hover). Cards are 16px
+radius.
 
 Reusable classes: `.container-page`, `.section`, `.card`, `.panel`, `.rule`,
 `.btn` + `-primary` / `-gold` / `-outline` / `-ghost` / `-sm`, `.field`, `.label`, `.eyebrow`,
-`.pill`, `.table`, `.table-wrap`.
+`.pill`, `.tone-*`, `.table`, `.table-wrap`.
+
+> The token names `gold` and `cream` are **legacy aliases** kept so existing classes keep working —
+> `gold` is now black, `cream` is light grey. Prefer `ink` and `surface` in new code.
 
 ## Verification & email that actually arrives
 

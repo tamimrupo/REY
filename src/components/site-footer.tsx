@@ -40,7 +40,14 @@ export async function SiteFooter() {
     <footer className="mt-24 border-t border-line bg-ink text-paper/80">
       <div className="container-page grid gap-12 py-16 lg:grid-cols-[1.4fr_2fr]">
         <div>
-          <p className="font-display text-3xl font-semibold text-paper">REY</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/rey-logo-white.svg"
+            alt="REY BD"
+            width={78}
+            height={40}
+            className="h-9 w-auto"
+          />
           <p className="mt-3 max-w-sm text-sm leading-relaxed">{site.tagline}</p>
           <p className="mt-6 text-sm leading-relaxed">
             {site.address}

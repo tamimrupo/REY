@@ -17,11 +17,15 @@ export async function SiteHeader() {
 
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-8">
-          <Link href="/" className="font-display text-2xl font-semibold tracking-tight">
-            REY
-            <span className="ml-1 align-super text-[0.6rem] font-sans font-semibold tracking-[0.2em] text-gold">
-              BD
-            </span>
+          <Link href="/" aria-label="REY BD — home" className="flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/rey-logo-black.svg"
+              alt="REY BD"
+              width={78}
+              height={40}
+              className="h-8 w-auto"
+            />
           </Link>
 
           <nav className="hidden items-center gap-6 md:flex">
