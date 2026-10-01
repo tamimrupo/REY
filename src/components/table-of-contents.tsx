@@ -71,7 +71,7 @@ export function TableOfContents({
               <a
                 href={`#${item.id}`}
                 aria-current={active ? "true" : undefined}
-                className={`block border-l-2 pl-3 leading-snug transition ${
+                className={`block border-l-2 py-1.5 pl-3 leading-snug transition ${
                   active
                     ? "border-ink font-medium text-ink"
                     : "border-line text-ink-muted hover:border-ink/40 hover:text-ink"

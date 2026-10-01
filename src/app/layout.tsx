@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { BackToTop } from "@/components/motion";
 import { RouteProgress } from "@/components/route-progress";
+import { TableLabels } from "@/components/table-labels";
 import { getSiteSettingsForMetadata } from "@/lib/data";
 
 import "./globals.css";
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-screen antialiased">
         <RouteProgress />
+        <TableLabels />
         {children}
         <BackToTop />
       </body>

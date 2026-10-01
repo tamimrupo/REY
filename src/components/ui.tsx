@@ -131,7 +131,7 @@ export function Stat({
   hint?: string;
 }) {
   return (
-    <div className="card p-5">
+    <div className="card p-4 sm:p-5">
       <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
         {label}
       </p>

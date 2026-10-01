@@ -199,7 +199,7 @@ export function FeaturedShelf({
                   {active.authors?.slug ? (
                     <Link
                       href={`/author/${active.authors.slug}`}
-                      className="transition hover:underline"
+                      className="inline-block py-1 transition hover:underline"
                     >
                       {active.authors.name ?? "REY BD"}
                     </Link>

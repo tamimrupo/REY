@@ -72,12 +72,14 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
       {session ? <QuotaBar userId={session.userId} /> : null}
 
       <div className="container-page py-10">
-        <nav className="text-xs text-ink-muted">
-          <Link href="/library" className="hover:text-ink">
+        <nav aria-label="Breadcrumb" className="text-xs text-ink-muted">
+          <Link href="/library" className="inline-block py-1.5 hover:text-ink">
             Library
           </Link>
-          <span className="mx-2">/</span>
-          <span>{book.genres?.name ?? "All titles"}</span>
+          <span aria-hidden className="mx-2">
+            /
+          </span>
+          <span aria-current="page">{book.genres?.name ?? "All titles"}</span>
         </nav>
 
         <div className="mt-8 grid gap-12 lg:grid-cols-[380px_1fr]">

@@ -48,7 +48,7 @@ export function MobileMenu({ signedIn }: { signedIn: boolean }) {
   }, [open]);
 
   return (
-    <div ref={containerRef} className="relative md:hidden">
+    <div ref={containerRef} className="relative lg:hidden">
       <button
         ref={triggerRef}
         type="button"

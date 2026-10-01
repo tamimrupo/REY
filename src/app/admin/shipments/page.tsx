@@ -49,7 +49,7 @@ export default async function AdminShipmentsPage(props: PageProps<"/admin/shipme
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <Stat label="Waiting to dispatch" value={toDispatch} />
         <Stat label="Returns in progress" value={returns} />
         <Stat label="Charged to customers" value={money(owed)} hint="Sum of customer shares" />

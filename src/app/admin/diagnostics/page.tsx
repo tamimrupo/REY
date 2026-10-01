@@ -59,7 +59,7 @@ export default async function AdminDiagnosticsPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <Stat label="Orders checked" value={rows.length} hint="Most recent 100" />
         <Stat label="Looking healthy" value={healthy} />
         <Stat

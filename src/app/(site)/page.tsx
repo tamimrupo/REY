@@ -253,7 +253,7 @@ export default async function HomePage() {
             </h2>
           </Reveal>
 
-          <dl className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 sm:mt-12 sm:grid-cols-2 sm:gap-10 lg:grid-cols-4">
             {[
               {
                 value: String(shelfBooks.total || shelfBooks.books.length),
@@ -273,7 +273,7 @@ export default async function HomePage() {
                 delay={index * 90}
                 className="border-t border-white/20 pt-5"
               >
-                <dt className="text-4xl font-extrabold tracking-tight text-paper">
+                <dt className="font-display text-4xl font-bold tracking-tight text-paper">
                   <CountUp value={item.value} />
                 </dt>
                 <dd className="mt-2 text-sm font-semibold text-paper">{item.label}</dd>

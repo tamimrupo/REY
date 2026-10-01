@@ -54,7 +54,7 @@ export default async function AdminCustomerPage(props: PageProps<"/admin/custome
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Link href="/admin/customers" className="text-sm text-ink-soft hover:text-gold">
+          <Link href="/admin/customers" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
             ← Customers
           </Link>
           <h1 className="mt-2 text-3xl font-semibold text-ink">{customer.full_name || "Unnamed"}</h1>
@@ -112,7 +112,7 @@ export default async function AdminCustomerPage(props: PageProps<"/admin/custome
           <section className="card p-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-ink">Books</h2>
-              <Link href="/admin/rentals?filter=open" className="text-sm text-ink-soft hover:text-gold">
+              <Link href="/admin/rentals?filter=open" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
                 All books out
               </Link>
             </div>

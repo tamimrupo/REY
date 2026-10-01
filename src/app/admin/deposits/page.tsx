@@ -28,7 +28,7 @@ export default async function AdminDepositsPage(props: PageProps<"/admin/deposit
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <Stat label="Currently held" value={money(held)} hint="Owed back to members" />
         <Stat label="Refunded to date" value={money(refunded)} />
         <Stat label="Records" value={deposits.length} />

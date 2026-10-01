@@ -46,7 +46,7 @@ export default async function AdminRentalsPage(props: PageProps<"/admin/rentals"
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <Stat label="With customers" value={withCustomers.length} />
         <Stat label="Overdue" value={overdue.length} hint="Past their due date" />
         <Stat
@@ -100,7 +100,7 @@ export default async function AdminRentalsPage(props: PageProps<"/admin/rentals"
                       </Link>
                       <p className="text-xs text-ink-muted">{rental.books?.authors?.name ?? ""}</p>
                     </td>
-                    <td>
+                    <td data-label="Customer">
                       <Link
                         href={`/admin/customers/${rental.user_id}`}
                         className="text-ink hover:text-gold"
@@ -109,14 +109,18 @@ export default async function AdminRentalsPage(props: PageProps<"/admin/rentals"
                       </Link>
                       <p className="text-xs text-ink-muted">{rental.profiles?.phone ?? ""}</p>
                     </td>
-                    <td>
+                    <td data-label="Status">
                       <StatusPill
                         status={late ? "cancelled" : rental.status}
                         label={late ? "Overdue" : rentalStatusLabel(rental.status)}
                       />
                     </td>
-                    <td className="whitespace-nowrap text-ink-soft">{formatDate(rental.due_at)}</td>
-                    <td className="text-ink">{money(rental.replacement_value)}</td>
+                    <td data-label="Due" className="whitespace-nowrap text-ink-soft">
+                      {formatDate(rental.due_at)}
+                    </td>
+                    <td data-label="Value" className="text-ink">
+                      {money(rental.replacement_value)}
+                    </td>
                     <td>
                       {["pending", "out", "returning"].includes(rental.status) ? (
                         <div className="flex flex-wrap items-center gap-2">

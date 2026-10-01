@@ -20,12 +20,14 @@ export default async function AuthorsPage() {
 
   return (
     <div className="container-page py-12">
-      <nav className="text-xs text-ink-muted">
-        <Link href="/library" className="hover:text-ink">
+      <nav aria-label="Breadcrumb" className="text-xs text-ink-muted">
+        <Link href="/library" className="inline-block py-1.5 hover:text-ink">
           Library
         </Link>
-        <span className="mx-2">/</span>
-        <span>Authors</span>
+        <span aria-hidden className="mx-2">
+          /
+        </span>
+        <span aria-current="page">Authors</span>
       </nav>
 
       <div className="section-rule mt-7">

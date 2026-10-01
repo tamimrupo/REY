@@ -78,7 +78,7 @@ export default async function ContactPage() {
                 ["Where do you deliver?", "/p/shipping-delivery-policy"],
               ].map(([label, href]) => (
                 <li key={href}>
-                  <Link href={href} className="text-ink-soft hover:text-gold">
+                  <Link href={href} className="inline-flex min-h-6 items-center text-ink-soft hover:text-gold">
                     {label} →
                   </Link>
                 </li>

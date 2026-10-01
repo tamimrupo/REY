@@ -230,7 +230,7 @@ export function RentalSettingsForm({ rental }: { rental: RentalSettings }) {
       <input type="hidden" name="key" value="rental" />
       <input type="hidden" name="kind" value="rental" />
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <div>
           <label className="label" htmlFor="duration_days">
             Plan length (days)

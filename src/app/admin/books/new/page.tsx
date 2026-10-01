@@ -11,7 +11,7 @@ export default async function NewBookPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/admin/books" className="text-sm text-ink-soft hover:text-gold">
+        <Link href="/admin/books" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
           ← Books
         </Link>
         <h1 className="mt-2 text-3xl font-semibold text-ink">Add a book</h1>

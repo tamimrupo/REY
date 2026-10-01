@@ -17,7 +17,7 @@ export default function AccountLoading() {
         <span aria-hidden className="h-px flex-1 bg-line" />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         {Array.from({ length: 3 }).map((_, index) => (
           <div key={index} className="card p-5">
             <span className="skeleton block h-2.5 w-20" />

@@ -36,7 +36,7 @@ export async function SiteHeader() {
             />
           </Link>
 
-          <nav className="hidden items-center gap-7 md:flex">
+          <nav className="hidden items-center gap-7 lg:flex">
             {navLinks.map((link) => (
               <NavLink
                 key={link.href}

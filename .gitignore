@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# responsive audit output (scripts/audit-responsive.mjs)
+/.audit/
+
 # next.js
 /.next/
 /out/

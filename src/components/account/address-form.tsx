@@ -75,7 +75,7 @@ function Fields({ address }: { address?: Address }) {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <div>
           <label className="label" htmlFor={`area-${address?.id ?? "new"}`}>
             Area

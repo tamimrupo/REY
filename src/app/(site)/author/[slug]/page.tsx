@@ -73,12 +73,14 @@ export default async function AuthorPage(props: PageProps<"/author/[slug]">) {
 
   return (
     <div className="container-page py-12">
-      <nav className="text-xs text-ink-muted">
-        <Link href="/library" className="hover:text-ink">
+      <nav aria-label="Breadcrumb" className="text-xs text-ink-muted">
+        <Link href="/library" className="inline-block py-1.5 hover:text-ink">
           Library
         </Link>
-        <span className="mx-2">/</span>
-        <span>{author.name}</span>
+        <span aria-hidden className="mx-2">
+          /
+        </span>
+        <span aria-current="page">{author.name}</span>
       </nav>
 
       <div className="mt-8">

@@ -673,8 +673,111 @@
   .table tr:last-child td {
     border-bottom: none;
   }
+  /* A link that fills a table cell is still a pointer target. */
+  .table td a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
   .table tbody tr:hover {
     background: var(--color-mist);
+  }
+
+  /* ---- Tables on a phone ------------------------------------------------- */
+  /* A data table cannot be read at 390px by squeezing it — the columns collapse
+     into one word per line — and it cannot be used by scrolling it sideways.
+     Below `md` each row becomes a card instead: the first cell is the card's
+     heading, any cell carrying `data-label` prints its column name beside the
+     value, and the actions sit on their own line at the bottom. */
+  @media (max-width: 767px) {
+    .table-wrap {
+      overflow: visible;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+      display: block;
+      width: 100%;
+    }
+
+    .table thead {
+      display: none;
+    }
+
+    .table tr {
+      border: 1px solid var(--color-line);
+      border-radius: var(--radius-card);
+      background: #fff;
+      box-shadow: var(--shadow-card);
+      padding: 0.875rem 1rem;
+    }
+
+    .table tr + tr {
+      margin-top: 0.75rem;
+    }
+
+    .table td {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border: none;
+      padding: 0.3125rem 0;
+      text-align: right;
+    }
+
+    .table td::before {
+      content: attr(data-label);
+      flex: none;
+      font-family: var(--font-mono);
+      font-size: var(--text-micro);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+      text-align: left;
+    }
+    /* A cell with no label (or no meaning) shows nothing at all. */
+    .table td:not([data-label])::before {
+      display: none;
+    }
+
+    /* The first cell names the card. */
+    .table td:first-child {
+      display: block;
+      padding-bottom: 0.5rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .table td:first-child::before {
+      display: none;
+    }
+
+    /* Anything holding a control is the card's action row. */
+    .table td:has(button, form, .btn) {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      margin-top: 0.625rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--color-line);
+      text-align: left;
+    }
+    .table td:has(button, form, .btn)::before {
+      display: none;
+    }
+
+    /* A link inside a card row is already covered by the rule above. */
+
+    /* Row hover means nothing once rows are cards. */
+    .table tbody tr:hover {
+      background: #fff;
+    }
   }
 
   /* ---- Layout helpers ---------------------------------------------------- */

@@ -162,7 +162,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
         />
       )}
 
-      <div className="grid gap-5 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
         <Stat label="Refundable deposit held" value={money(heldDeposit)} />
         <Stat label="Books with you" value={state.out.length} />
         <Stat label="Books borrowed all-time" value={booksBorrowed} />
@@ -172,7 +172,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
         <div className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-ink">Currently on loan</h2>
-            <Link href="/account/books" className="text-sm text-ink-soft hover:text-gold">
+            <Link href="/account/books" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
               Manage returns
             </Link>
           </div>
@@ -195,7 +195,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
       <div className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">Recent orders</h2>
-          <Link href="/account/orders" className="text-sm text-ink-soft hover:text-gold">
+          <Link href="/account/orders" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
             View all
           </Link>
         </div>

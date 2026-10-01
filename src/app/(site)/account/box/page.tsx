@@ -73,7 +73,7 @@ export default async function BoxPage(props: PageProps<"/account/box">) {
         <Alert tone="warning">
           Your membership is <strong>{state.subscription.status}</strong>. Renew to keep picking
           books.{" "}
-          <Link href="/account/membership" className="underline">
+          <Link href="/account/membership" className="inline-block py-1 underline">
             Manage membership
           </Link>
         </Alert>

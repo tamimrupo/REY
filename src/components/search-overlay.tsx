@@ -333,7 +333,7 @@ export function SearchOverlay() {
                   <Link
                     href={`/library?q=${encodeURIComponent(trimmed)}`}
                     onClick={() => setOpen(false)}
-                    className="mt-4 inline-block text-meta font-semibold uppercase tracking-[0.12em] text-ink underline decoration-ink/30 hover:decoration-ink"
+                    className="mt-4 inline-block py-1 text-meta font-semibold uppercase tracking-[0.12em] text-ink underline decoration-ink/30 hover:decoration-ink"
                   >
                     See all{total > 0 ? ` ${total}` : ""} result{total === 1 ? "" : "s"}
                   </Link>

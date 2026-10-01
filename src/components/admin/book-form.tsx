@@ -67,7 +67,7 @@ function CoverUpload({
           <button
             type="button"
             onClick={() => setManual((current) => !current)}
-            className="text-xs text-ink-muted underline hover:text-ink"
+            className="py-1 text-xs text-ink-muted underline hover:text-ink"
           >
             {manual ? "Hide URL field" : "Or paste an image URL"}
           </button>
@@ -85,7 +85,7 @@ function CoverUpload({
             <button
               type="button"
               onClick={() => onChange("")}
-              className="block text-xs text-rose-600 underline"
+              className="block py-1 text-xs text-rose-600 underline"
             >
               Remove cover
             </button>
@@ -251,7 +251,7 @@ export function BookForm({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
             <div>
               <label className="label" htmlFor="language">
                 Language
@@ -284,7 +284,7 @@ export function BookForm({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
             <div>
               <label className="label" htmlFor="publisher">
                 Publisher

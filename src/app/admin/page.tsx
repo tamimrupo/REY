@@ -38,7 +38,7 @@ export default async function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <Stat label="Monthly recurring" value={money(stats.mrr)} hint="From active subscriptions" />
         <Stat
           label="Active members"
@@ -53,7 +53,7 @@ export default async function AdminOverviewPage() {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <Stat
           label="Books out"
           value={stats.books_out}
@@ -76,7 +76,7 @@ export default async function AdminOverviewPage() {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <Stat label="Titles live" value={stats.titles} />
         <Stat label="Deposits held" value={money(stats.held_deposits)} hint="Refundable on exit" />
         <Stat
@@ -125,7 +125,7 @@ export default async function AdminOverviewPage() {
         <section className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-ink">Payments to verify</h2>
-            <Link href="/admin/payments" className="text-sm text-ink-soft hover:text-gold">
+            <Link href="/admin/payments" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
               View all
             </Link>
           </div>
@@ -157,7 +157,7 @@ export default async function AdminOverviewPage() {
         <section className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-ink">New subscriptions</h2>
-            <Link href="/admin/subscriptions" className="text-sm text-ink-soft hover:text-gold">
+            <Link href="/admin/subscriptions" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
               View all
             </Link>
           </div>
@@ -188,7 +188,7 @@ export default async function AdminOverviewPage() {
       <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">Latest orders</h2>
-          <Link href="/admin/orders" className="text-sm text-ink-soft hover:text-gold">
+          <Link href="/admin/orders" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
             View all
           </Link>
         </div>
@@ -232,7 +232,7 @@ export default async function AdminOverviewPage() {
       <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">Rare book requests</h2>
-          <Link href="/admin/requests" className="text-sm text-ink-soft hover:text-gold">
+          <Link href="/admin/requests" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
             View all
           </Link>
         </div>
