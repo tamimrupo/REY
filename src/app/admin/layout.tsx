@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="min-h-screen bg-cream/40">
-      <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-line bg-paper">
         <div className="mx-auto flex h-16 max-w-[110rem] items-center justify-between gap-4 px-5">
           <div className="flex items-center gap-4">
             <Link href="/admin" className="flex items-center gap-3" aria-label="REY dashboard">
@@ -27,7 +27,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
                 height={40}
                 className="h-6 w-auto"
               />
-              <span className="text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
+              <span className="label-mono">
                 Dashboard
               </span>
             </Link>
@@ -57,10 +57,10 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           </div>
         </aside>
 
-        <div className="min-w-0 flex-1">
+        <main id="main" className="min-w-0 flex-1">
           {/* Horizontal nav for small screens */}
-          <div className="no-scrollbar mb-6 -mx-1 overflow-x-auto lg:hidden">
-            <div className="flex gap-1 px-1">
+          <div className="no-scrollbar mb-6 -mx-1 overflow-x-auto border-b border-line lg:hidden">
+            <div className="flex gap-5 px-1">
               {[
                 ["/admin", "Overview"],
                 ["/admin/orders", "Orders"],
@@ -74,7 +74,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
                   key={href}
                   href={href}
                   exact={href === "/admin"}
-                  className="btn btn-outline btn-sm whitespace-nowrap aria-[current=page]:border-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper"
+                  className="whitespace-nowrap border-b-2 border-transparent pb-2.5 pt-1 text-sm text-ink-soft transition-colors duration-150 hover:text-ink aria-[current=page]:border-ink aria-[current=page]:font-medium aria-[current=page]:text-ink"
                 >
                   {label}
                 </NavLink>
@@ -83,7 +83,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           </div>
 
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );

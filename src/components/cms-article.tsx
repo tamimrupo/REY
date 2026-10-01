@@ -129,7 +129,7 @@ export function CmsArticle({
 
         <div className="min-w-0 lg:col-start-1 lg:row-start-1">
           <p className="eyebrow">REY BD</p>
-          <h1 className="mt-3 text-4xl font-semibold text-ink">{page.title}</h1>
+          <h1 className="mt-3 text-ink">{page.title}</h1>
           {page.excerpt ? (
             <p className="mt-4 max-w-3xl text-lg leading-relaxed text-ink-soft">{page.excerpt}</p>
           ) : null}
@@ -195,7 +195,7 @@ export function CmsArticle({
 export function MissingPage({ slug }: { slug: string }) {
   return (
     <div className="container-page max-w-2xl py-24 text-center">
-      <h1 className="text-3xl font-semibold text-ink">Page not found</h1>
+      <h1 className="text-ink">Page not found</h1>
       <p className="mt-3 text-sm text-ink-muted">
         We could not find a page at <code className="rounded bg-cream px-1.5 py-0.5">/{slug}</code>.
         It may still be a draft in the dashboard.

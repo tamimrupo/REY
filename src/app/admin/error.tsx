@@ -14,7 +14,7 @@ export default function AdminError({
     <div className="space-y-6">
       <div>
         <p className="label-mono">Dashboard error</p>
-        <h1 className="mt-4 text-3xl">That view could not load.</h1>
+        <h1 className="mt-4">That view could not load.</h1>
       </div>
 
       <div className="card p-6">

@@ -16,7 +16,7 @@ export default async function AccountLayout({ children }: LayoutProps<"/account"
       <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
         <aside className="min-w-0">
           <div className="rounded-card border border-line bg-white p-5">
-            <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Signed in as</p>
+            <p className="label-mono">Signed in as</p>
             <p className="mt-1 truncate font-display text-lg font-semibold text-ink">{name}</p>
             {session.email ? (
               <p className="mt-0.5 truncate text-xs text-ink-muted">{session.email}</p>
@@ -29,7 +29,7 @@ export default async function AccountLayout({ children }: LayoutProps<"/account"
 
           <div className="mt-6 space-y-2 border-t border-line pt-5">
             {isStaff ? (
-              <Link href="/admin" className="btn btn-gold btn-sm w-full">
+              <Link href="/admin" className="btn btn-primary btn-sm w-full">
                 Open dashboard
               </Link>
             ) : null}

@@ -101,9 +101,7 @@ export async function SiteFooter() {
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="lg:max-w-md">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-gold-soft">
-              Actually good emails, we swear
-            </p>
+            <p className="label-mono !text-paper/70">Actually good emails, we swear</p>
             <p className="mt-2 text-sm">
               New arrivals, restocks and members-only offers. One email a month.
             </p>

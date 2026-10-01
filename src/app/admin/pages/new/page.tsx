@@ -8,10 +8,10 @@ export default function NewPageRoute() {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/admin/pages" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+        <Link href="/admin/pages" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
           ← Pages
         </Link>
-        <h1 className="mt-2 text-3xl font-semibold text-ink">New page</h1>
+        <h1 className="mt-2 text-ink">New page</h1>
       </div>
 
       <div className="card p-6">

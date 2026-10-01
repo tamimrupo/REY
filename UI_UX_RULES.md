@@ -10,6 +10,9 @@ commit that breaks it.
 
 ## General
 
+- **"Less decoration, better composition."** The default answer to "should we add
+  a card / a shadow / an icon / a gradient / a divider here?" is no. Scale, rules,
+  whitespace and alignment are what carry the design.
 - **Keep the interface clean and modern.** The reference point is a well-set
   printed catalogue: hairlines, machine-set mono labels, generous margins, one
   accent — ink.
@@ -18,10 +21,14 @@ commit that breaks it.
 - **Never introduce unnecessary visual elements.** No decorative icons, no
   badges that repeat what the row already says, no motion that is not feedback.
   Every extra mark competes with the books.
+- **Flat surfaces.** No gradients, no glassmorphism, no translucency used to fake
+  depth: a surface is a fill plus a hairline. (The sticky header is solid paper.)
 - **Preserve existing brand identity.** Monochrome, always: no hue anywhere —
   not in statuses, charts, illustrations, hover states or error states. Ink
   `#090909` on paper `#ffffff`. The monochrome lock in `@theme` remaps every
-  Tailwind colour family to greys; that is a safety net, not permission.
+  Tailwind colour family to greys; that is a safety net, not permission. No
+  legacy palette exists in the markup — a `text-rose-*`, `text-amber-*`,
+  `text-gold*` or `text-emerald-*` in source is a defect, not a shortcut.
 - **Two typefaces, one job each.** Playfair Display for display headings, Inter
   for the interface, the system mono for labels and figures.
 - **Money and dates go through the shared components** (`Money`, `formatDate`,
@@ -35,6 +42,9 @@ commit that breaks it.
   `text-micro` 11 · `text-meta` 12 · `text-body-sm` 14 · `text-body` 15 ·
   `text-display` 40, plus the `h1`–`h4` clamps. Arbitrary sizes
   (`text-[13px]`) are a defect.
+- **Headings never set their own size.** No `text-3xl` on an `h1` — the clamps in
+  `@layer base` (`h1` 36→56px, `h2` 28→38px) are what keep 48 pages consistent
+  and keep the hierarchy intact from 390px to 1440px.
 - **Clear distinction between headings, labels and body text.** Headings are
   Playfair 700 · labels are uppercase mono 11px with `0.12em` tracking
   (`.label-mono`, `.eyebrow`) · body is Inter at the browser base size.
@@ -75,18 +85,31 @@ commit that breaks it.
   variants: primary, outline, ghost, invert, on-dark, `btn-sm`. Radius 4px,
   transitions 150ms, one press state (1px down), a disabled state, and a shadow
   on every button — including on hover. Never strip the shadow to look "flat".
-- **Depth is a signal, not decoration.** Buttons carry shadows; cards stay flat
-  with hairlines and `--shadow-card`.
+- **Depth is a signal, not decoration.** The interface is hairline-first: a
+  surface is defined by its border, not its shadow. Shadow is reserved for three
+  jobs — the button you are about to press, the card that lifts under the
+  pointer, and the panel that floats above the page.
 - **Forms must have clear labels and validation feedback.** A real `<label>`
   (visible, or `sr-only` when the design truly needs it) — never a placeholder
   standing in for one. Rejected fields take `aria-invalid="true"`, which draws
   the ink border and mist fill, and the message explains the fix.
 - **Cards should follow one consistent visual system.** White, 1px `line`,
-  `rounded-card` (6px), `--shadow-card`; `.lift` when the whole card is a link.
+  `rounded-card` (6px), `--shadow-card` (near-invisible); `.lift` when the whole
+  card is a link.
+- **Every label uses the label component.** `.label-mono` or `.eyebrow` — a
+  hand-rolled `text-xs uppercase tracking-[0.12em]` is a defect.
+- **Stats are ruled figures, not boxes.** `Stat` sets a mono label, a display
+  number and a hint under an ink rule, so a row of twelve reads as one report
+  rather than twelve cards.
+- **Empty states are ruled statements, not dashed placeholders.** `EmptyState`:
+  hairline, display title, description, one action.
+- **Side navigation is an index.** Hairline rows at `lg` with an ink left-rule
+  for the current page; underline tabs below it. Never pill-shaped.
 - **Tables are `.table` inside `.table-wrap`.** Below `md` they become cards
   (see Responsive). Never squeeze a table into the viewport, and never leave its
   action column off-screen.
-- **Status is carried by fill and contrast** (`.pill` tones), never by hue.
+- **Status flags are square** (`.pill`, `rounded-field`), uppercase mono, and
+  carried by fill and contrast — never by hue.
 - **Every empty, loading and error state is designed.** `EmptyState`,
   `loading.tsx`, `error.tsx` — a blank panel is not an acceptable answer to "no
   data yet".
@@ -146,9 +169,10 @@ commit that breaks it.
 - **Maintain sufficient contrast.** `ink` 19.9:1, `ink-soft` 7.8:1, `ink-muted`
   5.0:1 on paper. `ink-muted` is the floor — placeholder text is decorative and
   never carries meaning on its own.
-- **Use semantic HTML.** One `<main>`, one `<h1>` per page, real `<button>` and
-  `<a>` elements, labelled `<nav>`s, `aria-current="page"` for the current page,
-  breadcrumbs marked as such, tables with `<thead>`/`<th>`.
+- **Use semantic HTML.** One `<main>` (`id="main"`) per page, one `<h1>` per
+  page, a skip link before everything, real `<button>` and `<a>` elements,
+  labelled `<nav>`s, `aria-current="page"` for the current page, breadcrumbs
+  marked as such, tables with `<thead>`/`<th>`.
 - **Announce change.** `role="alert"` for errors, `role="status"` for
   successes, `aria-busy` while working, `aria-expanded`/`aria-controls` for
   disclosures.

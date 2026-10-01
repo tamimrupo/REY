@@ -90,7 +90,8 @@ const PROBE = `(() => {
 
     const tag = el.tagName.toLowerCase();
     const interactive = tag === "a" || tag === "button" || el.getAttribute("role") === "button";
-    if (interactive) {
+    // Screen-reader-only controls are not touch targets.
+    if (interactive && !el.closest(".sr-only")) {
       const inlineInProse = s.display === "inline" && el.closest("p, li, .cms-article");
       if (!inlineInProse && (r.height < 24 || r.width < 24) && small.length < 12) {
         small.push({ el: desc(el), w: Math.round(r.width), h: Math.round(r.height), text: (el.textContent || "").trim().slice(0, 28) });

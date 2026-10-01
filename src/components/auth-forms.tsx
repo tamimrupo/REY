@@ -36,7 +36,7 @@ export function LoginForm({ next = "/account" }: { next?: string }) {
       <p className="mt-6 text-sm">
         <Link
           href="/forgot-password"
-          className="inline-block py-1.5 text-ink-soft hover:text-gold"
+          className="inline-block py-1.5 text-ink-soft hover:text-ink"
         >
           Forgot your password?
         </Link>

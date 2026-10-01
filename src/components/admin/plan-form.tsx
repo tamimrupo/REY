@@ -28,7 +28,7 @@ export function PlanForm({
           <button
             type="submit"
             formAction={deletePlanAction}
-            className="btn btn-ghost text-rose-600"
+            className="btn btn-ghost text-ink"
             formNoValidate
           >
             Delete plan

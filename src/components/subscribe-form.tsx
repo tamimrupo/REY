@@ -183,7 +183,7 @@ export function SubscribeForm({
                     <button
                       type="button"
                       onClick={() => toggle(book.id)}
-                      className="text-xs text-ink-muted hover:text-rose-600"
+                      className="text-xs text-ink-muted hover:text-ink"
                     >
                       Remove
                     </button>

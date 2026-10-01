@@ -42,7 +42,7 @@ export default async function BoxPage(props: PageProps<"/account/box">) {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-ink">My box</h1>
+          <h1 className="text-ink">My box</h1>
           <p className="mt-2 text-sm text-ink-soft">
             {state.plan.name} · {state.quota} books a month ·{" "}
             <span className="font-medium text-ink">{state.remaining} slot(s) left</span>

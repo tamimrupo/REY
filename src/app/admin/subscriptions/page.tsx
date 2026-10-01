@@ -18,7 +18,7 @@ export default async function AdminSubscriptionsPage(props: PageProps<"/admin/su
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Subscriptions</h1>
+        <h1 className="text-ink">Subscriptions</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Who is on which plan, when they are billed, and who needs a nudge.
         </p>
@@ -64,7 +64,7 @@ export default async function AdminSubscriptionsPage(props: PageProps<"/admin/su
                   <td>
                     <Link
                       href={`/admin/customers/${subscription.user_id}`}
-                      className="text-ink hover:text-gold"
+                      className="text-ink hover:underline"
                     >
                       {subscription.profiles?.full_name || "—"}
                     </Link>

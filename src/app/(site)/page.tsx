@@ -136,7 +136,7 @@ export default async function HomePage() {
             height={1131}
             className="h-full w-full object-cover object-[66%_30%] grayscale contrast-[1.06]"
           />
-          <p className="label-mono absolute bottom-5 left-5 max-w-[13rem] bg-paper/85 px-2.5 py-1.5 leading-relaxed backdrop-blur">
+          <p className="label-mono absolute bottom-5 left-5 max-w-[13rem] border border-line bg-paper px-2.5 py-1.5 leading-relaxed">
             “Young woman reading”, Osman Hamdi Bey, 1880 — public domain
           </p>
         </div>
@@ -229,7 +229,7 @@ export default async function HomePage() {
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand">{step.number}</p>
                   <h3 className="mt-3 text-lg">{step.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-ink-soft">{step.body}</p>
-                  <p className="mt-4 text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
+                  <p className="label-mono mt-4">
                     {step.tag}
                   </p>
                 </Reveal>
@@ -296,7 +296,7 @@ export default async function HomePage() {
             />
           </Reveal>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          <div className="mt-12 grid gap-8 lg:grid-cols-3 lg:gap-10">
             {plans.map((plan, index) => (
               <Reveal key={plan.id} delay={index * 110} className="flex">
                 <PlanCard plan={plan} features={features} />
@@ -373,7 +373,7 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- CTA */}
       <section className="bg-paper">
         <div className="container-page py-20">
-          <Reveal className="panel px-8 py-14 text-center">
+          <Reveal className="panel px-8 py-16 text-center">
             <p className="eyebrow">Ready when you are</p>
             <h2 className="mx-auto mt-4 max-w-2xl">
               Your next twelve books are one plan away.

@@ -59,7 +59,7 @@ export function TableOfContents({
       aria-label="Table of contents"
       className="rounded-card border border-line bg-surface/60 p-5 lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:overflow-auto"
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
+      <p className="label-mono">
         Table of Contents
       </p>
 

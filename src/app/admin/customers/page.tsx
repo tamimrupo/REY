@@ -14,7 +14,7 @@ export default async function AdminCustomersPage(props: PageProps<"/admin/custom
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Customers</h1>
+        <h1 className="text-ink">Customers</h1>
         <p className="mt-1 text-sm text-ink-soft">
           {customers.length} account{customers.length === 1 ? "" : "s"}. Open one for rental history,
           deposits and notes.
@@ -63,7 +63,7 @@ export default async function AdminCustomersPage(props: PageProps<"/admin/custom
                       </span>
                       <Link
                         href={`/admin/customers/${customer.id}`}
-                        className="font-medium text-ink hover:text-gold"
+                        className="font-medium text-ink hover:underline"
                       >
                         {customer.full_name || "Unnamed"}
                       </Link>

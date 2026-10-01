@@ -15,7 +15,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-ink">Welcome back</h1>
+      <h1 className="text-ink">Welcome back</h1>
       <p className="mt-2 text-sm text-ink-soft">
         Sign in to pick this month&apos;s books and track your deliveries.
       </p>
@@ -30,7 +30,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
 
       <p className="mt-6 text-sm text-ink-soft">
         New to REY?{" "}
-        <Link href="/register" className="font-medium text-ink underline hover:text-gold">
+        <Link href="/register" className="font-medium text-ink underline hover:underline">
           Create an account
         </Link>
       </p>

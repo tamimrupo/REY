@@ -42,7 +42,7 @@ export default async function AdminShipmentsPage(props: PageProps<"/admin/shipme
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Shipments</h1>
+        <h1 className="text-ink">Shipments</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Every trip: first deliveries, swaps (new books out + old books back on one trip) and
           returns.

@@ -62,7 +62,7 @@ function CoverUpload({
             className="field file:mr-3 file:rounded-full file:border-0 file:bg-cream file:px-3 file:py-1.5 file:text-xs file:font-medium"
           />
           {uploading ? <p className="text-xs text-ink-muted">Uploading…</p> : null}
-          {error ? <p className="text-xs text-rose-600">{error}</p> : null}
+          {error ? <p className="text-xs text-ink">{error}</p> : null}
 
           <button
             type="button"
@@ -85,7 +85,7 @@ function CoverUpload({
             <button
               type="button"
               onClick={() => onChange("")}
-              className="block py-1 text-xs text-rose-600 underline"
+              className="block py-1 text-xs text-ink underline"
             >
               Remove cover
             </button>

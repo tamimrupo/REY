@@ -17,7 +17,7 @@ export default async function PaymentsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Payments</h1>
+        <h1 className="text-ink">Payments</h1>
         <p className="mt-2 text-sm text-ink-soft">
           Every bKash, Nagad or Rocket payment you have submitted, and your deposit.
         </p>
@@ -88,7 +88,7 @@ export default async function PaymentsPage() {
                     <td>
                       <StatusPill status={payment.status} />
                       {payment.status === "rejected" && payment.reject_reason ? (
-                        <p className="mt-1 text-xs text-rose-600">{payment.reject_reason}</p>
+                        <p className="mt-1 text-xs text-ink">{payment.reject_reason}</p>
                       ) : null}
                     </td>
                   </tr>

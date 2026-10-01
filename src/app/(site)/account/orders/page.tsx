@@ -14,7 +14,7 @@ export default async function OrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Orders</h1>
+        <h1 className="text-ink">Orders</h1>
         <p className="mt-2 text-sm text-ink-soft">
           Every payment, box and renewal on your account.
         </p>

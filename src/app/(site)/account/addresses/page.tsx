@@ -12,7 +12,7 @@ export default async function AddressesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Delivery addresses</h1>
+        <h1 className="text-ink">Delivery addresses</h1>
         <p className="mt-2 text-sm text-ink-soft">
           Where should the courier bring your box? You can save several.
         </p>

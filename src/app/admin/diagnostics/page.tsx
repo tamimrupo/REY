@@ -52,7 +52,7 @@ export default async function AdminDiagnosticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Diagnostics</h1>
+        <h1 className="text-ink">Diagnostics</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Checks that every order produced the membership, rentals and shipment it should have. Fix
           a stuck order with one click.
@@ -101,7 +101,7 @@ export default async function AdminDiagnosticsPage() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium text-ink">
-                    <Link href={`/admin/orders/${order.id}`} className="hover:text-gold">
+                    <Link href={`/admin/orders/${order.id}`} className="hover:underline">
                       {order.order_number}
                     </Link>
                     <span className="ml-2 font-normal text-ink-muted">
@@ -116,7 +116,7 @@ export default async function AdminDiagnosticsPage() {
                 <StatusPill status={order.status} />
               </div>
 
-              <ul className="mt-3 space-y-1 text-sm text-amber-900">
+              <ul className="mt-3 space-y-1 text-sm text-ink">
                 {issues.map((issue) => (
                   <li key={issue}>• {issue}</li>
                 ))}
@@ -154,7 +154,7 @@ export default async function AdminDiagnosticsPage() {
             {rows.slice(0, 30).map(({ order }) => (
               <tr key={order.id}>
                 <td>
-                  <Link href={`/admin/orders/${order.id}`} className="text-ink hover:text-gold">
+                  <Link href={`/admin/orders/${order.id}`} className="text-ink hover:underline">
                     {order.order_number}
                   </Link>
                 </td>

@@ -10,7 +10,7 @@ export const metadata = {
 export default function ForgotPasswordPage() {
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-ink">Reset your password</h1>
+      <h1 className="text-ink">Reset your password</h1>
       <p className="mt-2 text-sm text-ink-soft">
         Enter your email and we will send you a link to set a new password.
       </p>
@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
       </div>
 
       <p className="mt-6 text-sm text-ink-soft">
-        <Link href="/login" className="hover:text-gold">
+        <Link href="/login" className="hover:underline">
           ← Back to sign in
         </Link>
       </p>

@@ -18,7 +18,7 @@ export default async function AdminOrdersPage(props: PageProps<"/admin/orders">)
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Orders</h1>
+        <h1 className="text-ink">Orders</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Every sign-up, renewal and fee, with the customer attached.
         </p>
@@ -64,7 +64,7 @@ export default async function AdminOrdersPage(props: PageProps<"/admin/orders">)
                   <td>
                     <Link
                       href={`/admin/orders/${order.id}`}
-                      className="font-medium text-ink hover:text-gold"
+                      className="font-medium text-ink hover:underline"
                     >
                       {order.order_number}
                     </Link>

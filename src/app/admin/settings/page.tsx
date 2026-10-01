@@ -43,7 +43,7 @@ export default async function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Settings</h1>
+        <h1 className="text-ink">Settings</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Store details, payment numbers, courier rates, rental rules and message templates.
         </p>
@@ -154,7 +154,7 @@ export default async function AdminSettingsPage() {
         </div>
 
         <div className="mt-6 rounded-card border border-line bg-cream/40 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
+          <p className="label-mono">
             Cron secret
           </p>
           <p className="mt-2 break-all font-mono text-xs text-ink-soft">{secret || "—"}</p>

@@ -20,7 +20,7 @@ export async function QuotaBar({ userId }: { userId: string }) {
             <span className="font-medium text-ink">Browsing as a guest.</span> A plan unlocks 2, 4 or
             8 books a month.
           </p>
-          <Link href="/plans" className="btn btn-gold btn-sm">
+          <Link href="/plans" className="btn btn-primary btn-sm">
             Get a plan
           </Link>
         </div>
@@ -30,9 +30,9 @@ export async function QuotaBar({ userId }: { userId: string }) {
 
   if (state.subscription.status !== "active") {
     return (
-      <div className="border-b border-line bg-amber-50">
+      <div className="border-b border-line bg-surface">
         <div className="container-page flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
-          <p className="text-amber-900">
+          <p className="text-ink">
             Your plan is <strong>{state.subscription.status}</strong>. Renew to keep picking books.
           </p>
           <Link href="/account/membership" className="btn btn-primary btn-sm">

@@ -216,9 +216,9 @@ export function SearchOverlay() {
           ref={panelRef}
           role="dialog"
           aria-label="Search the library"
-          className="animate-pop absolute left-0 right-0 top-full z-50 border-b border-line bg-paper shadow-[0_30px_60px_-30px_rgba(0,0,0,0.55)]"
+          className="animate-pop absolute left-0 right-0 top-full z-50 border-b border-line bg-paper shadow-lift"
         >
-          <div className="container-page py-5">
+          <div className="container-page py-10">
             <div className="relative max-w-2xl">
               <label className="sr-only" htmlFor="site-search">
                 Search the library
@@ -262,7 +262,7 @@ export function SearchOverlay() {
               >
                 {genres.length ? (
                   <div>
-                    <p className="text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
+                    <p className="label-mono">
                       Categories
                     </p>
                     <ul className="mt-3 divide-y divide-line border-y border-line">

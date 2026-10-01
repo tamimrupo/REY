@@ -40,7 +40,7 @@ export default async function AdminRentalsPage(props: PageProps<"/admin/rentals"
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Books out</h1>
+        <h1 className="text-ink">Books out</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Every book in a box, with a customer, or on its way back.
         </p>
@@ -94,7 +94,7 @@ export default async function AdminRentalsPage(props: PageProps<"/admin/rentals"
                     <td className="max-w-[16rem]">
                       <Link
                         href={`/library/${rental.books?.slug ?? ""}`}
-                        className="font-medium text-ink hover:text-gold"
+                        className="font-medium text-ink hover:underline"
                       >
                         {rental.books?.title ?? "Book"}
                       </Link>
@@ -103,7 +103,7 @@ export default async function AdminRentalsPage(props: PageProps<"/admin/rentals"
                     <td data-label="Customer">
                       <Link
                         href={`/admin/customers/${rental.user_id}`}
-                        className="text-ink hover:text-gold"
+                        className="text-ink hover:underline"
                       >
                         {rental.profiles?.full_name || "Customer"}
                       </Link>
@@ -134,7 +134,7 @@ export default async function AdminRentalsPage(props: PageProps<"/admin/rentals"
                             <input type="hidden" name="id" value={rental.id} />
                             <input type="hidden" name="lost" value="true" />
                             <SubmitButton
-                              className="btn btn-ghost btn-sm text-rose-600"
+                              className="btn btn-ghost btn-sm"
                               pendingLabel="Marking…"
                             >
                               Lost

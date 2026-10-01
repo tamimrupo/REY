@@ -7,7 +7,7 @@ export default function AdminImportPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Import books</h1>
+        <h1 className="text-ink">Import books</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Search a title, author or ISBN and import it with its cover, description and author filled
           in — or fill the shelves in bulk from a CSV or the Open Library presets. Duplicate ISBNs and

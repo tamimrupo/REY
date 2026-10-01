@@ -34,7 +34,7 @@ export default async function AdminNotificationsPage(props: PageProps<"/admin/no
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Notifications</h1>
+        <h1 className="text-ink">Notifications</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Renewal reminders, dispatch messages and overdue nudges. Send them by email, or tap
           WhatsApp and the message is pre-filled.
@@ -112,7 +112,7 @@ export default async function AdminNotificationsPage(props: PageProps<"/admin/no
                 </p>
 
                 {notification.error ? (
-                  <p className="mt-2 text-xs text-rose-600">{notification.error}</p>
+                  <p className="mt-2 text-xs text-ink">{notification.error}</p>
                 ) : null}
 
                 <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -121,7 +121,7 @@ export default async function AdminNotificationsPage(props: PageProps<"/admin/no
                       href={link}
                       target="_blank"
                       rel="noreferrer"
-                      className="btn btn-gold btn-sm"
+                      className="btn btn-primary btn-sm"
                     >
                       Open in WhatsApp
                     </a>

@@ -47,7 +47,7 @@ export default async function LibraryPage(props: PageProps<"/library">) {
           </div>
 
           <div className="mt-7 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-            <h1 className="text-4xl sm:text-5xl">Browse every title</h1>
+            <h1>Browse every title</h1>
             <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
               Search by name, or narrow it by genre and language. Every title here is included in a
               plan — pick the ones you want and we deliver them.

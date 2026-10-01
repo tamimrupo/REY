@@ -28,7 +28,7 @@ export default async function CheckoutPage(props: PageProps<"/checkout/[id]">) {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="eyebrow">Checkout</p>
-          <h1 className="mt-2 text-3xl font-semibold text-ink">Order {order.order_number}</h1>
+          <h1 className="mt-2 text-ink">Order {order.order_number}</h1>
           <p className="mt-2 text-sm text-ink-muted">Placed {formatDate(order.created_at)}</p>
         </div>
         <StatusPill status={order.status} />

@@ -20,10 +20,10 @@ export default async function ContactPage() {
       <div className="mt-12 grid gap-10 lg:grid-cols-2">
         <div className="space-y-6">
           <div className="card p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
+            <p className="label-mono">
               Email
             </p>
-            <a href={`mailto:${site.email}`} className="mt-2 block font-display text-xl text-ink hover:text-gold">
+            <a href={`mailto:${site.email}`} className="mt-2 block font-display text-xl text-ink hover:underline">
               {site.email}
             </a>
           </div>
@@ -32,7 +32,7 @@ export default async function ContactPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
               Phone &amp; WhatsApp
             </p>
-            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="mt-2 block font-display text-xl text-ink hover:text-gold">
+            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="mt-2 block font-display text-xl text-ink hover:underline">
               {site.phone}
             </a>
           </div>
@@ -78,7 +78,7 @@ export default async function ContactPage() {
                 ["Where do you deliver?", "/p/shipping-delivery-policy"],
               ].map(([label, href]) => (
                 <li key={href}>
-                  <Link href={href} className="inline-flex min-h-6 items-center text-ink-soft hover:text-gold">
+                  <Link href={href} className="inline-flex min-h-6 items-center text-ink-soft hover:text-ink">
                     {label} →
                   </Link>
                 </li>

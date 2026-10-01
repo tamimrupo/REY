@@ -45,6 +45,11 @@ the tinted panels (`surface` / `cream`).
 **Rule of thumb:** `line` separates things *within* a component; `border-ink` marks
 structural dividers between sections. Never lower `ink-muted` any further.
 
+No legacy palette survives in the markup: the `gold`, `rose`, `amber` and
+`emerald` utilities were removed from source (`text-gold` ×37, `text-rose` ×13,
+`amber` ×10, `emerald` ×2 became ink, surface and hairlines). The monochrome lock
+stays as a safety net, not as the mechanism.
+
 ---
 
 ## 3. Radius
@@ -66,7 +71,15 @@ border-line`, not a rounded shadow box.
 ## 4. Type
 
 Roles, not sizes. Body copy is 16px (browser base); headings use the clamps in
-`@layer base` (`h1` up to 5rem, `h2` to 3rem), with Playfair at weight 700.
+`@layer base`, with Playfair at weight 700. A page never sets a heading size
+utility — it inherits the clamp, which is what keeps 48 pages consistent.
+
+| Level | Clamp | At 390 / 1440 |
+|---|---|---|
+| `h1` | `clamp(2.25rem, 4.6vw, 3.5rem)` | 36 → 56px |
+| `h2` | `clamp(1.75rem, 3vw, 2.375rem)` | 28 → 38px |
+| `h3` | 1.3125rem | 21px |
+| `h4` | 1.125rem | 18px |
 
 | Token | Value | Use for |
 |---|---|---|
@@ -75,7 +88,7 @@ Roles, not sizes. Body copy is 16px (browser base); headings use the clamps in
 | `text-meta` | 12px | Meta lines, field hints, `.label` |
 | `text-body-sm` | 14px | UI text, buttons, table cells |
 | `text-body` | 15px | Long-form paragraphs (`.field` too) |
-| `text-display` | 40px | Hero headline on small screens |
+| `text-display` | 40px | The home hero on small screens |
 
 Labels are uppercase with wide tracking; body copy never is. Never let a paragraph
 run wider than `max-w-xl` (≈65 characters). Left text columns in a split layout are
@@ -145,14 +158,18 @@ it stops — the spinner becomes a still ring, so "working" is still legible.
 
 ---
 
-## 8. Shadows
+## 8. Depth
 
-| Token | Use |
-|---|---|
-| `--shadow-card` | Flat cards, barely there |
-| `--shadow-paper` | Raised panels |
-| `--shadow-lift` | Hover lift on cards |
-| button shadows | `.btn-primary` / `.btn-outline` / `.btn-invert` — buttons always carry shadow |
+The interface is **hairline-first**: a surface is defined by its border, not by a
+shadow. Shadow has three jobs only — the button you are about to press, the card
+that lifts under the pointer, and the panel that floats above the page.
+
+| Token | Value | Use |
+|---|---|---|
+| `--shadow-card` | 1px, 3% ink | Static cards and panels — all but invisible |
+| `--shadow-paper` | 2px + 36px soft | Overlays, drop-downs, the elevated header |
+| `--shadow-lift` | 4px + 56px soft | Hover lift only |
+| button shadows | — | Buttons always carry a shadow, and a deeper one on hover |
 
 ---
 
@@ -168,11 +185,13 @@ it stops — the spinner becomes a still ring, so "working" is still legible.
 | `.field:focus` | ink border + 3px 8% ink ring | — | — | — |
 | `.chip` | rectangle, `line` border | ink border | `data-active="true"` → ink fill | — |
 | `.card` | white, `line` border, `rounded-card`, `--shadow-card` | `lift` adds `--shadow-lift` | — | — |
-| `.pill` | full radius, inset 1px ring | tone fills: `good` (ink), `progress` (white), `problem` (frost), `neutral` (surface) | — | — |
-| `.table` | `surface` header, `line` row rules | row hover → `mist` | — | — |
+| `.pill` | Square flag (`rounded-field`), uppercase mono, inset 1px ring | tone fills: `good` (ink), `progress` (white), `problem` (frost), `neutral` (surface) | — | — |
+| `.table` | Hairline rows under an ink rule, mono uppercase heads | row hover → `mist` | — | — |
 | `.label-mono` / `.eyebrow` | mono, uppercase, 0.12em tracking | — | — | — |
 | `.section-rule` | ink top rule + mono label + flexible hairline | — | — | — |
-| `EmptyState` | dashed card, title, description, optional action | — | — | — |
+| `EmptyState` | a ruled statement: hairline, display title, description, optional action — never dashed | — | — | — |
+| `Stat` | a figure under an ink rule — mono label, display number, meta hint — never a boxed card | — | — | — |
+| Side navigation | hairline index at `lg`, underline tabs below it; the current page carries an ink rule and `aria-current="page"` | — | — | — |
 | `Alert` | info (surface), success (white + ink border), warning (surface + ink border), **error (ink fill, white text)** | — | — | — |
 | `Money` | currency mark at 0.62em so the ৳ fallback matches the figures | — | — | — |
 

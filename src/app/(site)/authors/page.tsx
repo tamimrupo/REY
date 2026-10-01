@@ -39,7 +39,7 @@ export default async function AuthorsPage() {
       </div>
 
       <div className="mt-7 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-        <h1 className="text-4xl sm:text-5xl">Authors on our shelves</h1>
+        <h1>Authors on our shelves</h1>
         <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
           {seriesCount ? `${seriesCount} series, ` : ""}
           {authors.length} writers we hold titles by. Tap one to see everything, and what to read
@@ -57,7 +57,7 @@ export default async function AuthorsPage() {
                     aria-hidden
                     className="absolute left-1/2 top-[40%] h-[112px] w-[112px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink transition group-hover:scale-105"
                   />
-                  <div className="relative overflow-hidden rounded-card border border-line bg-white shadow-[0_16px_30px_-18px_rgba(0,0,0,0.55)]">
+                  <div className="relative overflow-hidden rounded-card border border-line bg-white shadow-paper">
                     <AvatarImage name={author.name} url={author.avatar_url} />
                   </div>
                 </div>
@@ -69,7 +69,7 @@ export default async function AuthorsPage() {
                   {titles} title{titles === 1 ? "" : "s"}
                 </p>
                 {series.length ? (
-                  <p className="mt-1.5 text-micro uppercase tracking-[0.12em] text-ink-muted">
+                  <p className="label-mono mt-1.5">
                     {series.slice(0, 2).join(" · ")}
                     {series.length > 2 ? ` +${series.length - 2}` : ""}
                   </p>

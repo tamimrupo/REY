@@ -17,7 +17,7 @@ export default async function RarePage() {
       <section className="border-b border-line bg-ink py-16 text-paper">
         <div className="container-page">
           <p className="eyebrow">Rare &amp; hard to find</p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-semibold text-paper sm:text-5xl">
+          <h1 className="mt-3 max-w-3xl text-paper">
             We do not rent these yet — request one and we will try to add it.
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-paper/70">

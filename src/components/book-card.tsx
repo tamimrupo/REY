@@ -20,14 +20,14 @@ export function BookCard({ book, badge }: { book: Book; badge?: string }) {
         />
 
         {flag ? (
-          <span className="absolute left-2 top-2 rounded-full bg-ink/85 px-2.5 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper backdrop-blur">
+          <span className="absolute left-2 top-2 rounded-field bg-ink px-2.5 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper">
             {flag}
           </span>
         ) : null}
       </div>
 
       <div className="mt-3">
-        <p className="line-clamp-2 text-sm font-medium leading-snug text-ink group-hover:text-gold">
+        <p className="line-clamp-2 text-sm font-medium leading-snug text-ink group-hover:underline">
           {book.title}
         </p>
         {author ? <p className="mt-1 text-xs text-ink-muted">{author}</p> : null}

@@ -23,7 +23,7 @@ export default async function AdminOverviewPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-ink">Overview</h1>
+          <h1 className="text-ink">Overview</h1>
           <p className="mt-1 text-sm text-ink-soft">
             Everything that needs a human, in one place.
           </p>
@@ -88,7 +88,7 @@ export default async function AdminOverviewPage() {
       </div>
 
       {stats.to_ship + stats.returns_pending + stats.notifications_queued > 0 ? (
-        <section className="card border-amber-200 bg-amber-50/60 p-6">
+        <section className="card border-ink bg-surface p-6">
           <h2 className="text-lg font-semibold text-ink">Needs a human</h2>
           <div className="mt-4 flex flex-wrap gap-3">
             {stats.to_ship > 0 ? (
@@ -125,7 +125,7 @@ export default async function AdminOverviewPage() {
         <section className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-ink">Payments to verify</h2>
-            <Link href="/admin/payments" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+            <Link href="/admin/payments" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
               View all
             </Link>
           </div>
@@ -157,7 +157,7 @@ export default async function AdminOverviewPage() {
         <section className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-ink">New subscriptions</h2>
-            <Link href="/admin/subscriptions" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+            <Link href="/admin/subscriptions" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
               View all
             </Link>
           </div>
@@ -188,7 +188,7 @@ export default async function AdminOverviewPage() {
       <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">Latest orders</h2>
-          <Link href="/admin/orders" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+          <Link href="/admin/orders" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
             View all
           </Link>
         </div>
@@ -209,7 +209,7 @@ export default async function AdminOverviewPage() {
                 {recentOrders.map((order) => (
                   <tr key={order.id}>
                     <td>
-                      <Link href={`/admin/orders/${order.id}`} className="font-medium text-ink hover:text-gold">
+                      <Link href={`/admin/orders/${order.id}`} className="font-medium text-ink hover:underline">
                         {order.order_number}
                       </Link>
                     </td>
@@ -232,7 +232,7 @@ export default async function AdminOverviewPage() {
       <section className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">Rare book requests</h2>
-          <Link href="/admin/requests" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+          <Link href="/admin/requests" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
             View all
           </Link>
         </div>

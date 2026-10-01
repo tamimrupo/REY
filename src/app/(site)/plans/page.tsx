@@ -22,10 +22,10 @@ export default async function PlansPage() {
 
   return (
     <>
-      <section className="border-b border-line bg-gradient-to-b from-cream to-paper">
+      <section className="border-b border-line bg-cream">
         <div className="container-page py-16 text-center">
           <p className="eyebrow">Membership</p>
-          <h1 className="mx-auto mt-3 max-w-3xl text-4xl font-semibold text-ink sm:text-5xl">
+          <h1 className="mx-auto mt-3 max-w-3xl text-ink">
             Pick the number of books. We handle the rest.
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-ink-soft">
@@ -39,7 +39,7 @@ export default async function PlansPage() {
         {/* The cards carry h3 titles, so the grid needs its own h2 parent. */}
         <h2 className="sr-only">Choose your plan</h2>
         {plans.length ? (
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid gap-8 lg:grid-cols-3 lg:gap-10">
             {plans.map((plan) => (
               <PlanCard key={plan.id} plan={plan} features={features} />
             ))}
@@ -89,11 +89,11 @@ export default async function PlansPage() {
           title="Four couriers, and we split the cost"
           description="Each courier has a rate, and you only pay your share. BD Post is free when the Book Post rules are followed, and you can check the package before you accept it."
         />
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {deliveryOptions.map((option) => (
-            <div key={option.key} className="card p-5">
-              <p className="font-medium text-ink">{option.label}</p>
-              <p className="mt-1 font-display text-2xl font-semibold text-ink">
+            <div key={option.key} className="border-t border-line pt-4">
+              <p className="label-mono">{option.label}</p>
+              <p className="mt-3 font-display text-2xl font-bold text-ink">
                 {option.charge === 0 ? "Free" : money(option.charge)}
               </p>
               <p className="mt-1 text-xs text-ink-muted">
@@ -117,7 +117,7 @@ export default async function PlansPage() {
             The library has thousands of English and Bangla titles, from biographies to translated
             classics.
           </p>
-          <Link href="/library" className="btn btn-gold">
+          <Link href="/library" className="btn btn-primary">
             Browse the library
           </Link>
         </div>

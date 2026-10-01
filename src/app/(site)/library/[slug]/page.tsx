@@ -84,7 +84,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
 
         <div className="mt-8 grid gap-12 lg:grid-cols-[380px_1fr]">
           <div>
-            <div className="overflow-hidden rounded-card border border-line bg-cream shadow-[0_18px_40px_-30px_rgba(9,9,9,0.5)]">
+            <div className="overflow-hidden rounded-card border border-line bg-cream shadow-paper">
               <BookCover book={book} className="aspect-[2/3] w-full" />
             </div>
           </div>
@@ -102,7 +102,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
               ) : null}
             </div>
 
-            <h1 className="mt-5 text-4xl font-semibold leading-tight text-ink">{book.title}</h1>
+            <h1 className="mt-5 leading-tight text-ink">{book.title}</h1>
             {book.subtitle ? (
               <p className="mt-2 text-lg text-ink-muted">{book.subtitle}</p>
             ) : null}
@@ -205,7 +205,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <h3 className="text-lg font-semibold text-ink">{section.title}</h3>
                     {section.hint ? (
-                      <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">
+                      <p className="label-mono">
                         {section.hint}
                       </p>
                     ) : null}

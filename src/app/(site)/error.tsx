@@ -14,13 +14,13 @@ export default function SiteError({
   reset: () => void;
 }) {
   return (
-    <div className="container-page py-24">
+    <div className="container-page py-20">
       <div className="flex items-center gap-4">
         <span className="label-mono">Something broke</span>
         <span aria-hidden className="h-px flex-1 bg-line" />
       </div>
 
-      <h1 className="mt-8 text-4xl sm:text-5xl">That page did not load.</h1>
+      <h1 className="mt-8">That page did not load.</h1>
       <p className="mt-5 max-w-lg leading-relaxed text-ink-soft">
         It is us, not you. Try once more — most of these are a dropped connection. If it keeps
         happening, the reference below is what we need to find it.

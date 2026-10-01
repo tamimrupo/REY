@@ -54,10 +54,8 @@ export function AdminNav() {
     <nav className="space-y-6">
       {groups.map((group) => (
         <div key={group.title}>
-          <p className="px-3 text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
-            {group.title}
-          </p>
-          <div className="mt-2 space-y-0.5">
+          <p className="label-mono pl-3">{group.title}</p>
+          <div className="mt-2 space-y-px">
             {group.items.map((item) => {
               const active =
                 item.href === "/admin"
@@ -68,8 +66,10 @@ export function AdminNav() {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`block rounded-card px-3 py-2 text-sm transition ${
-                    active ? "bg-ink text-paper" : "text-ink-soft hover:bg-cream hover:text-ink"
+                  className={`block border-l-2 py-2 pl-3 text-sm transition-colors duration-150 ${
+                    active
+                      ? "border-l-ink font-medium text-ink"
+                      : "border-l-transparent text-ink-soft hover:border-l-line hover:text-ink"
                   }`}
                 >
                   {item.label}

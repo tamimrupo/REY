@@ -16,7 +16,7 @@ export function PageForm({ page }: { page?: CmsPage | null }) {
           <button
             type="submit"
             formAction={deleteCmsPageAction}
-            className="btn btn-ghost text-rose-600"
+            className="btn btn-ghost text-ink"
             formNoValidate
           >
             Delete page

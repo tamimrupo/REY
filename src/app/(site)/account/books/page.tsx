@@ -35,7 +35,7 @@ export default async function MyBooksPage(props: PageProps<"/account/books">) {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-ink">My books</h1>
+          <h1 className="text-ink">My books</h1>
           <p className="mt-2 text-sm text-ink-soft">
             {out.length
               ? `${out.length} book${out.length === 1 ? "" : "s"} with you right now.`
@@ -78,7 +78,7 @@ export default async function MyBooksPage(props: PageProps<"/account/books">) {
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/library/${rental.books?.slug ?? ""}`}
-                      className="truncate text-sm font-medium text-ink hover:text-gold"
+                      className="truncate text-sm font-medium text-ink hover:underline"
                     >
                       {rental.books?.title ?? "Book"}
                     </Link>

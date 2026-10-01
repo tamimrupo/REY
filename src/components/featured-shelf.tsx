@@ -261,14 +261,14 @@ export function FeaturedShelf({
               <div
                 className={`relative overflow-hidden rounded-card transition-shadow duration-200 ${
                   isActive
-                    ? "shadow-[0_30px_52px_-22px_rgba(0,0,0,0.62)]"
-                    : "shadow-[0_16px_28px_-18px_rgba(0,0,0,0.45)]"
+                    ? "shadow-lift"
+                    : "shadow-paper"
                 }`}
               >
                 <BookCover book={book} className="aspect-[2/3] w-full" />
 
                 {isTop ? (
-                  <span className="absolute left-2.5 top-2.5 rounded-full bg-ink px-2.5 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper shadow-[0_4px_10px_rgba(0,0,0,0.35)]">
+                  <span className="absolute left-2.5 top-2.5 rounded-field bg-ink px-2.5 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper shadow-card">
                     Best seller
                   </span>
                 ) : null}
@@ -338,7 +338,7 @@ export function FeaturedShelf({
               type="button"
               onClick={() => step(-1)}
               aria-label="Previous book"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition hover:border-ink hover:shadow-[0_6px_14px_-8px_rgba(0,0,0,0.5)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink shadow-card transition hover:border-ink hover:shadow-paper"
             >
               <span aria-hidden>←</span>
             </button>
@@ -346,7 +346,7 @@ export function FeaturedShelf({
               type="button"
               onClick={() => step(1)}
               aria-label="Next book"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition hover:border-ink hover:shadow-[0_6px_14px_-8px_rgba(0,0,0,0.5)]"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink shadow-card transition hover:border-ink hover:shadow-paper"
             >
               <span aria-hidden>→</span>
             </button>

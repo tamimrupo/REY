@@ -23,7 +23,7 @@ export function NewsletterForm() {
           placeholder="you@example.com"
           className="field sm:flex-1"
         />
-        <SubmitButton className="btn btn-gold" pendingLabel="Joining…">
+        <SubmitButton className="btn btn-primary" pendingLabel="Joining…">
           Join
         </SubmitButton>
       </form>

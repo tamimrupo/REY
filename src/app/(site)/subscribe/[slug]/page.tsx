@@ -41,7 +41,7 @@ export default async function SubscribePage(props: PageProps<"/subscribe/[slug]"
     <div className="container-page py-12">
       <div className="max-w-3xl">
         <p className="eyebrow">Subscribe</p>
-        <h1 className="mt-3 text-4xl font-semibold text-ink">{plan.name}</h1>
+        <h1 className="mt-3 text-ink">{plan.name}</h1>
         <p className="mt-3 text-ink-soft">
           {money(plan.price_monthly)} / month · {plan.books_per_month} books a month ·{" "}
           {money(plan.security_deposit)} refundable deposit
@@ -50,7 +50,7 @@ export default async function SubscribePage(props: PageProps<"/subscribe/[slug]"
           <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft">
             {planFeatures.map((feature) => (
               <li key={feature.id} className="flex items-center gap-2">
-                <span aria-hidden className="text-gold">
+                <span aria-hidden className="text-ink">
                   ✦
                 </span>
                 {feature.feature}

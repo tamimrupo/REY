@@ -54,17 +54,17 @@ export default async function AdminCustomerPage(props: PageProps<"/admin/custome
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Link href="/admin/customers" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+          <Link href="/admin/customers" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
             ← Customers
           </Link>
-          <h1 className="mt-2 text-3xl font-semibold text-ink">{customer.full_name || "Unnamed"}</h1>
+          <h1 className="mt-2 text-ink">{customer.full_name || "Unnamed"}</h1>
           <p className="mt-1 text-sm text-ink-soft">
             {customer.phone || "no phone"} · joined {formatDate(customer.created_at)}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {wa ? (
-            <a href={wa} target="_blank" rel="noreferrer" className="btn btn-gold btn-sm">
+            <a href={wa} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
               WhatsApp
             </a>
           ) : null}
@@ -112,7 +112,7 @@ export default async function AdminCustomerPage(props: PageProps<"/admin/custome
           <section className="card p-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-ink">Books</h2>
-              <Link href="/admin/rentals?filter=open" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+              <Link href="/admin/rentals?filter=open" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
                 All books out
               </Link>
             </div>
@@ -208,7 +208,7 @@ export default async function AdminCustomerPage(props: PageProps<"/admin/custome
                     {orders.map((order) => (
                       <tr key={order.id}>
                         <td>
-                          <Link href={`/admin/orders/${order.id}`} className="text-ink hover:text-gold">
+                          <Link href={`/admin/orders/${order.id}`} className="text-ink hover:underline">
                             {order.order_number}
                           </Link>
                         </td>
@@ -239,7 +239,7 @@ export default async function AdminCustomerPage(props: PageProps<"/admin/custome
                       <span className="block text-xs text-ink-muted">
                         from {payment.sender_number}
                         {phonesMatch(payment.sender_number, customer.phone) === false ? (
-                          <span className="ml-1 font-medium text-amber-700">
+                          <span className="ml-1 font-medium text-ink">
                             ⚠ not the profile number
                           </span>
                         ) : null}

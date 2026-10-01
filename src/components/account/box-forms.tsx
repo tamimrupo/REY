@@ -45,7 +45,7 @@ function BookLine({ rental }: { rental: Rental }) {
         name="rental_id"
         value={rental.id}
         formAction={removeFromBoxAction}
-        className="btn btn-ghost btn-sm text-rose-600"
+        className="btn btn-ghost btn-sm"
         pendingLabel="Removing…"
       >
         Remove

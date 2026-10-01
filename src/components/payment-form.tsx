@@ -125,9 +125,9 @@ export function PaymentForm({
         />
         {uploading ? <p className="mt-2 text-xs text-ink-muted">Uploading…</p> : null}
         {proofPath && !uploading ? (
-          <p className="mt-2 text-xs text-emerald-700">Screenshot attached.</p>
+          <p className="mt-2 text-xs text-ink">Screenshot attached.</p>
         ) : null}
-        {uploadError ? <p className="mt-2 text-xs text-rose-600">{uploadError}</p> : null}
+        {uploadError ? <p className="mt-2 text-xs text-ink">{uploadError}</p> : null}
       </div>
 
       {state ? <Alert tone={state.ok ? "success" : "error"}>{state.message}</Alert> : null}

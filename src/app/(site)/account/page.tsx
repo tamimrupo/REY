@@ -40,7 +40,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
       ) : null}
 
       <div>
-        <h1 className="text-3xl font-semibold text-ink">
+        <h1 className="text-ink">
           Hello {session.profile?.full_name?.split(" ")[0] || "there"}
         </h1>
         <p className="mt-2 text-sm text-ink-soft">
@@ -92,7 +92,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
 
           <dl className="mt-6 grid gap-6 border-t border-line pt-6 sm:grid-cols-4">
             <div>
-              <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Period ends</dt>
+              <dt className="label-mono">Period ends</dt>
               <dd className="mt-1 text-ink">{formatDate(subscription.current_period_end)}</dd>
             </div>
             <div>
@@ -112,7 +112,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
           </dl>
 
           {state.box.length ? (
-            <div className="mt-6 rounded-card border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            <div className="mt-6 rounded-card border border-ink bg-surface p-4 text-sm text-ink">
               <p className="font-semibold">
                 {state.box.length} book{state.box.length === 1 ? "" : "s"} waiting in your box
               </p>
@@ -172,7 +172,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
         <div className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-ink">Currently on loan</h2>
-            <Link href="/account/books" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+            <Link href="/account/books" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
               Manage returns
             </Link>
           </div>
@@ -195,7 +195,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
       <div className="card p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">Recent orders</h2>
-          <Link href="/account/orders" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+          <Link href="/account/orders" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
             View all
           </Link>
         </div>

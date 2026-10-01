@@ -46,13 +46,15 @@
   --font-serif: "Playfair Display", "Iowan Old Style", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Depth — buttons carry weight; cards stay flat and rely on hairlines. */
+  /* Depth — the interface is hairline-first: cards and panels are defined by
+     their border, not their shadow. Shadow is reserved for things that move or
+     float: buttons, hovered cards, overlays. */
   --radius-field: 2px;
   --radius-btn: 4px;
   --radius-card: 6px;
-  --shadow-card: 0 1px 2px #0909090a, 0 14px 28px -26px #09090924;
-  --shadow-paper: 0 1px 2px #0909090d, 0 24px 48px -32px #09090933;
-  --shadow-lift: 0 2px 4px #09090914, 0 40px 80px -40px #0909093d;
+  --shadow-card: 0 1px 1px #09090908;
+  --shadow-paper: 0 1px 2px #0909090a, 0 18px 36px -28px #09090926;
+  --shadow-lift: 0 2px 4px #09090912, 0 28px 56px -36px #09090930;
 
   /* --- Type scale ---------------------------------------------------------
      Named by the job it does, not by the pixel size, so the role decides the
@@ -288,23 +290,23 @@
   }
 
   h1 {
-    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-size: clamp(2.25rem, 4.6vw, 3.5rem);
     font-weight: 700;
-    line-height: 0.98;
-    letter-spacing: -0.025em;
+    line-height: 1.02;
+    letter-spacing: -0.028em;
   }
 
   h2 {
-    font-size: clamp(1.875rem, 4vw, 3rem);
+    font-size: clamp(1.75rem, 3vw, 2.375rem);
     font-weight: 700;
-    line-height: 1.02;
-    letter-spacing: -0.022em;
+    line-height: 1.06;
+    letter-spacing: -0.024em;
   }
 
   h3 {
-    font-size: 1.5rem;
+    font-size: 1.3125rem;
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.2;
     letter-spacing: -0.02em;
   }
 
@@ -408,22 +410,6 @@
   .btn-primary:active:not(:disabled) {
     transform: translateY(1px);
     box-shadow: 0 1px 2px rgb(0 0 0 / 0.22);
-  }
-
-  /* Alias of primary — the old "gold" button is now solid black. */
-  .btn-gold {
-    background-color: var(--color-ink);
-    color: #fff;
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.18),
-      0 8px 18px -8px rgb(0 0 0 / 0.5);
-  }
-  .btn-gold:hover:not(:disabled) {
-    background-color: var(--color-brand-hover);
-    transform: translateY(-1px);
-    box-shadow:
-      0 2px 4px rgb(0 0 0 / 0.2),
-      0 14px 28px -10px rgb(0 0 0 / 0.55);
   }
 
   .btn-outline {
@@ -613,11 +599,12 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    border-radius: 999px;
-    padding: 0.18rem 0.6rem;
+    border-radius: var(--radius-field);
+    padding: 0.18rem 0.5rem;
     font-size: var(--text-micro);
     font-weight: 600;
-    letter-spacing: 0;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     box-shadow: inset 0 0 0 1px currentColor;
   }
 
@@ -656,17 +643,16 @@
   .table th {
     text-align: left;
     font-size: var(--text-micro);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-ink-muted);
-    font-weight: 650;
+    font-weight: 500;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-ink);
     white-space: nowrap;
-    background: var(--color-surface);
   }
   .table td {
-    padding: 0.8rem 1rem;
+    padding: 0.9rem 1rem;
     border-bottom: 1px solid var(--color-line);
     vertical-align: middle;
   }
@@ -814,7 +800,7 @@
       border-color var(--duration-base);
   }
   .lift:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-lift);
   }
 

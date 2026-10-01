@@ -59,7 +59,7 @@ export default async function AdminPaymentsPage(props: PageProps<"/admin/payment
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-ink">Payments</h1>
+          <h1 className="text-ink">Payments</h1>
           <p className="mt-1 text-sm text-ink-soft">
             Check the TrxID against your bKash/Nagad statement, then verify to activate the
             membership.
@@ -137,7 +137,7 @@ export default async function AdminPaymentsPage(props: PageProps<"/admin/payment
                         href={`/api/proof/${payment.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-1 block text-xs text-gold underline"
+                        className="mt-1 block text-xs text-ink underline"
                       >
                         View screenshot
                       </a>
@@ -147,7 +147,7 @@ export default async function AdminPaymentsPage(props: PageProps<"/admin/payment
                   <td>
                     <StatusPill status={payment.status} />
                     {payment.reject_reason ? (
-                      <p className="mt-1 max-w-[12rem] text-xs text-rose-600">
+                      <p className="mt-1 max-w-[12rem] text-xs text-ink">
                         {payment.reject_reason}
                       </p>
                     ) : null}

@@ -21,10 +21,10 @@ export default async function EditBookPage(props: PageProps<"/admin/books/[id]">
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Link href="/admin/books" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+          <Link href="/admin/books" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
             ← Books
           </Link>
-          <h1 className="mt-2 text-3xl font-semibold text-ink">{book.title}</h1>
+          <h1 className="mt-2 text-ink">{book.title}</h1>
           <p className="mt-1 text-sm text-ink-soft">
             Added {formatDate(book.created_at)} · /library/{book.slug}
           </p>

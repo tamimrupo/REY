@@ -37,7 +37,7 @@ export default async function MembershipPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Membership</h1>
+        <h1 className="text-ink">Membership</h1>
         <p className="mt-2 text-sm text-ink-soft">
           Your plan, billing dates, courier preference and deposit.
         </p>
@@ -77,7 +77,7 @@ export default async function MembershipPage() {
 
             <dl className="mt-6 grid gap-6 border-t border-line pt-6 sm:grid-cols-4">
               <div>
-                <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Started</dt>
+                <dt className="label-mono">Started</dt>
                 <dd className="mt-1 text-ink">{formatDate(current.started_at ?? current.created_at)}</dd>
               </div>
               <div>

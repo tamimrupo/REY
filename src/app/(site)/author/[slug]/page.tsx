@@ -109,7 +109,7 @@ export default async function AuthorPage(props: PageProps<"/author/[slug]">) {
               <div key={group.name}>
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3">
                   <h3 className="text-lg font-semibold text-ink">{group.name} series</h3>
-                  <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">
+                  <p className="label-mono">
                     {group.books.length} book{group.books.length === 1 ? "" : "s"} · read in order
                   </p>
                 </div>

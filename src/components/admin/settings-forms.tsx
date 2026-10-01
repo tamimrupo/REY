@@ -159,7 +159,7 @@ export function CourierSettingsForm({ couriers }: { couriers: CourierSettings })
       <input type="hidden" name="kind" value="couriers" />
 
       <div className="space-y-3">
-        <div className="hidden gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted sm:grid sm:grid-cols-5">
+        <div className="label-mono hidden gap-2 sm:grid sm:grid-cols-5">
           <span>Key</span>
           <span>Label</span>
           <span>Charge ৳</span>
@@ -178,7 +178,7 @@ export function CourierSettingsForm({ couriers }: { couriers: CourierSettings })
               <input name={`courier_percent_${index}`} type="number" step="1" min={0} max={100} className="field" defaultValue={method?.percent ?? ""} />
               <input name={`courier_return_${index}`} type="number" step="1" className="field" defaultValue={method?.return_charge ?? ""} />
               {method ? (
-                <p className="text-xs text-emerald-700 sm:col-span-5">
+                <p className="text-xs text-ink sm:col-span-5">
                   Customer pays {money(Math.round(charge * (percent / 100) * 100) / 100)} of{" "}
                   {money(charge)} · shop covers {money(Math.round((charge - charge * (percent / 100)) * 100) / 100)}
                 </p>

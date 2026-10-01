@@ -40,7 +40,7 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
         </div>
       </div>
 
-      <main className="flex w-full items-center justify-center px-6 py-16 lg:w-1/2">
+      <main id="main" className="flex w-full items-center justify-center px-6 py-16 lg:w-1/2">
         <div className="w-full max-w-sm">{children}</div>
       </main>
     </div>

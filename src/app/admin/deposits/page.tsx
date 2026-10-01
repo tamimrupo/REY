@@ -22,7 +22,7 @@ export default async function AdminDepositsPage(props: PageProps<"/admin/deposit
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Deposits</h1>
+        <h1 className="text-ink">Deposits</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Refundable balances we are holding for members, and refunds already sent.
         </p>

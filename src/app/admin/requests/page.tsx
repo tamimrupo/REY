@@ -14,7 +14,7 @@ export default async function AdminRequestsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Rare book requests</h1>
+        <h1 className="text-ink">Rare book requests</h1>
         <p className="mt-1 text-sm text-ink-soft">
           What members are hunting for. Mark one as added once it lands on the shelves.
         </p>

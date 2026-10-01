@@ -16,7 +16,7 @@ export default async function VerifyEmailPage(props: PageProps<"/verify-email">)
   return (
     <div>
       <p className="eyebrow">One step left</p>
-      <h1 className="mt-3 text-3xl font-semibold text-ink">Confirm your email</h1>
+      <h1 className="mt-3 text-ink">Confirm your email</h1>
       <p className="mt-2 text-sm text-ink-soft">
         We sent a confirmation link
         {email ? (
@@ -53,7 +53,7 @@ export default async function VerifyEmailPage(props: PageProps<"/verify-email">)
 
       <p className="mt-6 text-sm text-ink-soft">
         Already confirmed?{" "}
-        <Link href="/login" className="font-medium text-ink underline hover:text-gold">
+        <Link href="/login" className="font-medium text-ink underline hover:underline">
           Sign in
         </Link>
       </p>

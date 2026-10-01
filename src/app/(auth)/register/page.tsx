@@ -15,7 +15,7 @@ export default async function RegisterPage(props: PageProps<"/register">) {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-ink">Join the club</h1>
+      <h1 className="text-ink">Join the club</h1>
       <p className="mt-2 text-sm text-ink-soft">
         It is free to create an account. You only pay when you pick a plan.
       </p>
@@ -30,7 +30,7 @@ export default async function RegisterPage(props: PageProps<"/register">) {
 
       <p className="mt-6 text-sm text-ink-soft">
         Already a member?{" "}
-        <Link href="/login" className="font-medium text-ink underline hover:text-gold">
+        <Link href="/login" className="font-medium text-ink underline hover:underline">
           Sign in
         </Link>
       </p>

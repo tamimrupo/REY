@@ -15,10 +15,10 @@ export default async function EditPageRoute(props: PageProps<"/admin/pages/[id]"
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Link href="/admin/pages" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-gold">
+          <Link href="/admin/pages" className="inline-flex min-h-6 items-center text-sm text-ink-soft hover:text-ink">
             ← Pages
           </Link>
-          <h1 className="mt-2 text-3xl font-semibold text-ink">{page.title}</h1>
+          <h1 className="mt-2 text-ink">{page.title}</h1>
         </div>
         <Link href={`/p/${page.slug}`} className="btn btn-outline btn-sm">
           View on site

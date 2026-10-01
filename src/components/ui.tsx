@@ -49,14 +49,16 @@ export function EmptyState({
   actionHref?: string;
   actionLabel?: string;
 }) {
+  // A ruled statement, not a dashed placeholder: the page says what is missing
+  // in the same voice it says everything else.
   return (
-    <div className="rounded-card border border-dashed border-line bg-white/60 px-6 py-12 text-center">
-      <p className="font-display text-lg font-semibold text-ink">{title}</p>
+    <div className="border-t border-line pt-6">
+      <p className="font-display text-2xl font-bold text-ink">{title}</p>
       {description ? (
-        <p className="mx-auto mt-2 max-w-md text-sm text-ink-muted">{description}</p>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-muted">{description}</p>
       ) : null}
       {actionHref && actionLabel ? (
-        <Link href={actionHref} className="btn btn-primary mt-5">
+        <Link href={actionHref} className="btn btn-outline mt-6">
           {actionLabel}
         </Link>
       ) : null}
@@ -130,13 +132,12 @@ export function Stat({
   value: React.ReactNode;
   hint?: string;
 }) {
+  // A figure under a rule, the way a report sets one — not a card in a grid.
   return (
-    <div className="card p-4 sm:p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
-        {label}
-      </p>
-      <p className="mt-2 font-display text-2xl font-semibold text-ink">{value}</p>
-      {hint ? <p className="mt-1 text-xs text-ink-muted">{hint}</p> : null}
+    <div className="border-t border-ink pt-4">
+      <p className="label-mono">{label}</p>
+      <p className="mt-3 font-display text-3xl font-bold leading-none text-ink">{value}</p>
+      {hint ? <p className="mt-2 text-meta text-ink-muted">{hint}</p> : null}
     </div>
   );
 }

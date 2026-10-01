@@ -18,7 +18,10 @@ export function AccountNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="no-scrollbar -mx-1 flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+    <nav
+      aria-label="Account"
+      className="no-scrollbar -mx-1 flex gap-5 overflow-x-auto border-b border-line lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-b-0 lg:border-t lg:border-ink"
+    >
       {items.map((item) => {
         const active =
           item.href === "/account" ? pathname === "/account" : pathname.startsWith(item.href);
@@ -27,8 +30,10 @@ export function AccountNav() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`whitespace-nowrap rounded-card px-3 py-2 text-sm transition ${
-              active ? "bg-ink text-paper" : "text-ink-soft hover:bg-cream hover:text-ink"
+            className={`whitespace-nowrap border-b-2 pb-2.5 pt-1 text-sm transition-colors duration-150 lg:border-b-0 lg:border-l-2 lg:py-2 lg:pl-3 ${
+              active
+                ? "border-ink font-medium text-ink"
+                : "border-transparent text-ink-soft hover:text-ink lg:hover:border-l-line"
             }`}
           >
             {item.label}

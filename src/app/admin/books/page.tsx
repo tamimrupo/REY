@@ -23,7 +23,7 @@ export default async function AdminBooksPage(props: PageProps<"/admin/books">) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-ink">Books</h1>
+          <h1 className="text-ink">Books</h1>
           <p className="mt-1 text-sm text-ink-soft">
             {total} titles · {authors.length} authors · {genres.length} genres
           </p>
@@ -83,7 +83,7 @@ export default async function AdminBooksPage(props: PageProps<"/admin/books">) {
                   </div>
                 </td>
                 <td className="max-w-[18rem]">
-                  <Link href={`/admin/books/${book.id}`} className="font-medium text-ink hover:text-gold">
+                  <Link href={`/admin/books/${book.id}`} className="font-medium text-ink hover:underline">
                     {book.title}
                   </Link>
                 </td>
@@ -120,7 +120,7 @@ export default async function AdminBooksPage(props: PageProps<"/admin/books">) {
                     <form action={deleteBookAction}>
                       <input type="hidden" name="id" value={book.id} />
                       <SubmitButton
-                        className="btn btn-ghost btn-sm text-rose-600"
+                        className="btn btn-ghost btn-sm"
                         pendingLabel="Deleting…"
                       >
                         Delete

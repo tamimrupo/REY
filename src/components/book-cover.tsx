@@ -85,7 +85,7 @@ export function CoverPlaceholder({
     return (
       <span
         aria-hidden
-        className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-mist to-frost"
+        className="absolute inset-0 flex items-center justify-center bg-mist"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -104,7 +104,7 @@ export function CoverPlaceholder({
   return (
     <span
       aria-hidden
-      className={`absolute inset-0 flex flex-col items-center justify-between gap-3 bg-gradient-to-b from-mist to-frost text-center ${
+      className={`absolute inset-0 flex flex-col items-center justify-between gap-3 bg-mist text-center ${
         large ? "px-5 py-6" : "px-2.5 py-3.5"
       }`}
     >

@@ -11,7 +11,7 @@ export default async function AdminPlansPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Plans &amp; pricing</h1>
+        <h1 className="text-ink">Plans &amp; pricing</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Change prices, book counts and deposit without touching code.
         </p>
