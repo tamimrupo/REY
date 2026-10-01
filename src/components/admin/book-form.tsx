@@ -100,10 +100,13 @@ export function BookForm({
   book,
   authors,
   genres,
+  defaults,
 }: {
   book?: Book | null;
   authors: Author[];
   genres: Genre[];
+  /** Pre-filled values for a new book, e.g. a Bangla title from the search box. */
+  defaults?: { title?: string };
 }) {
   const [coverUrl, setCoverUrl] = useState(book?.cover_url ?? "");
 
@@ -128,7 +131,7 @@ export function BookForm({
                 name="title"
                 required
                 className="field"
-                defaultValue={book?.title ?? ""}
+                defaultValue={book?.title ?? defaults?.title ?? ""}
               />
             </div>
             <div>

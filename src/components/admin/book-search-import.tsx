@@ -7,6 +7,7 @@ import { SubmitButton } from "@/components/forms/submit-button";
 import { CoverPlaceholder } from "@/components/book-cover";
 import { Alert } from "@/components/ui";
 import { importCandidatesAction } from "@/lib/actions/admin";
+import { hasBengaliScript } from "@/lib/book-search";
 import type { BookSearchRow } from "@/lib/book-search";
 
 const MIN_QUERY = 3;
@@ -212,6 +213,22 @@ export function BookSearchImport() {
 
       {showEmpty ? (
         <Alert tone="info">No matches. Try a shorter title, just the author, or an ISBN.</Alert>
+      ) : null}
+
+      {/* A Bangla title the outside catalogues cannot see is still a book the
+          shop can carry — hand it over to the manual form, Bangla intact. */}
+      {showEmpty && query.trim().length >= 2 && hasBengaliScript(query) ? (
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <Link
+            href={`/admin/books/new?title=${encodeURIComponent(query.trim())}`}
+            className="btn btn-outline btn-sm"
+          >
+            Add it by hand
+          </Link>
+          <span className="text-sm text-ink-muted">
+            Keeps the Bangla exactly as you typed it.
+          </span>
+        </div>
       ) : null}
 
       {state ? <Alert tone={state.ok ? "success" : "error"}>{state.message}</Alert> : null}

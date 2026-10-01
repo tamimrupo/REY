@@ -70,6 +70,134 @@ export function hasBengaliScript(query: string): boolean {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Bengali transliteration                                                     */
+/* -------------------------------------------------------------------------- */
+
+/** Consonants, in the order the script teaches them. */
+const CONSONANTS: Record<string, string> = {
+  ক: "k", খ: "kh", গ: "g", ঘ: "gh", ঙ: "ng",
+  চ: "ch", ছ: "chh", জ: "j", ঝ: "jh", ঞ: "n",
+  ট: "t", ঠ: "th", ড: "d", ঢ: "dh", ণ: "n",
+  ত: "t", থ: "th", দ: "d", ধ: "dh", ন: "n",
+  প: "p", ফ: "ph", ব: "b", ভ: "bh", ম: "m",
+  য: "j", র: "r", ল: "l", শ: "sh", ষ: "sh", স: "s", হ: "h",
+  ড়: "r", ঢ়: "rh", য়: "y", ৎ: "t",
+};
+
+/** Independent vowels and the vowel signs that follow a consonant. */
+const VOWELS: Record<string, string> = {
+  অ: "a", আ: "a", ই: "i", ঈ: "i", উ: "u", ঊ: "u", ঋ: "ri",
+  এ: "e", ঐ: "oi", ও: "o", ঔ: "ou",
+};
+
+const VOWEL_SIGNS: Record<string, string> = {
+  "া": "a", "ি": "i", "ী": "i", "ু": "u", "ূ": "u", "ৃ": "ri",
+  "ে": "e", "ৈ": "oi", "ো": "o", "ৌ": "ou",
+};
+
+const SIGNS: Record<string, string> = {
+  "ং": "ng", "ঁ": "n", "ঃ": "h",
+};
+
+const VIRAMA = "\u09cd";
+
+/**
+ * Renders Bengali script as Latin letters, so it can be searched.
+ *
+ * It follows the writing system rather than a pronunciation dictionary: a
+ * consonant takes its inherent vowel only when nothing follows to silence it
+ * (a vowel sign, a virama, or the end of the word). That is enough to turn
+ * পথের পাঁচালী into "pather panchali" and হুমায়ূন আহমেদ into "humayun ahmed" —
+ * the spellings the outside catalogues actually index.
+ *
+ * It is a search aid, never a display: the shop keeps the Bangla.
+ */
+export function transliterateBengali(input: string): string {
+  let out = "";
+  // য়, ড় and ঢ় are composition exclusions, so NFC will not join the letter and
+  // its nukta — some keyboards send them as two code points. Join them here, or
+  // হুমায়ূন comes out as "humaja una".
+  const composed = input
+    .replace(/\u09af\u09bc/g, "\u09df")
+    .replace(/\u09a1\u09bc/g, "\u09dc")
+    .replace(/\u09a2\u09bc/g, "\u09dd")
+    .normalize("NFC");
+  const chars = Array.from(composed);
+  // য is "j" at the start of a word and "y" after a vowel — সুয → suj, মায়া → maya.
+  let afterVowel = false;
+
+  for (let i = 0; i < chars.length; i += 1) {
+    const char = chars[i];
+    const next = chars[i + 1];
+
+    if (char in CONSONANTS) {
+      out += char === "য" && afterVowel ? "y" : CONSONANTS[char];
+      // Inherent vowel: only when the consonant is not silenced by what follows
+      // — a vowel sign, a virama, the end of the word, or a space.
+      const silenced =
+        next === VIRAMA || next === " " || next === "\u09bc" || (next ? next in VOWEL_SIGNS : true);
+      if (!silenced) out += "a";
+      afterVowel = false;
+      continue;
+    }
+
+    if (char in VOWEL_SIGNS) {
+      out += VOWEL_SIGNS[char];
+      afterVowel = true;
+      continue;
+    }
+
+    if (char in VOWELS) {
+      out += VOWELS[char];
+      afterVowel = true;
+      continue;
+    }
+
+    if (char in SIGNS) {
+      out += SIGNS[char];
+      afterVowel = false;
+      continue;
+    }
+
+    if (char === VIRAMA) {
+      afterVowel = false;
+      continue;
+    }
+
+    // Any other Bengali mark (nukta and friends) is a join, not a separator:
+    // ignoring it is what keeps হুমায়ূন as "humayun" rather than "humaya una".
+    if (char >= "\u0980" && char <= "\u09ff") continue;
+
+    // Bengali digits, and anything already Latin, pass through.
+    if (char >= "০" && char <= "৯") {
+      out += String(char.codePointAt(0)! - 0x09e6);
+      afterVowel = false;
+      continue;
+    }
+
+    out += /[a-zA-Z0-9\s'&.-]/.test(char) ? char : " ";
+    afterVowel = false;
+  }
+
+  return out.replace(/\s+/g, " ").trim();
+}
+
+/**
+ * The spellings worth searching for a Bengali query.
+ *
+ * Bengali leaves many inherent vowels unwritten but unspoken — আহমেদ is
+ * "Ahmed", not "Ahamed" — and no rule recovers that reliably. So we search the
+ * literal transliteration *and* a version with the medial vowels closed up, in
+ * one query, and let the catalogue decide. Two spellings of the same intent is
+ * cheaper than a pronunciation dictionary.
+ */
+export function bengaliSearchVariants(input: string): string[] {
+  const written = transliterateBengali(input);
+  const closed = written.replace(/a(?=[bcdfghjklmnpqrstvwxyz])/g, "");
+  return [...new Set([written, closed])].filter((variant) => variant.trim().length >= 3);
+}
+
+/* -------------------------------------------------------------------------- */
 /* Mapping: Open Library                                                       */
 /* -------------------------------------------------------------------------- */
 
@@ -662,21 +790,34 @@ export async function searchBooks(query: string, limit = 12): Promise<SearchOutc
   if (trimmed.length < 3) return { results: [], totalFound: null, hint: null };
 
   const bengali = hasBengaliScript(trimmed);
+  // Bengali script is not indexed anywhere useful, so search the Latin spelling
+  // of it instead and say so. The shop still keeps the Bangla the admin typed.
+  const variants = bengali ? bengaliSearchVariants(trimmed) : [];
+  const searched = variants[0] ?? trimmed;
+  const queries = variants.length ? variants : [trimmed];
   const usesKey = Boolean(process.env.GOOGLE_BOOKS_API_KEY?.trim());
 
-  const [google, openlibrary] = await Promise.all([
-    usesKey ? searchGoogle(trimmed, limit) : Promise.resolve([]),
-    searchOpenLibrary(trimmed, limit),
+  const [google, ...libraries] = await Promise.all([
+    usesKey ? searchGoogle(searched, limit) : Promise.resolve([]),
+    ...queries.map((query) => searchOpenLibrary(query, limit)),
   ]);
 
-  const results = dedupe([...google, ...openlibrary.results]).slice(0, limit);
+  const results = dedupe([...google, ...libraries.flatMap((library) => library.results)]).slice(
+    0,
+    limit,
+  );
+  const totalFound = libraries.reduce<number | null>((best, library) => {
+    if (typeof library.total !== "number") return best;
+    return best === null ? library.total : Math.max(best, library.total);
+  }, null);
 
   let hint: string | null = null;
   if (bengali) {
-    hint =
-      "Open Library only indexes Latin letters, so Bengali script finds nothing. " +
-      "Search the English spelling instead (Humayun Ahmed, not হুমায়ূন আহমেদ), " +
-      "or use the Open Library bulk tab with the “Bangla / Bengali” preset.";
+    hint = results.length
+      ? `Bengali script: searched as “${queries.join("” and “")}”, which is how the outside ` +
+        `catalogues index it. Rename it to the Bangla afterwards and the shop keeps that.`
+      : `Bengali script: searched as “${queries.join("” and “")}” and found nothing. Try just the ` +
+        `author, or add the book by hand — it will keep the Bangla title.`;
   } else if (!results.length) {
     hint =
       "Nothing matched. Try just the author or a shorter title — and remember the catalogue is " +
@@ -685,7 +826,7 @@ export async function searchBooks(query: string, limit = 12): Promise<SearchOutc
 
   return {
     results,
-    totalFound: openlibrary.total,
+    totalFound,
     hint,
   };
 }

@@ -5,7 +5,12 @@ import { getAuthors, getGenres } from "@/lib/data";
 
 export const metadata = { title: "Add a book" };
 
-export default async function NewBookPage() {
+export default async function NewBookPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ title?: string }>;
+}) {
+  const { title } = await searchParams;
   const [authors, genres] = await Promise.all([getAuthors(), getGenres()]);
 
   return (
@@ -21,7 +26,7 @@ export default async function NewBookPage() {
       </div>
 
       <div className="card p-6">
-        <BookForm authors={authors} genres={genres} />
+        <BookForm authors={authors} genres={genres} defaults={{ title: title?.trim() ?? "" }} />
       </div>
     </div>
   );
