@@ -54,6 +54,8 @@ export function BookSearchImport() {
    * having happened, and one click must not be able to fire twice.
    */
   const paging = useRef({ next: 2, busy: false });
+  /** The query whose results are on screen — distinguishes a new search from a refresh. */
+  const loadedFor = useRef("");
   const [error, setError] = useState("");
   /** The query the current rows belong to — drives the loading state. */
   const [loadedQuery, setLoadedQuery] = useState("");
@@ -90,11 +92,23 @@ export function BookSearchImport() {
         }
 
         setError("");
-        setRows((payload.results ?? []) as BookSearchRow[]);
+        const fresh = (payload.results ?? []) as BookSearchRow[];
+        // A refresh (after an import) must not throw away the pages the admin
+        // has already loaded — it should only update the badges on them. A new
+        // query replaces the list and starts paging again.
+        const sameQuery = loadedFor.current === trimmed;
+        setRows((prev) => {
+          if (!sameQuery) return fresh;
+          const byId = new Map(fresh.map((row) => [row.id, row]));
+          const merged = prev.map((row) => byId.get(row.id) ?? row);
+          const have = new Set(merged.map((row) => row.id));
+          return [...merged, ...fresh.filter((row) => !have.has(row.id))];
+        });
+        if (!sameQuery) paging.current = { next: 2, busy: false };
+        loadedFor.current = trimmed;
         setTotal(typeof payload.totalFound === "number" ? payload.totalFound : null);
         setHint(payload.hint ?? null);
         setMine((payload.mine ?? []) as ExistingRow[]);
-        paging.current = { next: 2, busy: false };
         setHasMore(Boolean(payload.hasMore));
         setLoadedQuery(trimmed);
       } catch {
