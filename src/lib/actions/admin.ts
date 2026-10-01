@@ -95,13 +95,32 @@ export async function saveBookAction(
 
   let authorId = str(formData, "author_id") || null;
   const newAuthor = str(formData, "new_author");
-  if (newAuthor && !authorId) {
-    const { data } = await supabase
+
+  if (newAuthor) {
+    // The name may already belong to someone — point the book at them instead of
+    // creating a second row for the same person.
+    const { data: existingAuthor } = await supabase
       .from("authors")
-      .insert({ name: newAuthor, slug: slugify(newAuthor) || `author-${Date.now()}` })
       .select("id")
-      .single();
-    authorId = data?.id ?? null;
+      .ilike("name", newAuthor)
+      .maybeSingle();
+
+    if (existingAuthor?.id) {
+      authorId = existingAuthor.id;
+    } else if (authorId) {
+      // Renaming the author this book already has. The row is shared, so one edit
+      // fixes every book they carry — which is how a Latin name becomes a Bangla
+      // one without touching 30 records. The slug stays put so author URLs keep
+      // working.
+      await supabase.from("authors").update({ name: newAuthor }).eq("id", authorId);
+    } else {
+      const { data } = await supabase
+        .from("authors")
+        .insert({ name: newAuthor, slug: slugify(newAuthor) || `author-${Date.now()}` })
+        .select("id")
+        .single();
+      authorId = data?.id ?? null;
+    }
   }
 
   // Optional author photo and bio, used by the author card on book pages and the

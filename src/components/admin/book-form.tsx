@@ -170,8 +170,15 @@ export function BookForm({
               <input
                 name="new_author"
                 className="field mt-2"
-                placeholder="…or type a new author name"
+                placeholder={
+                  book ? "…or rename this author (Bangla is fine)" : "…or type a new author name"
+                }
               />
+              <p className="mt-1 text-meta text-ink-muted">
+                {book
+                  ? "Renaming updates the author on every book they carry. Bangla names are welcome — the shop renders them in a Bengali face."
+                  : "New authors are added to the catalogue. Bangla names are welcome."}
+              </p>
               <input
                 name="author_avatar_url"
                 className="field mt-2"
