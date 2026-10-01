@@ -66,9 +66,10 @@ export function BookSearchImport() {
   const settled = loadedQuery === trimmed;
   const searching = usable && !settled;
 
-  // A finished import changes the message, which re-runs the search below so
-  // the rows pick up their "In library" state.
-  const refreshToken = state?.ok ? state.message : "";
+  // The list is never re-fetched because an import finished. A refresh replaces
+  // rows the admin is reading — it was the reason an import from page three
+  // dropped them back to the top. Nothing on screen moves now; an imported row
+  // shows its "In library" badge the next time the search runs.
 
   useEffect(() => {
     if (trimmed.length < MIN_QUERY) return;
@@ -123,7 +124,7 @@ export function BookSearchImport() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [trimmed, refreshToken]);
+  }, [trimmed]);
 
   const missing = rows.filter((row) => !row.existing);
   const picks = missing.map((row) => ({ source: row.source, id: row.id }));
