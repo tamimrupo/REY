@@ -89,31 +89,62 @@ export default async function PlansPage() {
           title="Four couriers, and we split the cost"
           description="Each courier has a rate, and you only pay your share. BD Post is free when the Book Post rules are followed, and you can check the package before you accept it."
         />
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {deliveryOptions.map((option) => (
-            <div key={option.key} className="border-t border-line pt-4">
-              <p className="label-mono">{option.label}</p>
-              <p className="mt-3 font-display text-2xl font-bold text-ink">
-                {option.charge === 0 ? "Free" : money(option.charge)}
-              </p>
-              <p className="mt-1 text-xs text-ink-muted">
-                {courierSettings.methods.find((m) => m.key === option.key)
-                  ? `Your share of the ${money(
-                      courierSettings.methods.find((m) => m.key === option.key)?.charge ?? 0,
-                    )} courier charge`
-                  : "Return option"}
-              </p>
+        {/* The national service is free, so it leads. The paid couriers are the
+            alternative, not the offer. */}
+        {deliveryOptions
+          .filter((option) => option.charge === 0)
+          .map((option) => (
+            <div
+              key={option.key}
+              className="mt-8 flex flex-col gap-5 border-t border-ink pt-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-10"
+            >
+              <div>
+                <p className="label-mono">{option.label} · Book Post</p>
+                <p className="mt-3 font-display text-4xl font-bold text-ink">Free</p>
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-soft">
+                  Bangladesh Post carries printed books at no cost through its Book Post service.
+                  Follow their rules when you hand the parcel over — and check the package on
+                  arrival, as you can with every courier we use.
+                </p>
+              </div>
+              <a
+                href="https://bdpost.gov.bd/"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-6 items-center gap-1 text-sm font-medium text-ink underline decoration-ink/30 hover:decoration-ink"
+              >
+                Bangladesh Post <span aria-hidden>↗</span>
+              </a>
             </div>
           ))}
+
+        <div className="mt-10 grid gap-6 sm:grid-cols-3">
+          {deliveryOptions
+            .filter((option) => option.charge > 0)
+            .map((option) => (
+              <div key={option.key} className="border-t border-line pt-4">
+                <p className="label-mono">{option.label}</p>
+                <p className="mt-3 font-display text-2xl font-bold text-ink">
+                  {money(option.charge)}
+                </p>
+                <p className="mt-1 text-xs text-ink-muted">
+                  {courierSettings.methods.find((m) => m.key === option.key)
+                    ? `Your share of the ${money(
+                        courierSettings.methods.find((m) => m.key === option.key)?.charge ?? 0,
+                      )} courier charge`
+                    : "Return option"}
+                </p>
+              </div>
+            ))}
         </div>
       </section>
 
       <section className="border-t border-line bg-ink py-16 text-paper">
         <div className="container-page flex flex-col items-center gap-6 text-center">
-          <h2 className="max-w-2xl text-3xl font-semibold text-paper">
+          <h2 className="max-w-2xl text-paper">
             Still deciding? Browse the shelves first.
           </h2>
-          <p className="max-w-xl text-sm text-paper/70">
+          <p className="max-w-xl text-base leading-relaxed text-paper/70">
             The library has thousands of English and Bangla titles, from biographies to translated
             classics.
           </p>

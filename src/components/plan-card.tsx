@@ -53,13 +53,16 @@ export function PlanCard({
       </ul>
 
       <div className="mt-auto pt-6">
-        <div className="space-y-1 text-meta text-ink-muted">
-          <p>
-            Security deposit 1st time · refundable{" "}
-            <span className="font-medium text-ink-soft">{money(plan.security_deposit)}</span>
+          <p className="space-y-1 text-meta text-ink-muted">
+            <span className="block">
+              Security deposit 1st time · refundable{" "}
+              <span className="font-medium text-ink-soft">{money(plan.security_deposit)}</span>
+            </span>
+            <span className="block">
+              <span className="font-medium text-ink">Free delivery with BD Post</span> · otherwise
+              from ৳40 · check your package on arrival
+            </span>
           </p>
-          <p>Delivery from ৳40 · free with BD Post · check your package on arrival</p>
-        </div>
 
         <Link
           href={`/subscribe/${plan.slug}`}
