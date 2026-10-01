@@ -10,8 +10,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Design system
 
-Read `docs/design-system.md` before any UI work. It is extracted from the shipped
-interface — it is not aspirational, and it is not a suggestion.
+Read `UI_UX_RULES.md` and `docs/design-system.md` before any UI work. They are
+extracted from the shipped interface — they are not aspirational, and they are
+not suggestions. (`UI_UX_RULES.md` states the rules; `docs/design-system.md`
+holds the values they refer to.)
 
 Non-negotiables:
 
@@ -37,8 +39,10 @@ Verification before calling UI work done:
 ```bash
 npm run lint && npm run build
 node .claude/skills/design-system/scripts/validate-tokens.cjs --dir src
+npm run audit:responsive        # 1440 / 1024 / 768 / 390 across every page
 ```
 
 Then load the page and measure: no element may have a colour channel spread above
 12, cards must measure 6px radius, labels 11px. Screenshot it before you claim it
-looks right.
+looks right. The responsive audit must report zero page overflow, zero clipped
+content, zero elements outside the viewport and zero targets under 24px.

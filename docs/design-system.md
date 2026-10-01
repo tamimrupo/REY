@@ -3,6 +3,9 @@
 > Extracted from the shipped UI, not invented for it. Every value below is in use
 > somewhere in `src/`. If you need a new value, add it here first and then use it —
 > that is what keeps the pages looking like one site.
+>
+> The rules of engagement live in [`UI_UX_RULES.md`](../UI_UX_RULES.md); this file
+> is the reference the rules point at.
 
 ---
 
@@ -176,6 +179,21 @@ it stops — the spinner becomes a still ring, so "working" is still legible.
 Cover images always render through `BookCoverImage`, which keeps a placeholder
 underneath, so a missing *or* broken image shows the house mark rather than a gap.
 
+### Responsive behaviour
+
+Two breakpoints do the structural work: `md` (768px) and `lg` (1024px).
+
+| Below | What changes | Why |
+|---|---|---|
+| `lg` | The header's nav links move into the Menu disclosure, which already carries the account links and the CTA — so the bar is logo + search + Menu. | Six links plus three buttons do not fit beside a logo at 768px; they pushed 41px of the page off-screen. |
+| `md` | **Tables become cards.** Each row becomes a card, the first cell is its heading, and `TableLabels` copies each column heading onto its cells as `data-label`, which the card prints in mono beside the value. Controls move to their own full-width row at the bottom. | A data table at 390px either wraps to one word per line or hides its action column off-screen. Neither is usable one-handed. |
+| `md` | Stat rows go two-up instead of one tall card per row. | Keeps the numbers on screen without scrolling past four cards. |
+| always | Any grid or flex child holding a horizontally scrolling rail carries `min-w-0`. | Without it the rail's min-content width — 691px for the account nav — silently becomes the width of the page. This is the most common mobile overflow in the app. |
+
+The `.table` card rules live in `globals.css` under "Tables on a phone";
+`src/components/table-labels.tsx` supplies the labels and degrades to unlabelled
+but readable cards without JavaScript.
+
 ---
 
 ## 10. Interaction rules
@@ -199,7 +217,15 @@ underneath, so a missing *or* broken image shows the house mark rather than a ga
 ```bash
 npm run lint && npm run build          # types + lint
 node .claude/skills/design-system/scripts/validate-tokens.cjs --dir src   # hardcoded values
+npm run audit:responsive               # every page at 1440 / 1024 / 768 / 390
+npm run audit:responsive -- --shots    # …and a full-page screenshot of each
 ```
+
+The responsive audit starts a headless Edge/Chrome (set `AUDIT_BROWSER` to point
+at another), signs in when `AUDIT_EMAIL`/`AUDIT_PASSWORD` are set, and writes
+`.audit/report.json`. It fails loudly on page-level horizontal overflow, content
+clipped beyond reach, elements past the viewport edge, targets under 24px, and
+tables that only work sideways. All four must be zero.
 
 Measured checks worth repeating after UI work:
 
