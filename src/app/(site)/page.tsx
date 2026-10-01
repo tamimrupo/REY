@@ -127,7 +127,7 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- Hero */}
       <section className="relative border-b border-ink bg-paper">
         {/* ---- The image: full-bleed down the right side on wide screens ---- */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-l border-ink lg:block">
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-b border-l border-ink lg:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/hero/reader-1880.jpg"
@@ -144,7 +144,7 @@ export default async function HomePage() {
         {/* ---- The pitch ---- */}
         <div className="container-page relative grid gap-y-10 pb-12 pt-12 lg:grid-cols-[1.22fr_0.4fr] lg:py-20">
           <Reveal className="flex flex-col">
-            <div className="flex items-center gap-4 border-t border-ink pt-3.5">
+            <div className="flex items-center gap-4">
               <span className="label-mono !text-ink-soft">Book rental club — Dhaka, Bangladesh</span>
               <span aria-hidden className="h-px flex-1 bg-ink" />
               <span className="label-mono hidden !text-ink-soft sm:inline">Est. 2026</span>
@@ -164,7 +164,7 @@ export default async function HomePage() {
               cancel whenever.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <div className="mt-9 flex max-w-[42rem] flex-wrap items-center gap-3">
               <Link href="/plans" className="btn btn-primary">
                 Start your plan — from {money(cheapestPlan?.price_monthly ?? 299)}/mo
                 <span aria-hidden>→</span>
@@ -174,7 +174,7 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <dl className="mt-12 grid max-w-[42rem] grid-cols-2 gap-x-6 gap-y-5 border-t border-ink pt-6 sm:grid-cols-4 lg:mt-auto lg:pt-8">
+            <dl className="mt-12 grid max-w-[42rem] grid-cols-2 gap-x-6 gap-y-5 border-t border-ink pt-6 sm:grid-cols-4 lg:mt-14 lg:pt-7">
               {heroFacts.map((fact) => (
                 <div key={fact.label}>
                   <dt className="font-serif text-2xl font-semibold leading-none tracking-tight text-ink">
