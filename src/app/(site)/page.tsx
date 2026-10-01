@@ -150,7 +150,7 @@ export default async function HomePage() {
               <span className="label-mono hidden !text-ink-soft sm:inline">Est. 2026</span>
             </div>
 
-            <h1 className="mt-8 text-[2.5rem] sm:text-5xl lg:text-6xl">
+            <h1 className="mt-8 text-display sm:text-5xl lg:text-6xl">
               A new b
               <BookGlyph />
               ok every month,
@@ -229,7 +229,7 @@ export default async function HomePage() {
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand">{step.number}</p>
                   <h3 className="mt-3 text-lg">{step.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-ink-soft">{step.body}</p>
-                  <p className="mt-4 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-ink-muted">
+                  <p className="mt-4 text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
                     {step.tag}
                   </p>
                 </Reveal>

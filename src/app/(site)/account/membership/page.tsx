@@ -77,19 +77,19 @@ export default async function MembershipPage() {
 
             <dl className="mt-6 grid gap-6 border-t border-line pt-6 sm:grid-cols-4">
               <div>
-                <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Started</dt>
+                <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Started</dt>
                 <dd className="mt-1 text-ink">{formatDate(current.started_at ?? current.created_at)}</dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Period ends</dt>
+                <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Period ends</dt>
                 <dd className="mt-1 text-ink">{formatDate(current.current_period_end)}</dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Next billing</dt>
+                <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Next billing</dt>
                 <dd className="mt-1 text-ink">{formatDate(current.next_billing_date)}</dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Deposit</dt>
+                <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Deposit</dt>
                 <dd className="mt-1 text-ink">
                   {heldDeposit
                     ? money(heldDeposit.amount)
@@ -99,18 +99,18 @@ export default async function MembershipPage() {
             </dl>
 
             <div className="mt-6 grid gap-4 border-t border-line pt-6 sm:grid-cols-3">
-              <div className="rounded-xl bg-cream/60 p-4">
-                <p className="text-xs uppercase tracking-[0.08em] text-ink-muted">Slots this month</p>
+              <div className="rounded-card bg-cream/60 p-4">
+                <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Slots this month</p>
                 <p className="mt-1 font-display text-xl font-semibold text-ink">
                   {state.used} / {state.quota}
                 </p>
               </div>
-              <div className="rounded-xl bg-cream/60 p-4">
-                <p className="text-xs uppercase tracking-[0.08em] text-ink-muted">Books with you</p>
+              <div className="rounded-card bg-cream/60 p-4">
+                <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Books with you</p>
                 <p className="mt-1 font-display text-xl font-semibold text-ink">{state.out.length}</p>
               </div>
-              <div className="rounded-xl bg-cream/60 p-4">
-                <p className="text-xs uppercase tracking-[0.08em] text-ink-muted">In your box</p>
+              <div className="rounded-card bg-cream/60 p-4">
+                <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">In your box</p>
                 <p className="mt-1 font-display text-xl font-semibold text-ink">{state.box.length}</p>
               </div>
             </div>

@@ -47,7 +47,7 @@ function CoverUpload({
       <input type="hidden" name="cover_url" value={value} />
 
       <div className="flex flex-wrap items-start gap-4">
-        <div className="h-40 w-28 shrink-0 overflow-hidden rounded-lg border border-line bg-cream">
+        <div className="h-40 w-28 shrink-0 overflow-hidden rounded-card border border-line bg-cream">
           <BookCoverImage url={value} title={title} size="md" className="h-full w-full" />
         </div>
 

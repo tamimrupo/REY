@@ -82,7 +82,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
 
         <div className="mt-8 grid gap-12 lg:grid-cols-[380px_1fr]">
           <div>
-            <div className="overflow-hidden rounded-[6px] border border-line bg-cream shadow-[0_18px_40px_-30px_rgba(9,9,9,0.5)]">
+            <div className="overflow-hidden rounded-card border border-line bg-cream shadow-[0_18px_40px_-30px_rgba(9,9,9,0.5)]">
               <BookCover book={book} className="aspect-[2/3] w-full" />
             </div>
           </div>

@@ -33,7 +33,7 @@ export function AuthorCard({
             aria-hidden
             className="absolute left-1/2 top-[40%] h-[126px] w-[126px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink sm:h-[150px] sm:w-[150px]"
           />
-          <div className="relative overflow-hidden rounded-lg border border-line bg-white shadow-[0_18px_34px_-18px_rgba(0,0,0,0.55)]">
+          <div className="relative overflow-hidden rounded-card border border-line bg-white shadow-[0_18px_34px_-18px_rgba(0,0,0,0.55)]">
             <AvatarImage name={author.name} url={author.avatar_url} />
           </div>
         </div>
@@ -59,7 +59,7 @@ export function AuthorCard({
 
           {/* Signature block. */}
           <p className="mt-7 text-2xl italic leading-none text-ink">{author.name}</p>
-          <p className="mt-2 text-[0.6875rem] uppercase tracking-[0.14em] text-ink-muted">
+          <p className="mt-2 text-micro uppercase tracking-[0.12em] text-ink-muted">
             Author
           </p>
 
@@ -71,7 +71,7 @@ export function AuthorCard({
 
           {titles.length ? (
             <div className="mt-7 border-t border-line pt-5">
-              <p className="text-[0.6875rem] uppercase tracking-[0.14em] text-ink-muted">
+              <p className="text-micro uppercase tracking-[0.12em] text-ink-muted">
                 More by this author
               </p>
               <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">

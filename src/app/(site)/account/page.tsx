@@ -92,27 +92,27 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
 
           <dl className="mt-6 grid gap-6 border-t border-line pt-6 sm:grid-cols-4">
             <div>
-              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Period ends</dt>
+              <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Period ends</dt>
               <dd className="mt-1 text-ink">{formatDate(subscription.current_period_end)}</dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Slots used</dt>
+              <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Slots used</dt>
               <dd className="mt-1 text-ink">
                 {state.used} of {state.quota} · {state.remaining} left
               </dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">Books with you</dt>
+              <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">Books with you</dt>
               <dd className="mt-1 text-ink">{state.out.length}</dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-[0.08em] text-ink-muted">In your box</dt>
+              <dt className="text-xs uppercase tracking-[0.12em] text-ink-muted">In your box</dt>
               <dd className="mt-1 text-ink">{state.box.length}</dd>
             </div>
           </dl>
 
           {state.box.length ? (
-            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            <div className="mt-6 rounded-card border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
               <p className="font-semibold">
                 {state.box.length} book{state.box.length === 1 ? "" : "s"} waiting in your box
               </p>
@@ -128,7 +128,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
           ) : null}
 
           {left !== null && left <= 3 ? (
-            <div className="mt-6 rounded-xl border border-line bg-cream/60 p-4 text-sm text-ink-soft">
+            <div className="mt-6 rounded-card border border-line bg-cream/60 p-4 text-sm text-ink-soft">
               <p className="font-semibold text-ink">
                 {left < 0
                   ? `Your plan ended on ${formatDate(subscription.current_period_end)}.`

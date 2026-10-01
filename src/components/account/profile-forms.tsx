@@ -78,7 +78,7 @@ export function CancelMembershipForm({
   planName: string;
 }) {
   return (
-    <details className="rounded-xl border border-line bg-cream/40 p-5">
+    <details className="rounded-card border border-line bg-cream/40 p-5">
       <summary className="cursor-pointer text-sm font-medium text-ink">
         Cancel my {planName} membership
       </summary>

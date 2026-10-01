@@ -159,7 +159,7 @@ export function CourierSettingsForm({ couriers }: { couriers: CourierSettings })
       <input type="hidden" name="kind" value="couriers" />
 
       <div className="space-y-3">
-        <div className="hidden gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-ink-muted sm:grid sm:grid-cols-5">
+        <div className="hidden gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted sm:grid sm:grid-cols-5">
           <span>Key</span>
           <span>Label</span>
           <span>Charge ৳</span>
@@ -191,7 +191,7 @@ export function CourierSettingsForm({ couriers }: { couriers: CourierSettings })
         </p>
       </div>
 
-      <div className="rounded-xl border border-line bg-cream/40 p-4">
+      <div className="rounded-card border border-line bg-cream/40 p-4">
         <p className="text-sm font-semibold text-ink">BD Post (Book Post)</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <div>

@@ -35,7 +35,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
         </Link>
       </p>
 
-      <details className="mt-6 rounded-xl border border-line bg-white/60 p-4">
+      <details className="mt-6 rounded-card border border-line bg-white/60 p-4">
         <summary className="cursor-pointer py-1.5 text-sm text-ink-soft">
           Never got the confirmation email?
         </summary>

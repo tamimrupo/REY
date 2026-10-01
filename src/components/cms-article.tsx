@@ -134,7 +134,7 @@ export function CmsArticle({
             <p className="mt-4 max-w-3xl text-lg leading-relaxed text-ink-soft">{page.excerpt}</p>
           ) : null}
 
-          <div className="mt-10 max-w-3xl space-y-5 text-[0.95rem] leading-relaxed text-ink-soft">
+          <div className="mt-10 max-w-3xl space-y-5 text-body leading-relaxed text-ink-soft">
             {nodes.map((node, index) => {
               if (node.kind === "heading") {
                 return (

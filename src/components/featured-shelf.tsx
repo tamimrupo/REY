@@ -252,12 +252,12 @@ export function FeaturedShelf({
               data-card
               href={`/library/${book.slug}`}
               aria-current={isActive ? "true" : undefined}
-              className={`group w-40 shrink-0 snap-center transition-transform duration-300 ease-out sm:w-44 lg:w-48 ${
+              className={`group w-40 shrink-0 snap-center transition-transform duration-200 ease-out sm:w-44 lg:w-48 ${
                 isActive ? "scale-[1.07]" : "scale-100"
               }`}
             >
               <div
-                className={`relative overflow-hidden rounded-xl transition-shadow duration-300 ${
+                className={`relative overflow-hidden rounded-card transition-shadow duration-200 ${
                   isActive
                     ? "shadow-[0_30px_52px_-22px_rgba(0,0,0,0.62)]"
                     : "shadow-[0_16px_28px_-18px_rgba(0,0,0,0.45)]"
@@ -266,7 +266,7 @@ export function FeaturedShelf({
                 <BookCover book={book} className="aspect-[2/3] w-full" />
 
                 {isTop ? (
-                  <span className="absolute left-2.5 top-2.5 rounded-full bg-ink px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-paper shadow-[0_4px_10px_rgba(0,0,0,0.35)]">
+                  <span className="absolute left-2.5 top-2.5 rounded-full bg-ink px-2.5 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper shadow-[0_4px_10px_rgba(0,0,0,0.35)]">
                     Best seller
                   </span>
                 ) : null}

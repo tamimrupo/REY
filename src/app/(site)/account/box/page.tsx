@@ -88,7 +88,7 @@ export default async function BoxPage(props: PageProps<"/account/box">) {
           outCount={state.out.length}
         />
       ) : (
-        <div className="rounded-2xl border border-dashed border-line bg-white/60 px-6 py-10 text-center">
+        <div className="rounded-card border border-dashed border-line bg-white/60 px-6 py-10 text-center">
           <p className="font-display text-lg font-semibold text-ink">Your box is empty</p>
           <p className="mx-auto mt-2 max-w-md text-sm text-ink-muted">
             Add up to {state.remaining} book{state.remaining === 1 ? "" : "s"} below, then confirm the
@@ -120,7 +120,7 @@ export default async function BoxPage(props: PageProps<"/account/box">) {
           {catalog.books.map((book) => {
             const already = takenIds.has(book.id);
             return (
-              <div key={book.id} className="overflow-hidden rounded-xl border border-line bg-white">
+              <div key={book.id} className="overflow-hidden rounded-card border border-line bg-white">
                 <Link href={`/library/${book.slug}`} className="block">
                   <div className="aspect-[2/3] w-full overflow-hidden bg-cream">
                     <BookCoverImage
@@ -137,7 +137,7 @@ export default async function BoxPage(props: PageProps<"/account/box">) {
                   <p className="line-clamp-2 text-xs font-medium leading-snug text-ink">
                     {book.title}
                   </p>
-                  <p className="mt-1 text-[0.65rem] text-ink-muted">{book.authors?.name ?? "—"}</p>
+                  <p className="mt-1 text-micro text-ink-muted">{book.authors?.name ?? "—"}</p>
 
                   <div className="mt-3">
                     {already ? (

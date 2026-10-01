@@ -159,7 +159,7 @@ export default async function AdminOrderPage(props: PageProps<"/admin/orders/[id
         {deliveries.length ? (
           <div className="mt-4 space-y-4">
             {deliveries.map((shipment: any) => (
-              <details key={shipment.id} className="rounded-xl border border-line p-4">
+              <details key={shipment.id} className="rounded-card border border-line p-4">
                 <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-3">
                   <span className="text-sm text-ink">
                     {SHIPMENT_TYPE_LABELS[shipment.type as "outbound" | "swap" | "return"]} ·{" "}

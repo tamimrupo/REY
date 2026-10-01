@@ -27,7 +27,7 @@ export function Alert({
   } as const;
 
   return (
-    <div className={`rounded-xl border px-4 py-3 text-sm ${tones[tone]}`}>{children}</div>
+    <div className={`rounded-card border px-4 py-3 text-sm ${tones[tone]}`}>{children}</div>
   );
 }
 
@@ -43,7 +43,7 @@ export function EmptyState({
   actionLabel?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-line bg-white/60 px-6 py-12 text-center">
+    <div className="rounded-card border border-dashed border-line bg-white/60 px-6 py-12 text-center">
       <p className="font-display text-lg font-semibold text-ink">{title}</p>
       {description ? (
         <p className="mx-auto mt-2 max-w-md text-sm text-ink-muted">{description}</p>
@@ -125,7 +125,7 @@ export function Stat({
 }) {
   return (
     <div className="card p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-muted">
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
         {label}
       </p>
       <p className="mt-2 font-display text-2xl font-semibold text-ink">{value}</p>

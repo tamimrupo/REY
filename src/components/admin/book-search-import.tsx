@@ -144,9 +144,9 @@ export function BookSearchImport() {
             {rows.map((row) => (
               <li
                 key={`${row.source}-${row.id}`}
-                className="flex gap-4 rounded-xl border border-line bg-white p-3"
+                className="flex gap-4 rounded-card border border-line bg-white p-3"
               >
-                <div className="relative h-24 w-16 shrink-0 overflow-hidden rounded-lg border border-line bg-surface">
+                <div className="relative h-24 w-16 shrink-0 overflow-hidden rounded-card border border-line bg-surface">
                   <CoverPlaceholder title={row.title} size="sm" />
                   {row.coverUrl ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -176,7 +176,7 @@ export function BookSearchImport() {
                   {row.description ? (
                     <p className="mt-1.5 line-clamp-2 text-xs text-ink-soft">{row.description}</p>
                   ) : null}
-                  <p className="mt-1 text-[0.65rem] text-ink-muted">
+                  <p className="mt-1 text-micro text-ink-muted">
                     {row.isbn ? <span className="font-mono">ISBN {row.isbn}</span> : null}
                     {row.isbn && row.subjects.length ? " · " : null}
                     {row.subjects.length ? (

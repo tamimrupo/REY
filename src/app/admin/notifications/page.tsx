@@ -106,7 +106,7 @@ export default async function AdminNotificationsPage(props: PageProps<"/admin/no
                   </div>
                 </div>
 
-                <p className="mt-3 whitespace-pre-line rounded-xl bg-cream/50 p-4 text-sm text-ink-soft">
+                <p className="mt-3 whitespace-pre-line rounded-card bg-cream/50 p-4 text-sm text-ink-soft">
                   {notification.body}
                 </p>
 

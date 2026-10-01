@@ -20,7 +20,7 @@ export default async function ContactPage() {
       <div className="mt-12 grid gap-10 lg:grid-cols-2">
         <div className="space-y-6">
           <div className="card p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-muted">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
               Email
             </p>
             <a href={`mailto:${site.email}`} className="mt-2 block font-display text-xl text-ink hover:text-gold">
@@ -29,7 +29,7 @@ export default async function ContactPage() {
           </div>
 
           <div className="card p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-muted">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
               Phone &amp; WhatsApp
             </p>
             <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="mt-2 block font-display text-xl text-ink hover:text-gold">
@@ -38,7 +38,7 @@ export default async function ContactPage() {
           </div>
 
           <div className="card p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-muted">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
               Warehouse
             </p>
             <p className="mt-2 text-ink-soft">{site.address}</p>
@@ -46,7 +46,7 @@ export default async function ContactPage() {
           </div>
 
           <div className="card p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-muted">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
               Looking for a specific book?
             </p>
             <p className="mt-2 text-sm text-ink-soft">

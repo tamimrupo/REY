@@ -10,7 +10,7 @@ export function BookCard({ book, badge }: { book: Book; badge?: string }) {
 
   return (
     <Link href={`/library/${book.slug}`} className="group block">
-      <div className="relative aspect-[2/3] overflow-hidden rounded-xl border border-line bg-cream">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-card border border-line bg-cream">
         <BookCoverImage
           url={book.cover_url}
           title={book.title}
@@ -20,7 +20,7 @@ export function BookCard({ book, badge }: { book: Book; badge?: string }) {
         />
 
         {flag ? (
-          <span className="absolute left-2 top-2 rounded-full bg-ink/85 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-paper backdrop-blur">
+          <span className="absolute left-2 top-2 rounded-full bg-ink/85 px-2.5 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper backdrop-blur">
             {flag}
           </span>
         ) : null}

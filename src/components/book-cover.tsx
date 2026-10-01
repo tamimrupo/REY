@@ -119,15 +119,15 @@ export function CoverPlaceholder({
 
       <span
         className={`line-clamp-4 font-display font-semibold leading-snug text-ink ${
-          large ? "text-lg" : "text-[0.78rem]"
+          large ? "text-lg" : "text-meta"
         }`}
       >
         {title}
       </span>
 
       <span
-        className={`w-full truncate uppercase tracking-[0.16em] text-ink-muted ${
-          large ? "text-[0.7rem]" : "text-[0.55rem]"
+        className={`w-full truncate uppercase tracking-[0.12em] text-ink-muted ${
+          large ? "text-meta" : "text-nano"
         }`}
       >
         {author || label || "REY BD"}

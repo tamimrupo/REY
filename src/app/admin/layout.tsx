@@ -26,7 +26,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
                 height={40}
                 className="h-6 w-auto"
               />
-              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink-muted">
+              <span className="text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
                 Dashboard
               </span>
             </Link>

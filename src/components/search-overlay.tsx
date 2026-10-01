@@ -180,7 +180,7 @@ export function SearchOverlay() {
               <div className="max-h-[58vh] overflow-auto">
                 {genres.length ? (
                   <div>
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink-muted">
+                    <p className="text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
                       Categories
                     </p>
                     <ul className="mt-3 divide-y divide-line border-y border-line">
@@ -204,7 +204,7 @@ export function SearchOverlay() {
 
                 {books.length ? (
                   <div className={genres.length ? "mt-7" : ""}>
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink-muted">
+                    <p className="text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
                       Books
                     </p>
                     <ul className="mt-3 space-y-1">
@@ -215,7 +215,7 @@ export function SearchOverlay() {
                             onMouseEnter={() => setActive(index)}
                             onFocus={() => setActive(index)}
                             onClick={() => go(book)}
-                            className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition ${
+                            className={`flex w-full items-center gap-3 rounded-card px-2 py-2 text-left transition ${
                               index === active ? "bg-surface" : "hover:bg-surface/60"
                             }`}
                           >
@@ -251,7 +251,7 @@ export function SearchOverlay() {
                   <Link
                     href={`/library?q=${encodeURIComponent(trimmed)}`}
                     onClick={() => setOpen(false)}
-                    className="mt-4 inline-block text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-ink underline decoration-ink/30 hover:decoration-ink"
+                    className="mt-4 inline-block text-meta font-semibold uppercase tracking-[0.12em] text-ink underline decoration-ink/30 hover:decoration-ink"
                   >
                     See all{total > 0 ? ` ${total}` : ""} result{total === 1 ? "" : "s"}
                   </Link>
@@ -264,13 +264,13 @@ export function SearchOverlay() {
 
               <aside className="hidden lg:block">
                 {current ? (
-                  <div className="rounded-2xl border border-line bg-white p-4">
+                  <div className="rounded-card border border-line bg-white p-4">
                     <BookCoverImage
                       url={current.cover_url}
                       title={current.title}
                       author={current.authors?.name}
                       label={current.genres?.name}
-                      className="mx-auto h-44 w-28 rounded-lg border border-line"
+                      className="mx-auto h-44 w-28 rounded-card border border-line"
                     />
                     <p className="mt-4 font-display text-base font-semibold leading-snug text-ink">
                       {current.title}
@@ -301,7 +301,7 @@ export function SearchOverlay() {
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-line p-6 text-center text-xs leading-relaxed text-ink-muted">
+                  <div className="rounded-card border border-dashed border-line p-6 text-center text-xs leading-relaxed text-ink-muted">
                     The book you are looking at appears here — cover, author, pages and a way in.
                   </div>
                 )}

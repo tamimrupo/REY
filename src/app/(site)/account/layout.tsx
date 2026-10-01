@@ -15,8 +15,8 @@ export default async function AccountLayout({ children }: LayoutProps<"/account"
     <div className="container-page py-10">
       <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
         <aside>
-          <div className="rounded-2xl border border-line bg-white p-5">
-            <p className="text-xs uppercase tracking-[0.1em] text-ink-muted">Signed in as</p>
+          <div className="rounded-card border border-line bg-white p-5">
+            <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Signed in as</p>
             <p className="mt-1 font-display text-lg font-semibold text-ink">{name}</p>
             {session.email ? (
               <p className="mt-0.5 truncate text-xs text-ink-muted">{session.email}</p>

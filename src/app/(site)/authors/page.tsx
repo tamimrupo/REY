@@ -55,7 +55,7 @@ export default async function AuthorsPage() {
                     aria-hidden
                     className="absolute left-1/2 top-[40%] h-[112px] w-[112px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink transition group-hover:scale-105"
                   />
-                  <div className="relative overflow-hidden rounded-xl border border-line bg-white shadow-[0_16px_30px_-18px_rgba(0,0,0,0.55)]">
+                  <div className="relative overflow-hidden rounded-card border border-line bg-white shadow-[0_16px_30px_-18px_rgba(0,0,0,0.55)]">
                     <AvatarImage name={author.name} url={author.avatar_url} />
                   </div>
                 </div>
@@ -67,7 +67,7 @@ export default async function AuthorsPage() {
                   {titles} title{titles === 1 ? "" : "s"}
                 </p>
                 {series.length ? (
-                  <p className="mt-1.5 text-[0.6875rem] uppercase tracking-[0.12em] text-ink-muted">
+                  <p className="mt-1.5 text-micro uppercase tracking-[0.12em] text-ink-muted">
                     {series.slice(0, 2).join(" · ")}
                     {series.length > 2 ? ` +${series.length - 2}` : ""}
                   </p>

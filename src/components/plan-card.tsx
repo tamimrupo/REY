@@ -19,12 +19,12 @@ export function PlanCard({
 
   return (
     <div
-      className={`lift relative flex h-full flex-col rounded-2xl border bg-white p-6 ${
+      className={`lift relative flex h-full flex-col rounded-card border bg-white p-6 ${
         plan.is_popular ? "border-ink shadow-[0_18px_40px_-28px_rgba(22,19,17,0.55)]" : "border-line"
       }`}
     >
       {plan.is_popular ? (
-        <span className="absolute -top-3 left-6 rounded-full bg-ink px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-paper">
+        <span className="absolute -top-3 left-6 rounded-full bg-ink px-3 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper">
           Most popular
         </span>
       ) : null}

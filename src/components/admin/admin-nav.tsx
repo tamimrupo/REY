@@ -54,7 +54,7 @@ export function AdminNav() {
     <nav className="space-y-6">
       {groups.map((group) => (
         <div key={group.title}>
-          <p className="px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink-muted">
+          <p className="px-3 text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">
             {group.title}
           </p>
           <div className="mt-2 space-y-0.5">
@@ -67,7 +67,7 @@ export function AdminNav() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`block rounded-lg px-3 py-2 text-sm transition ${
+                  className={`block rounded-card px-3 py-2 text-sm transition ${
                     active ? "bg-ink text-paper" : "text-ink-soft hover:bg-cream hover:text-ink"
                   }`}
                 >

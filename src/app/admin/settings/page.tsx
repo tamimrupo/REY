@@ -153,8 +153,8 @@ export default async function AdminSettingsPage() {
           />
         </div>
 
-        <div className="mt-6 rounded-xl border border-line bg-cream/40 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-muted">
+        <div className="mt-6 rounded-card border border-line bg-cream/40 p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
             Cron secret
           </p>
           <p className="mt-2 break-all font-mono text-xs text-ink-soft">{secret || "—"}</p>

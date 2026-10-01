@@ -90,7 +90,7 @@ export function ConfirmBoxPanel({
       </div>
 
       {isSwap ? (
-        <p className="mt-3 rounded-lg bg-cream/70 p-3 text-sm text-ink-soft">
+        <p className="mt-3 rounded-card bg-cream/70 p-3 text-sm text-ink-soft">
           You still have <strong>{outCount}</strong> book{outCount === 1 ? "" : "s"} from last month.
           We collect them on the same trip as your new books — one courier charge instead of two.
         </p>
@@ -109,7 +109,7 @@ export function ConfirmBoxPanel({
             {couriers.map((option) => (
               <label
                 key={option.key}
-                className="flex cursor-pointer items-center justify-between rounded-lg border border-line px-3 py-2 text-sm hover:bg-cream/60"
+                className="flex cursor-pointer items-center justify-between rounded-card border border-line px-3 py-2 text-sm hover:bg-cream/60"
               >
                 <span className="flex items-center gap-2">
                   <input
@@ -215,7 +215,7 @@ export function ReturnForm({
         {couriers.map((option) => (
           <label
             key={option.key}
-            className="flex cursor-pointer items-center justify-between rounded-lg border border-line px-3 py-2 text-sm hover:bg-cream/60"
+            className="flex cursor-pointer items-center justify-between rounded-card border border-line px-3 py-2 text-sm hover:bg-cream/60"
           >
             <span className="flex items-center gap-2">
               <input
@@ -235,9 +235,9 @@ export function ReturnForm({
       </div>
 
       {courier === "bdpost" ? (
-        <div className="mt-5 space-y-3 rounded-xl border border-line bg-cream/50 p-4">
+        <div className="mt-5 space-y-3 rounded-card border border-line bg-cream/50 p-4">
           <p className="whitespace-pre-line text-xs leading-relaxed text-ink-soft">{bdpostRules}</p>
-          <div className="rounded-lg bg-white p-3 text-xs text-ink-soft">
+          <div className="rounded-card bg-white p-3 text-xs text-ink-soft">
             <p className="font-semibold text-ink">Return address</p>
             <p className="mt-1">
               {warehouse.name}

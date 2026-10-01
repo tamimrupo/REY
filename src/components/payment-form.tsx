@@ -64,7 +64,7 @@ export function PaymentForm({
               type="button"
               key={option.key}
               onClick={() => setMethod(option.key)}
-              className={`rounded-xl border px-4 py-3 text-left text-sm transition ${
+              className={`rounded-card border px-4 py-3 text-left text-sm transition ${
                 method === option.key
                   ? "border-ink bg-cream/70 ring-2 ring-ink"
                   : "border-line hover:border-ink/40"
@@ -78,7 +78,7 @@ export function PaymentForm({
       </div>
 
       {active ? (
-        <div className="rounded-xl border border-line bg-cream/50 p-4 text-sm">
+        <div className="rounded-card border border-line bg-cream/50 p-4 text-sm">
           <p className="text-ink">
             Send <span className="font-semibold">{money(amount)}</span> to{" "}
             <span className="font-semibold text-ink">

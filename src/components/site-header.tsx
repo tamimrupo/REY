@@ -12,7 +12,7 @@ export async function SiteHeader() {
   return (
     <header
       data-site-header
-      className="relative sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur transition-shadow duration-300 data-[scrolled=true]:shadow-[0_1px_0_#09090914,0_20px_34px_-28px_#09090973]"
+      className="relative sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur transition-shadow duration-200 data-[scrolled=true]:shadow-[0_1px_0_#09090914,0_20px_34px_-28px_#09090973]"
     >
       <ScrollElevation />
       {announcement.enabled && announcement.text ? (

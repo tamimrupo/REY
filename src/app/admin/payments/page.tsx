@@ -33,7 +33,7 @@ function SenderMatch({
   // is quiet grey text. Both used to rely on red/green, which this theme forbids.
   if (match === false) {
     return (
-      <span className="mt-1 inline-flex items-center gap-1 rounded bg-ink px-1.5 py-0.5 text-[0.6875rem] font-semibold text-paper">
+      <span className="mt-1 inline-flex items-center gap-1 rounded bg-ink px-1.5 py-0.5 text-micro font-semibold text-paper">
         ⚠ Different number than the profile
       </span>
     );

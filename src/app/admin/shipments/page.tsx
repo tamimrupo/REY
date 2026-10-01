@@ -164,7 +164,7 @@ export default async function AdminShipmentsPage(props: PageProps<"/admin/shipme
                   </div>
 
                   {shipment.addresses ? (
-                    <div className="rounded-xl bg-cream/50 p-4 text-sm text-ink-soft">
+                    <div className="rounded-card bg-cream/50 p-4 text-sm text-ink-soft">
                       <p className="font-medium text-ink">Deliver to</p>
                       <p className="mt-1">
                         {shipment.addresses.recipient} · {shipment.addresses.phone}

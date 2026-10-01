@@ -124,7 +124,7 @@ export function SubscribeForm({
                 key={book.id}
                 onClick={() => toggle(book.id)}
                 aria-pressed={active}
-                className={`group overflow-hidden rounded-xl border text-left transition ${
+                className={`group overflow-hidden rounded-card border text-left transition ${
                   active
                     ? "border-ink ring-2 ring-ink"
                     : maxed
@@ -145,7 +145,7 @@ export function SubscribeForm({
                     {book.title}
                   </p>
                   {book.author ? (
-                    <p className="mt-1 text-[0.65rem] text-ink-muted">{book.author}</p>
+                    <p className="mt-1 text-micro text-ink-muted">{book.author}</p>
                   ) : null}
                 </div>
               </button>
@@ -225,7 +225,7 @@ export function SubscribeForm({
               {couriers.map((option) => (
                 <label
                   key={option.key}
-                  className="flex cursor-pointer items-center justify-between rounded-lg border border-line px-3 py-2 text-sm hover:bg-cream/60"
+                  className="flex cursor-pointer items-center justify-between rounded-card border border-line px-3 py-2 text-sm hover:bg-cream/60"
                 >
                   <span className="flex items-center gap-2">
                     <input
@@ -257,7 +257,7 @@ export function SubscribeForm({
                 {addresses.map((address) => (
                   <label
                     key={address.id}
-                    className="flex cursor-pointer gap-3 rounded-lg border border-line px-3 py-2 text-sm hover:bg-cream/60"
+                    className="flex cursor-pointer gap-3 rounded-card border border-line px-3 py-2 text-sm hover:bg-cream/60"
                   >
                     <input
                       type="radio"
@@ -277,7 +277,7 @@ export function SubscribeForm({
                   </label>
                 ))}
 
-                <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-line px-3 py-2 text-sm hover:bg-cream/60">
+                <label className="flex cursor-pointer items-center gap-3 rounded-card border border-line px-3 py-2 text-sm hover:bg-cream/60">
                   <input
                     type="radio"
                     name="address_id"

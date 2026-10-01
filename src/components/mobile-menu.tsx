@@ -23,13 +23,13 @@ export function MobileMenu({ signedIn }: { signedIn: boolean }) {
           </span>
         </span>
       </summary>
-      <div className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-line bg-white p-2 shadow-xl">
+      <div className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-card border border-line bg-white p-2 shadow-xl">
         <nav className="flex flex-col">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-lg px-3 py-2 text-sm text-ink-soft hover:bg-cream hover:text-ink"
+              className="rounded-card px-3 py-2 text-sm text-ink-soft hover:bg-cream hover:text-ink"
             >
               {link.label}
             </Link>
@@ -37,7 +37,7 @@ export function MobileMenu({ signedIn }: { signedIn: boolean }) {
           <div className="my-1 h-px bg-line" />
           <Link
             href={signedIn ? "/account" : "/login"}
-            className="rounded-lg px-3 py-2 text-sm text-ink-soft hover:bg-cream hover:text-ink"
+            className="rounded-card px-3 py-2 text-sm text-ink-soft hover:bg-cream hover:text-ink"
           >
             {signedIn ? "My account" : "Sign in"}
           </Link>
