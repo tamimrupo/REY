@@ -12,6 +12,15 @@ import type { BookSearchRow } from "@/lib/book-search";
 
 const MIN_QUERY = 3;
 
+/**
+ * What the box browses before anyone types anything.
+ *
+ * Opening Import books should show books, not an empty box: a list you can pick
+ * from is easier than a list you have to ask for. This is the same fielded
+ * query the bulk tab offers as its "Bangla / Bengali" preset.
+ */
+const BROWSE_QUERY = "subject:bengali";
+
 /** Human-readable facts about a result: author · year · pages · publisher. */
 function metaLine(row: BookSearchRow): string {
   return [row.authors.join(", "), row.year, row.pages ? `${row.pages} pp` : null, row.publisher]
@@ -31,7 +40,7 @@ type ExistingRow = {
 export function BookSearchImport() {
   const [state, importAction] = useActionState(importCandidatesAction, null);
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(BROWSE_QUERY);
   const [rows, setRows] = useState<BookSearchRow[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [hint, setHint] = useState<string | null>(null);
