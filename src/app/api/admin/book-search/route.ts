@@ -42,6 +42,46 @@ export async function GET(request: Request) {
   }
 
   const supabase = await createClient();
+
+  // The shop's own shelf, in the same list. For a Bangla catalogue this is the
+  // part that matters: the outside services cannot see "গোরা", but we can — and
+  // it is the fastest way to notice a title is already in.
+  //
+  // Two plain queries rather than one OR across the author join: the join filter
+  // fails silently, and silence is exactly what we are trying to remove.
+  const like = `%${query.replace(/[%,()]/g, "").trim()}%`;
+  const [byTitle, byAuthor] = await Promise.all([
+    supabase
+      .from("books")
+      .select("id, slug, title, cover_url, is_active, authors(name)")
+      .ilike("title", like)
+      .order("title")
+      .limit(8),
+    supabase
+      .from("books")
+      .select("id, slug, title, cover_url, is_active, authors!inner(name)")
+      .ilike("authors.name", like)
+      .order("title")
+      .limit(8),
+  ]);
+
+  const seen = new Set<string>();
+  const mine = [...(byTitle.data ?? []), ...(byAuthor.data ?? [])]
+    .filter((row) => {
+      if (seen.has(row.id as string)) return false;
+      seen.add(row.id as string);
+      return true;
+    })
+    .slice(0, 8)
+    .map((row) => ({
+      id: row.id as string,
+      slug: row.slug as string,
+      title: row.title as string,
+      coverUrl: (row.cover_url as string | null) ?? null,
+      published: Boolean(row.is_active),
+      author: (row.authors as unknown as { name: string } | null)?.name ?? null,
+    }));
+
   const ctx = newImportContext(supabase);
 
   const results: BookSearchRow[] = [];
@@ -54,6 +94,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     ok: true,
     results,
+    mine,
     totalFound: outcome.totalFound,
     hint: outcome.hint,
     message: "",

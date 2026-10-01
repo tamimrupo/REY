@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 
 import { SubmitButton } from "@/components/forms/submit-button";
-import { CoverPlaceholder } from "@/components/book-cover";
+import { BookCoverImage, CoverPlaceholder } from "@/components/book-cover";
 import { Alert } from "@/components/ui";
 import { importCandidatesAction } from "@/lib/actions/admin";
 import { hasBengaliScript } from "@/lib/book-search";
@@ -19,6 +19,15 @@ function metaLine(row: BookSearchRow): string {
     .join(" · ");
 }
 
+type ExistingRow = {
+  id: string;
+  slug: string;
+  title: string;
+  coverUrl: string | null;
+  published: boolean;
+  author: string | null;
+};
+
 export function BookSearchImport() {
   const [state, importAction] = useActionState(importCandidatesAction, null);
 
@@ -26,6 +35,8 @@ export function BookSearchImport() {
   const [rows, setRows] = useState<BookSearchRow[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [hint, setHint] = useState<string | null>(null);
+  /** Books already on the shop's own shelf that match the query. */
+  const [mine, setMine] = useState<ExistingRow[]>([]);
   const [error, setError] = useState("");
   /** The query the current rows belong to — drives the loading state. */
   const [loadedQuery, setLoadedQuery] = useState("");
@@ -65,6 +76,7 @@ export function BookSearchImport() {
         setRows((payload.results ?? []) as BookSearchRow[]);
         setTotal(typeof payload.totalFound === "number" ? payload.totalFound : null);
         setHint(payload.hint ?? null);
+        setMine((payload.mine ?? []) as ExistingRow[]);
         setLoadedQuery(trimmed);
       } catch {
         if (cancelled) return;
@@ -84,7 +96,7 @@ export function BookSearchImport() {
   const picks = missing.map((row) => ({ source: row.source, id: row.id }));
   const publishValue = publish ? "true" : "false";
   const showRows = usable && settled && rows.length > 0;
-  const showEmpty = usable && settled && !rows.length && !error;
+  const showEmpty = usable && settled && !rows.length && !mine.length && !error;
 
   return (
     <div className="space-y-5">
@@ -119,6 +131,40 @@ export function BookSearchImport() {
 
       {searching ? <p className="text-sm text-ink-muted">Searching…</p> : null}
       {error ? <Alert tone="error">{error}</Alert> : null}
+      {/* The shop's own shelf first: the fastest way to see that a title is
+          already in, and the only way to find a Bangla title you added. */}
+      {mine.length ? (
+        <div>
+          <p className="label-mono">In your catalogue · {mine.length}</p>
+          <ul className="mt-3 space-y-1">
+            {mine.map((row) => (
+              <li key={row.id}>
+                <div className="flex items-center gap-3 rounded-card px-2 py-2 hover:bg-surface/60">
+                  <BookCoverImage
+                    url={row.coverUrl}
+                    title={row.title}
+                    size="sm"
+                    className="h-12 w-8 shrink-0 rounded border border-line"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="line-clamp-2 block text-sm font-medium leading-snug text-ink">
+                      {row.title}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-ink-muted">
+                      {row.author ?? "Unknown author"}
+                      {row.published ? "" : " · hidden"}
+                    </span>
+                  </span>
+                  <Link href={`/admin/books/${row.id}`} className="btn btn-outline btn-sm">
+                    Edit
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {hint ? <Alert tone="warning">{hint}</Alert> : null}
 
       {showRows ? (
