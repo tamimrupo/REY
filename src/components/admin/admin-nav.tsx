@@ -67,6 +67,7 @@ export function AdminNav() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? "page" : undefined}
                   className={`block rounded-card px-3 py-2 text-sm transition ${
                     active ? "bg-ink text-paper" : "text-ink-soft hover:bg-cream hover:text-ink"
                   }`}

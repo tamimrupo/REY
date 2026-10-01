@@ -99,12 +99,15 @@ Vertical space separates; do not add borders *and* big gaps for the same job.
 
 | Token | Value | Use for |
 |---|---|---|
-| `--duration-fast` | 150ms | Hover colour / border / shadow |
-| `--duration-base` | 200ms | Lifts, state changes, underlines |
-| `--duration-slow` | 500ms | Scroll reveals, image zoom |
+| `--duration-fast` | 150ms | Hover colour / border / shadow, press |
+| `--duration-base` | 200ms | Lifts, state changes, underlines, panels opening |
+| `--duration-slow` | 500ms | Scroll reveals, image zoom, the route bar |
+| `--ease-soft` | `cubic-bezier(0.16, 1, 0.3, 1)` | Things that move |
+| `--ease-quick` | `cubic-bezier(0, 0, 0.2, 1)` | Things that change |
 
-Easing is `cubic-bezier(0.16, 1, 0.3, 1)` for movement and `cubic-bezier(0, 0, 0.2, 1)`
-for colour. Reveals are opacity + transform only — never animate width or height.
+Feedback animations are tokens too — `--animate-fade-in`, `--animate-fade-up`
+and `--animate-pop` (all 200ms, `both`) — so a component never hand-rolls a
+keyframe. Reveals are opacity + transform only; never animate width or height.
 Everything is disabled under `prefers-reduced-motion: reduce`.
 
 Utilities: `Reveal` (fade-up on scroll), `CountUp` (figures), `ScrollElevation`
@@ -112,7 +115,34 @@ Utilities: `Reveal` (fade-up on scroll), `CountUp` (figures), `ScrollElevation`
 
 ---
 
-## 7. Shadows
+## 7. Feedback: what answers a click
+
+Every action answers within a frame or two. A person should never have to wonder
+whether the site noticed.
+
+| Moment | What answers it | Where |
+|---|---|---|
+| Hovering a control | 1px lift + deeper shadow (buttons); border darkens (fields, chips) | `.btn`, `.chip`, `.field` |
+| Pressing a button | 1px push *past* zero + reduced shadow — it moves under the finger before anything else happens | `.btn:not(:disabled):active` |
+| A link is clicked and the route is loading | A 2px ink hairline sweeps the top of the viewport. Delayed 120ms, so instant prefetched routes never flash a bar; gives up after 8s; never intercepts a pointer | `components/route-progress.tsx` |
+| Being on a page | The link for the current page stays underlined, set in ink, and carries `aria-current="page"` | `components/nav-link.tsx`, `.nav-link[aria-current="page"]` |
+| A panel opens | 200ms pop — opacity + 2% scale, from the corner it belongs to | `--animate-pop` |
+| A menu or the search closes | Escape from anywhere, a click outside, or choosing an item; focus returns to the button that opened it; the page behind stops scrolling while search is open | `mobile-menu.tsx`, `search-overlay.tsx` |
+| A form is submitted | The button shows a spinner and a present-tense label ("Signing in…"), disables itself, and sets `aria-busy` | `SubmitButton` |
+| A form answers | The message fades up next to the form and is announced: `role="alert"` for errors, `role="status"` otherwise | `Alert` |
+| Any `<details>` opens | Its content fades up, 200ms. One rule covers every disclosure in the app | `details[open] > summary ~ *` |
+| A field is rejected | Ink border, mist fill, and the message beside it (`aria-invalid="true"`) — contrast carries it, never colour | `.field[aria-invalid="true"]` |
+| A page is loading | A skeleton in the shape of the content that is coming, breathing at 1.6s | `.skeleton`, `app/**/loading.tsx` |
+| The search is thinking | The magnifier becomes a spinner in place, results dim to 60%, and the list is marked `aria-busy` | `search-overlay.tsx` |
+
+Rules: nothing loops except the spinner and the skeleton; nothing travels more
+than 6px; each one is a one-shot `animation` with `both`, so the last frame
+sticks rather than snapping back. Under `prefers-reduced-motion: reduce` all of
+it stops — the spinner becomes a still ring, so "working" is still legible.
+
+---
+
+## 8. Shadows
 
 | Token | Use |
 |---|---|
@@ -123,7 +153,7 @@ Utilities: `Reveal` (fade-up on scroll), `CountUp` (figures), `ScrollElevation`
 
 ---
 
-## 8. Components
+## 9. Components
 
 | Component | Default | Hover | Active | Disabled |
 |---|---|---|---|---|
@@ -148,7 +178,7 @@ underneath, so a missing *or* broken image shows the house mark rather than a ga
 
 ---
 
-## 9. Interaction rules
+## 10. Interaction rules
 
 - Focus: `:focus-visible` draws a 2px `currentColor` ring, 2px offset — legible on
   white and on ink.
@@ -164,7 +194,7 @@ underneath, so a missing *or* broken image shows the house mark rather than a ga
 
 ---
 
-## 10. Verifying a change
+## 11. Verifying a change
 
 ```bash
 npm run lint && npm run build          # types + lint
@@ -180,6 +210,10 @@ Measured checks worth repeating after UI work:
 3. **Accessibility** — run Lighthouse per page; target 1.0. `ink-muted` on `paper`
    is the tightest pair at 5.0:1.
 4. **Screenshot** the page at desktop width before calling it done.
+5. **Feedback** — click a link (the bar runs), submit a form (the button spins and
+   the answer is announced), open a menu (it pops, closes on Escape, and returns
+   focus to where it came from). None of it should be noticeable until you look
+   for it.
 
 Known deliberate exceptions: `global-error.tsx` uses inline hex values because it
 renders outside the root layout and cannot rely on this stylesheet.

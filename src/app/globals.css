@@ -67,9 +67,51 @@
 
   /* --- Motion -------------------------------------------------------------
      Three durations, assigned by what is moving. */
-  --duration-fast: 150ms; /* colour, border, shadow on hover */
-  --duration-base: 200ms; /* lifts, state changes */
-  --duration-slow: 500ms; /* reveals, image zoom */
+  --duration-fast: 150ms; /* colour, border, shadow, press */
+  --duration-base: 200ms; /* lifts, state changes, panels opening */
+  --duration-slow: 500ms; /* reveals, image zoom, navigation bar */
+  --ease-soft: cubic-bezier(0.16, 1, 0.3, 1); /* things that move */
+  --ease-quick: cubic-bezier(0, 0, 0.2, 1); /* things that change */
+
+  /* Feedback animations: one-shot, short, and `both` so the last frame sticks
+     instead of snapping back. Feedback that outlives its usefulness is noise,
+     so nothing runs longer than a panel opening — except the spinner. */
+  --animate-fade-in: fade-in var(--duration-base) var(--ease-quick) both;
+  --animate-fade-up: fade-up var(--duration-base) var(--ease-soft) both;
+  --animate-pop: pop var(--duration-base) var(--ease-soft) both;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Panels and menus arrive from just under full size — enough to read as
+     "this came from the thing you clicked", not enough to notice. */
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 
   /* --- Monochrome lock ---------------------------------------------------- */
   --color-slate-50: #fafafa;
@@ -342,6 +384,13 @@
     transform: none;
   }
 
+  /* Pressed: hover lifts a button 1px, pressing pushes it back past zero, so
+     the control answers the click before the work has even started. */
+  .btn:not(:disabled):active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.22);
+  }
+
   .btn-primary {
     background-color: var(--color-ink);
     color: #fff;
@@ -357,7 +406,7 @@
       0 14px 28px -10px rgb(0 0 0 / 0.55);
   }
   .btn-primary:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(1px);
     box-shadow: 0 1px 2px rgb(0 0 0 / 0.22);
   }
 
@@ -393,7 +442,7 @@
       0 12px 22px -12px rgb(0 0 0 / 0.45);
   }
   .btn-outline:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(1px);
   }
 
   .btn-ghost {
@@ -441,6 +490,18 @@
   }
   .field::placeholder {
     color: #a3a3a3;
+  }
+  /* A field the server has rejected. In monochrome the signal is contrast plus
+     the message beside it — never a colour. */
+  .field[aria-invalid="true"] {
+    border-color: var(--color-ink);
+    background: var(--color-mist);
+    box-shadow: 0 0 0 3px rgb(9 9 9 / 0.06);
+  }
+  .field:disabled {
+    background: var(--color-surface);
+    color: var(--color-ink-muted);
+    cursor: not-allowed;
   }
 
   .label {
@@ -494,7 +555,7 @@
       0 20px 40px -14px rgb(0 0 0 / 0.8);
   }
   .btn-invert:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(1px);
   }
 
   .btn-on-dark {
@@ -527,6 +588,11 @@
   .chip:hover {
     border-color: var(--color-ink);
     color: var(--color-ink);
+  }
+  /* Instant, because a filter should feel like a switch, not a transition. */
+  .chip:active {
+    transform: translateY(1px);
+    background: var(--color-surface);
   }
   .chip[data-active="true"] {
     background: var(--color-ink);
@@ -666,8 +732,92 @@
     transition: transform var(--duration-base) cubic-bezier(0.16, 1, 0.3, 1);
   }
   .nav-link:hover::after,
-  .nav-link:focus-visible::after {
+  .nav-link:focus-visible::after,
+  .nav-link[aria-current="page"]::after {
     transform: scaleX(1);
+  }
+  /* The page you are on stays underlined and reads at full strength. */
+  .nav-link[aria-current="page"] {
+    color: var(--color-ink);
+  }
+
+  /* ---- Disclosures ------------------------------------------------------- */
+  /* Native <details> carries the dashboard and the account area. One rule gives
+     every one of them the same entrance and makes the summary a pointer: no
+     per-page wiring, and no panel that was forgotten. */
+  summary {
+    cursor: pointer;
+  }
+  details[open] > summary ~ * {
+    animation: var(--animate-fade-up);
+  }
+
+  /* ---- Feedback ---------------------------------------------------------- */
+  /* Route progress: a hairline that runs while the next page loads. The delay
+     before it appears lives in the component (120ms), so an instant, prefetched
+     navigation never flashes a bar. */
+  .route-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    width: 100%;
+    height: 2px;
+    background: var(--color-ink);
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    pointer-events: none;
+    transition:
+      transform var(--duration-slow) var(--ease-soft),
+      opacity var(--duration-fast) linear;
+  }
+  .route-progress[data-phase="running"] {
+    opacity: 1;
+    transform: scaleX(0.75);
+  }
+  .route-progress[data-phase="done"] {
+    opacity: 0;
+    transform: scaleX(1);
+    transition:
+      transform var(--duration-fast) var(--ease-quick),
+      opacity var(--duration-base) linear var(--duration-fast);
+  }
+
+  /* Inline busy indicator. Inherits the colour it is dropped into. */
+  .spinner {
+    display: inline-block;
+    flex: none;
+    width: 0.85em;
+    height: 0.85em;
+    border: 1.5px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 999px;
+    animation: spinner-turn 700ms linear infinite;
+  }
+
+  /* Skeleton block: one shape language for every route fallback. */
+  .skeleton {
+    border-radius: var(--radius-field);
+    background: var(--color-frost);
+    animation: skeleton-pulse 1.6s ease-in-out infinite;
+  }
+}
+
+/* One turn, and a breath for skeletons. */
+@keyframes spinner-turn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
   }
 }
 
@@ -688,6 +838,14 @@
   .reveal {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* A spinner that cannot spin still has to say "working": hold it as a full
+     ring rather than freezing on the gap. */
+  .spinner {
+    animation: none !important;
+    border-top-color: currentColor;
+    opacity: 0.6;
   }
 }
 

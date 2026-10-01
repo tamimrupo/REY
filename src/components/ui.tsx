@@ -26,8 +26,15 @@ export function Alert({
     error: "border-ink bg-ink text-paper",
   } as const;
 
+  // A live region, so a message that arrives after an action is spoken rather
+  // than only drawn. Errors interrupt; everything else waits its turn.
   return (
-    <div className={`rounded-card border px-4 py-3 text-sm ${tones[tone]}`}>{children}</div>
+    <div
+      role={tone === "error" ? "alert" : "status"}
+      className={`animate-fade-up rounded-card border px-4 py-3 text-sm ${tones[tone]}`}
+    >
+      {children}
+    </div>
   );
 }
 

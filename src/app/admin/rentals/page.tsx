@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { SubmitButton } from "@/components/forms/submit-button";
 import { EmptyState, Stat, StatusPill } from "@/components/ui";
 import { markAllReturnedAction, markRentalReturnedAction } from "@/lib/actions/admin";
 import { listRentals } from "@/lib/data";
@@ -121,22 +122,25 @@ export default async function AdminRentalsPage(props: PageProps<"/admin/rentals"
                         <div className="flex flex-wrap items-center gap-2">
                           <form action={markRentalReturnedAction}>
                             <input type="hidden" name="id" value={rental.id} />
-                            <button type="submit" className="btn btn-outline btn-sm">
+                            <SubmitButton className="btn btn-outline btn-sm" pendingLabel="Marking…">
                               Mark returned
-                            </button>
+                            </SubmitButton>
                           </form>
                           <form action={markRentalReturnedAction}>
                             <input type="hidden" name="id" value={rental.id} />
                             <input type="hidden" name="lost" value="true" />
-                            <button type="submit" className="btn btn-ghost btn-sm text-rose-600">
+                            <SubmitButton
+                              className="btn btn-ghost btn-sm text-rose-600"
+                              pendingLabel="Marking…"
+                            >
                               Lost
-                            </button>
+                            </SubmitButton>
                           </form>
                           <form action={markAllReturnedAction}>
                             <input type="hidden" name="user_id" value={rental.user_id} />
-                            <button type="submit" className="btn btn-ghost btn-sm">
+                            <SubmitButton className="btn btn-ghost btn-sm" pendingLabel="Updating…">
                               All of theirs
-                            </button>
+                            </SubmitButton>
                           </form>
                         </div>
                       ) : (

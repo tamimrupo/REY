@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { deleteBookAction, toggleBookActiveAction } from "@/lib/actions/admin";
 import { BookCoverImage } from "@/components/book-cover";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { EmptyState, StatusPill } from "@/components/ui";
 import { getAuthors, getGenres, listBooks } from "@/lib/data";
 
@@ -106,18 +107,24 @@ export default async function AdminBooksPage(props: PageProps<"/admin/books">) {
                     <form action={toggleBookActiveAction}>
                       <input type="hidden" name="id" value={book.id} />
                       <input type="hidden" name="next" value={String(!book.is_active)} />
-                      <button type="submit" className="btn btn-outline btn-sm">
+                      <SubmitButton
+                        className="btn btn-outline btn-sm"
+                        pendingLabel={book.is_active ? "Hiding…" : "Publishing…"}
+                      >
                         {book.is_active ? "Hide" : "Publish"}
-                      </button>
+                      </SubmitButton>
                     </form>
                     <Link href={`/admin/books/${book.id}`} className="btn btn-outline btn-sm">
                       Edit
                     </Link>
                     <form action={deleteBookAction}>
                       <input type="hidden" name="id" value={book.id} />
-                      <button type="submit" className="btn btn-ghost btn-sm text-rose-600">
+                      <SubmitButton
+                        className="btn btn-ghost btn-sm text-rose-600"
+                        pendingLabel="Deleting…"
+                      >
                         Delete
-                      </button>
+                      </SubmitButton>
                     </form>
                   </div>
                 </td>

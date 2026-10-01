@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { SendEmailButton } from "@/components/admin/notification-actions";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { EmptyState, Stat, StatusPill } from "@/components/ui";
 import { markNotificationDoneAction, runMaintenanceAction } from "@/lib/actions/admin";
 import { ActionForm } from "@/components/forms/action-form";
@@ -134,9 +135,9 @@ export default async function AdminNotificationsPage(props: PageProps<"/admin/no
                     <form action={markNotificationDoneAction}>
                       <input type="hidden" name="id" value={notification.id} />
                       <input type="hidden" name="status" value="manual" />
-                      <button type="submit" className="btn btn-ghost btn-sm">
+                      <SubmitButton className="btn btn-ghost btn-sm" pendingLabel="Marking…">
                         Mark as sent
-                      </button>
+                      </SubmitButton>
                     </form>
                   ) : null}
 

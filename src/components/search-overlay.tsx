@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { BookCoverImage } from "@/components/book-cover";
 
@@ -41,6 +42,8 @@ function Magnifier({ className = "h-4 w-4" }: { className?: string }) {
 export function SearchOverlay() {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -50,16 +53,60 @@ export function SearchOverlay() {
   const [active, setActive] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // Close when the click lands anywhere outside the search.
+  // Focus goes back to the button that opened the search — never on mount.
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (wasOpen.current && !open) triggerRef.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
+
+  // While the search is open: Escape closes it from anywhere, a click outside
+  // closes it, Tab stays inside it, and the page behind it holds still.
   useEffect(() => {
     if (!open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusable = panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    // Close when the click lands anywhere outside the search.
     const onPointerDown = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    document.addEventListener("keydown", onKeyDown);
     document.addEventListener("mousedown", onPointerDown);
-    return () => document.removeEventListener("mousedown", onPointerDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mousedown", onPointerDown);
+    };
   }, [open]);
 
   // Ask the server shortly after typing stops.
@@ -107,6 +154,9 @@ export function SearchOverlay() {
 
   const go = (hit: Hit) => {
     setOpen(false);
+    // The panel closes at once; tell the progress bar a route is starting, since
+    // this navigation has no link for the page to notice.
+    window.dispatchEvent(new Event("route:start"));
     router.push(`/library/${hit.slug}`);
   };
 
@@ -134,9 +184,11 @@ export function SearchOverlay() {
   return (
     <div ref={containerRef}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
+        aria-controls="site-search-overlay"
         aria-label="Search the library"
         className={`btn btn-ghost btn-sm ${open ? "text-ink" : ""}`}
       >
@@ -144,8 +196,28 @@ export function SearchOverlay() {
         <span className="hidden sm:inline">Search</span>
       </button>
 
+      {/* The rest of the page goes quiet behind the search, and a click on it
+          closes the panel. Rendered on the body because the header's backdrop
+          blur would otherwise trap a fixed child inside the bar. */}
+      {open
+        ? createPortal(
+            <div
+              aria-hidden
+              className="animate-fade-in fixed inset-0 z-30 bg-ink/20"
+              onClick={() => setOpen(false)}
+            />,
+            document.body,
+          )
+        : null}
+
       {open ? (
-        <div className="absolute left-0 right-0 top-full z-50 border-b border-line bg-paper shadow-[0_30px_60px_-30px_rgba(0,0,0,0.55)]">
+        <div
+          id="site-search-overlay"
+          ref={panelRef}
+          role="dialog"
+          aria-label="Search the library"
+          className="animate-pop absolute left-0 right-0 top-full z-50 border-b border-line bg-paper shadow-[0_30px_60px_-30px_rgba(0,0,0,0.55)]"
+        >
           <div className="container-page py-5">
             <div className="relative max-w-2xl">
               <label className="sr-only" htmlFor="site-search">
@@ -172,12 +244,22 @@ export function SearchOverlay() {
                     ✕
                   </button>
                 ) : null}
-                <Magnifier />
+                {/* The magnifier and the spinner share the spot, so the search
+                    reports work without anything on screen moving. */}
+                {loading ? <span aria-hidden className="spinner" /> : <Magnifier />}
+                <span className="sr-only" role="status">
+                  {loading ? "Searching…" : ""}
+                </span>
               </div>
             </div>
 
             <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
-              <div className="max-h-[58vh] overflow-auto">
+              <div
+                aria-busy={loading}
+                className={`max-h-[58vh] overflow-auto transition-opacity duration-150 ${
+                  loading ? "opacity-60" : "opacity-100"
+                }`}
+              >
                 {genres.length ? (
                   <div>
                     <p className="text-micro font-semibold uppercase tracking-[0.12em] text-ink-muted">

@@ -27,6 +27,10 @@ Non-negotiables:
   always use `.label-mono` or `tracking-[0.12em]`.
 - **Section rules are black.** `line` separates things inside a component; ink
   borders mark structural divisions between sections.
+- **Every action answers.** Controls take a press state, pending submits spin,
+  results are announced (`role="alert"` / `role="status"`), navigation shows the
+  route bar, and the current page is marked with `aria-current="page"`. Use the
+  `--animate-*` tokens — never hand-roll a keyframe or a raw duration.
 
 Verification before calling UI work done:
 

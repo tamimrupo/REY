@@ -41,15 +41,15 @@ function BookLine({ rental }: { rental: Rental }) {
       <StatusPill status={rental.status} />
       {/* A button with formAction, not a nested <form>: nesting forms is invalid HTML
           and breaks hydration. The button's own name/value carries the rental id. */}
-      <button
-        type="submit"
+      <SubmitButton
         name="rental_id"
         value={rental.id}
         formAction={removeFromBoxAction}
         className="btn btn-ghost btn-sm text-rose-600"
+        pendingLabel="Removing…"
       >
         Remove
-      </button>
+      </SubmitButton>
     </li>
   );
 }

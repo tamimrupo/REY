@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AdminNav } from "@/components/admin/admin-nav";
+import { NavLink } from "@/components/nav-link";
 import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -69,9 +70,14 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
                 ["/admin/books", "Books"],
                 ["/admin/settings", "Settings"],
               ].map(([href, label]) => (
-                <Link key={href} href={href} className="btn btn-outline btn-sm whitespace-nowrap">
+                <NavLink
+                  key={href}
+                  href={href}
+                  exact={href === "/admin"}
+                  className="btn btn-outline btn-sm whitespace-nowrap aria-[current=page]:border-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper"
+                >
                   {label}
-                </Link>
+                </NavLink>
               ))}
             </div>
           </div>

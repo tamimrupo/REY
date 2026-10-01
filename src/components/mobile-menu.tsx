@@ -1,53 +1,98 @@
-import Link from "next/link";
+"use client";
 
-const links = [
-  { href: "/plans", label: "Plans" },
-  { href: "/library", label: "Library" },
-  { href: "/authors", label: "Authors" },
-  { href: "/how-it-works", label: "How it works" },
-  { href: "/rare", label: "Rare & requests" },
-  { href: "/about-us", label: "About" },
-];
+import { useEffect, useRef, useState } from "react";
 
+import { NavLink } from "@/components/nav-link";
+import { navLinks } from "@/lib/nav-links";
+
+const itemClass =
+  "rounded-card px-3 py-2 text-sm text-ink-soft transition-colors duration-150 hover:bg-cream hover:text-ink aria-[current=page]:bg-cream aria-[current=page]:font-semibold aria-[current=page]:text-ink";
+
+/**
+ * The small-screen menu.
+ *
+ * A disclosure panel rather than a native `<details>`, so that it can close on
+ * Escape, on a click outside, and on the choice itself — and so it arrives with
+ * the same quick pop as every other panel in the app.
+ */
 export function MobileMenu({ signedIn }: { signedIn: boolean }) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const wasOpen = useRef(false);
+
+  // Focus goes back to the button that opened the menu — but never on mount.
+  useEffect(() => {
+    if (wasOpen.current && !open) triggerRef.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    const onPointerDown = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("mousedown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mousedown", onPointerDown);
+    };
+  }, [open]);
+
   return (
-    <details className="group relative md:hidden">
-      <summary className="list-none">
-        <span className="btn btn-outline btn-sm">
-          Menu
-          <span aria-hidden className="group-open:hidden">
-            ☰
-          </span>
-          <span aria-hidden className="hidden group-open:inline">
-            ✕
-          </span>
+    <div ref={containerRef} className="relative md:hidden">
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-controls="site-mobile-menu"
+        className="btn btn-outline btn-sm"
+      >
+        Menu
+        <span aria-hidden className="text-base leading-none">
+          {open ? "✕" : "☰"}
         </span>
-      </summary>
-      <div className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-card border border-line bg-white p-2 shadow-xl">
-        <nav className="flex flex-col">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-card px-3 py-2 text-sm text-ink-soft hover:bg-cream hover:text-ink"
+      </button>
+
+      {open ? (
+        <div
+          id="site-mobile-menu"
+          className="animate-pop absolute right-0 z-50 mt-2 w-60 origin-top-right overflow-hidden rounded-card border border-line bg-white p-2 shadow-xl"
+        >
+          <nav className="flex flex-col">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className={itemClass}
+              >
+                {link.label}
+              </NavLink>
+            ))}
+            <div className="my-1 h-px bg-line" />
+            <NavLink
+              href={signedIn ? "/account" : "/login"}
+              onClick={() => setOpen(false)}
+              className={itemClass}
             >
-              {link.label}
-            </Link>
-          ))}
-          <div className="my-1 h-px bg-line" />
-          <Link
-            href={signedIn ? "/account" : "/login"}
-            className="rounded-card px-3 py-2 text-sm text-ink-soft hover:bg-cream hover:text-ink"
-          >
-            {signedIn ? "My account" : "Sign in"}
-          </Link>
-          <Link href="/plans" className="btn btn-primary m-1">
-            Start a plan
-          </Link>
-        </nav>
-      </div>
-    </details>
+              {signedIn ? "My account" : "Sign in"}
+            </NavLink>
+            <NavLink href="/plans" onClick={() => setOpen(false)} className="btn btn-primary m-1">
+              Start a plan
+            </NavLink>
+          </nav>
+        </div>
+      ) : null}
+    </div>
   );
 }
-
-export { links as navLinks };

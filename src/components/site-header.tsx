@@ -1,6 +1,8 @@
 import Link from "next/link";
 
-import { MobileMenu, navLinks } from "@/components/mobile-menu";
+import { MobileMenu } from "@/components/mobile-menu";
+import { NavLink } from "@/components/nav-link";
+import { navLinks } from "@/lib/nav-links";
 import { ScrollElevation } from "@/components/motion";
 import { SearchOverlay } from "@/components/search-overlay";
 import { getSession } from "@/lib/auth";
@@ -36,13 +38,13 @@ export async function SiteHeader() {
 
           <nav className="hidden items-center gap-7 md:flex">
             {navLinks.map((link) => (
-              <Link
+              <NavLink
                 key={link.href}
                 href={link.href}
                 className="nav-link py-2 text-sm text-ink-soft transition hover:text-ink"
               >
                 {link.label}
-              </Link>
+              </NavLink>
             ))}
           </nav>
         </div>

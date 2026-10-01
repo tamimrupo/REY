@@ -171,7 +171,9 @@ export function FeaturedShelf({
     const list = cards();
     if (!list.length) return;
     const next = (activeIndexRef.current + direction + list.length) % list.length;
-    goTo(next);
+    // CSS cannot reach a JavaScript scroll, so honour the motion setting by hand.
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    goTo(next, reduced ? "auto" : "smooth");
   };
 
   if (!books.length) return null;

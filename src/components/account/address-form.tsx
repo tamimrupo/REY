@@ -1,6 +1,7 @@
 "use client";
 
 import { ActionForm } from "@/components/forms/action-form";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { deleteAddressAction, saveAddressAction } from "@/lib/actions/storefront";
 import type { Address } from "@/lib/types";
 
@@ -133,14 +134,14 @@ export function EditAddressForm({ address }: { address: Address }) {
       submitLabel="Update address"
       pendingLabel="Saving…"
       footer={
-        <button
-          type="submit"
-          formAction={deleteAddressAction}
+        <SubmitButton
           className="btn btn-ghost"
+          formAction={deleteAddressAction}
           formNoValidate
+          pendingLabel="Deleting…"
         >
           Delete
-        </button>
+        </SubmitButton>
       }
     >
       <Fields address={address} />

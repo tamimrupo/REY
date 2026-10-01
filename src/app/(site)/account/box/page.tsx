@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Alert, EmptyState, StatusPill } from "@/components/ui";
 import { BookCoverImage } from "@/components/book-cover";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { ConfirmBoxPanel, type CourierOption } from "@/components/account/box-forms";
 import { addToBoxFormAction } from "@/lib/actions/storefront";
 import { requireUser } from "@/lib/auth";
@@ -149,9 +150,9 @@ export default async function BoxPage(props: PageProps<"/account/box">) {
                       <form action={addToBoxFormAction}>
                         <input type="hidden" name="book_id" value={book.id} />
                         <input type="hidden" name="back" value="/account/box" />
-                        <button type="submit" className="btn btn-primary btn-sm w-full">
+                        <SubmitButton className="btn btn-primary btn-sm w-full" pendingLabel="Adding…">
                           Add
-                        </button>
+                        </SubmitButton>
                       </form>
                     ) : (
                       <button type="button" disabled className="btn btn-outline btn-sm w-full">
