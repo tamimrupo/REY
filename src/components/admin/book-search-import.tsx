@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { SubmitButton } from "@/components/forms/submit-button";
 import { BookCoverImage, CoverPlaceholder } from "@/components/book-cover";
@@ -47,9 +47,13 @@ export function BookSearchImport() {
   /** Books already on the shop's own shelf that match the query. */
   const [mine, setMine] = useState<ExistingRow[]>([]);
   /** Which page of outside results is showing, and whether more exist. */
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  /**
+   * Paging lives in a ref, not state: the next page must not depend on a render
+   * having happened, and one click must not be able to fire twice.
+   */
+  const paging = useRef({ next: 2, busy: false });
   const [error, setError] = useState("");
   /** The query the current rows belong to — drives the loading state. */
   const [loadedQuery, setLoadedQuery] = useState("");
@@ -90,7 +94,7 @@ export function BookSearchImport() {
         setTotal(typeof payload.totalFound === "number" ? payload.totalFound : null);
         setHint(payload.hint ?? null);
         setMine((payload.mine ?? []) as ExistingRow[]);
-        setPage(1);
+        paging.current = { next: 2, busy: false };
         setHasMore(Boolean(payload.hasMore));
         setLoadedQuery(trimmed);
       } catch {
@@ -119,21 +123,35 @@ export function BookSearchImport() {
    * disturb the rows already on screen.
    */
   const showMore = async () => {
-    const next = page + 1;
+    if (paging.current.busy) return;
+    paging.current.busy = true;
     setLoadingMore(true);
+
+    const next = paging.current.next;
     try {
       const response = await fetch(
         `/api/admin/book-search?q=${encodeURIComponent(trimmed)}&page=${next}`,
       );
       const payload = await response.json();
       if (!response.ok || !payload.ok) return;
-      setRows((prev) => [...prev, ...((payload.results ?? []) as BookSearchRow[])]);
+
+      // Append only what is not already on screen. A repeated page, a double
+      // click or a retry then costs nothing instead of duplicating the list.
+      setRows((prev) => {
+        const seen = new Set(prev.map((row) => row.id));
+        const fresh = ((payload.results ?? []) as BookSearchRow[]).filter(
+          (row) => !seen.has(row.id),
+        );
+        return fresh.length ? [...prev, ...fresh] : prev;
+      });
+
+      paging.current.next = next + 1;
       setHasMore(Boolean(payload.hasMore));
       setTotal(typeof payload.totalFound === "number" ? payload.totalFound : null);
-      setPage(next);
     } catch {
       // Keep what is already on screen.
     } finally {
+      paging.current.busy = false;
       setLoadingMore(false);
     }
   };
