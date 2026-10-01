@@ -3,7 +3,11 @@ import Link from "next/link";
 import { LoginForm, ResendConfirmationForm } from "@/components/auth-forms";
 import { SetupNotice } from "@/components/ui";
 
-export const metadata = { title: "Sign in" };
+export const metadata = {
+  title: "Sign in",
+  description:
+    "Sign in to REY BD to pick this month's books, follow your deliveries and manage your rental plan.",
+};
 
 export default async function LoginPage(props: PageProps<"/login">) {
   const search = await props.searchParams;
@@ -32,7 +36,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
       </p>
 
       <details className="mt-6 rounded-xl border border-line bg-white/60 p-4">
-        <summary className="cursor-pointer text-sm text-ink-soft">
+        <summary className="cursor-pointer py-1.5 text-sm text-ink-soft">
           Never got the confirmation email?
         </summary>
         <p className="mt-3 text-sm text-ink-soft">

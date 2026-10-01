@@ -36,6 +36,8 @@ export default async function PlansPage() {
       </section>
 
       <section className="container-page py-16">
+        {/* The cards carry h3 titles, so the grid needs its own h2 parent. */}
+        <h2 className="sr-only">Choose your plan</h2>
         {plans.length ? (
           <div className="grid gap-6 lg:grid-cols-3">
             {plans.map((plan) => (

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { PageForm } from "@/components/admin/page-form";
-import { StatusPill } from "@/components/ui";
+import { EmptyState, StatusPill } from "@/components/ui";
 import { getCmsPages } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 
@@ -56,9 +56,10 @@ export default async function AdminPagesPage() {
       </div>
 
       {pages.length === 0 ? (
-        <p className="text-sm text-ink-muted">
-          No pages yet. Create one, or run the seed SQL for the standard policies.
-        </p>
+        <EmptyState
+          title="No pages yet"
+          description="Create your first policy or content page with the form below."
+        />
       ) : null}
 
       <section className="card p-6">

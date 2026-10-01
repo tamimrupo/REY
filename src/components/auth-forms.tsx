@@ -33,8 +33,11 @@ export function LoginForm({ next = "/account" }: { next?: string }) {
           autoComplete="current-password"
         />
       </div>
-      <p className="text-sm">
-        <Link href="/forgot-password" className="text-ink-soft hover:text-gold">
+      <p className="mt-6 text-sm">
+        <Link
+          href="/forgot-password"
+          className="inline-block py-1.5 text-ink-soft hover:text-gold"
+        >
           Forgot your password?
         </Link>
       </p>
@@ -96,7 +99,14 @@ export function ForgotPasswordForm() {
         <label className="label" htmlFor="email">
           Email
         </label>
-        <input id="email" name="email" type="email" required className="field" />
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          className="field"
+          autoComplete="email"
+        />
       </div>
     </ActionForm>
   );

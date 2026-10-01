@@ -2,7 +2,10 @@ import Link from "next/link";
 
 import { ForgotPasswordForm } from "@/components/auth-forms";
 
-export const metadata = { title: "Reset password" };
+export const metadata = {
+  title: "Reset password",
+  description: "Reset your REY BD password — we will email you a secure link to choose a new one.",
+};
 
 export default function ForgotPasswordPage() {
   return (

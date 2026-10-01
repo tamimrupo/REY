@@ -58,6 +58,8 @@ export function BookCoverImage({
           ref={imgRef}
           src={url}
           alt={title}
+          width={400}
+          height={600}
           loading={loading}
           onError={hideBrokenCover}
           className="absolute inset-0 h-full w-full object-cover"
@@ -86,7 +88,13 @@ export function CoverPlaceholder({
         className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-mist to-frost"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/rey-logo-black.svg" alt="" className="h-2.5 w-auto opacity-35" />
+        <img
+          src="/brand/rey-logo-black.svg"
+          alt=""
+          width={78}
+          height={40}
+          className="h-2.5 w-auto opacity-35"
+        />
       </span>
     );
   }
@@ -104,6 +112,8 @@ export function CoverPlaceholder({
       <img
         src="/brand/rey-logo-black.svg"
         alt=""
+        width={78}
+        height={40}
         className={`w-auto opacity-40 ${large ? "h-5" : "h-3.5"}`}
       />
 

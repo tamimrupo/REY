@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { deleteBookAction, toggleBookActiveAction } from "@/lib/actions/admin";
 import { BookCoverImage } from "@/components/book-cover";
-import { StatusPill } from "@/components/ui";
+import { EmptyState, StatusPill } from "@/components/ui";
 import { getAuthors, getGenres, listBooks } from "@/lib/data";
 
 export const metadata = { title: "Books" };
@@ -128,9 +128,12 @@ export default async function AdminBooksPage(props: PageProps<"/admin/books">) {
       </div>
 
       {books.length === 0 ? (
-        <p className="text-sm text-ink-muted">
-          No books found. Add one, or run the seed SQL to load the starter catalog.
-        </p>
+        <EmptyState
+          title="No books found"
+          description="Nothing matches this search. Add a book, or import a batch from Import books."
+          actionHref="/admin/import"
+          actionLabel="Import books"
+        />
       ) : null}
 
       {pages > 1 ? (

@@ -4,7 +4,10 @@ import { ResendConfirmationForm } from "@/components/auth-forms";
 import { Alert } from "@/components/ui";
 import { siteUrl } from "@/lib/env";
 
-export const metadata = { title: "Confirm your email" };
+export const metadata = {
+  title: "Confirm your email",
+  description: "Confirm your REY BD email address to finish setting up your book rental account.",
+};
 
 export default async function VerifyEmailPage(props: PageProps<"/verify-email">) {
   const search = await props.searchParams;

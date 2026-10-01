@@ -59,12 +59,18 @@ export async function SiteFooter() {
           </p>
           <div className="mt-6 flex gap-4 text-sm">
             {site.facebook ? (
-              <a href={site.facebook} className="hover:text-paper">
+              <a
+                href={site.facebook}
+                className="py-1.5 transition hover:text-paper"
+              >
                 Facebook
               </a>
             ) : null}
             {site.instagram ? (
-              <a href={site.instagram} className="hover:text-paper">
+              <a
+                href={site.instagram}
+                className="py-1.5 transition hover:text-paper"
+              >
                 Instagram
               </a>
             ) : null}
@@ -80,7 +86,7 @@ export async function SiteFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="nav-link transition hover:text-paper"
+                      className="nav-link py-1.5 transition hover:text-paper"
                     >
                       {link.label}
                     </Link>

@@ -1,5 +1,5 @@
 import { PlanForm } from "@/components/admin/plan-form";
-import { StatusPill } from "@/components/ui";
+import { EmptyState, StatusPill } from "@/components/ui";
 import { getPlanFeatures, getPlans } from "@/lib/data";
 import { money } from "@/lib/format";
 
@@ -16,6 +16,13 @@ export default async function AdminPlansPage() {
           Change prices, book counts and deposit without touching code.
         </p>
       </div>
+
+      {plans.length === 0 ? (
+        <EmptyState
+          title="No plans yet"
+          description="Add your first plan with the form below — pricing, book count and deposit are all editable later."
+        />
+      ) : null}
 
       <div className="space-y-4">
         {plans.map((plan) => (

@@ -70,6 +70,8 @@ export function AvatarImage({
           ref={imgRef}
           src={url}
           alt=""
+          width={400}
+          height={500}
           className="absolute inset-0 h-full w-full object-cover"
           loading="lazy"
           onError={hideBrokenImage}

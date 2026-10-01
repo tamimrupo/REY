@@ -3,7 +3,11 @@ import Link from "next/link";
 import { RegisterForm } from "@/components/auth-forms";
 import { SetupNotice } from "@/components/ui";
 
-export const metadata = { title: "Create account" };
+export const metadata = {
+  title: "Create account",
+  description:
+    "Create a free REY BD account to pick your books, choose a plan and track deliveries across Bangladesh.",
+};
 
 export default async function RegisterPage(props: PageProps<"/register">) {
   const search = await props.searchParams;
