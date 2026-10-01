@@ -109,6 +109,8 @@ export function BookForm({
   defaults?: { title?: string };
 }) {
   const [coverUrl, setCoverUrl] = useState(book?.cover_url ?? "");
+  const [authorPhoto, setAuthorPhoto] = useState(book?.authors?.avatar_url ?? "");
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   return (
     <ActionForm
@@ -179,11 +181,48 @@ export function BookForm({
                   ? "Renaming updates the author on every book they carry. Bangla names are welcome — the shop renders them in a Bengali face."
                   : "New authors are added to the catalogue. Bangla names are welcome."}
               </p>
+              <input type="hidden" name="author_avatar_url" value={authorPhoto} />
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    setPhotoUploading(true);
+                    try {
+                      const supabase = createClient();
+                      const safeName = file.name.replace(/[^\w.-]/g, "_");
+                      const path = `authors/${Date.now()}-${safeName}`;
+                      const { error } = await supabase.storage
+                        .from("book-covers")
+                        .upload(path, file, { upsert: false, contentType: file.type });
+                      if (error) throw error;
+                      const { data } = supabase.storage.from("book-covers").getPublicUrl(path);
+                      setAuthorPhoto(data.publicUrl);
+                    } catch {
+                      // Leave whatever URL was already there.
+                    } finally {
+                      setPhotoUploading(false);
+                    }
+                  }}
+                  className="text-sm"
+                />
+                {photoUploading ? <span aria-hidden className="spinner" /> : null}
+                {authorPhoto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={authorPhoto}
+                    alt=""
+                    className="h-11 w-11 rounded-field border border-line object-cover"
+                  />
+                ) : null}
+              </div>
               <input
-                name="author_avatar_url"
                 className="field mt-2"
-                placeholder="Author photo URL (optional)"
-                defaultValue={book?.authors?.avatar_url ?? ""}
+                placeholder="…or paste an author photo URL"
+                value={authorPhoto}
+                onChange={(event) => setAuthorPhoto(event.target.value)}
               />
               <textarea
                 name="author_bio"
