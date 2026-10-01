@@ -29,8 +29,8 @@ export function PlanCard({
         plan.is_popular ? "border-ink" : "border-line"
       }`}
     >
-      <p className={`label-mono ${plan.is_popular ? "text-ink" : ""}`}>
-        {plan.is_popular ? "Most popular" : "\u00a0"}
+      <p className={`label-mono ${plan.is_popular ? "text-ink" : ""}`} aria-hidden={!plan.is_popular}>
+        {plan.is_popular ? "Most popular" : null}
       </p>
 
       <h3 className="mt-3 font-display text-2xl font-bold text-ink">{plan.name}</h3>

@@ -50,12 +50,13 @@ export function EmptyState({
   actionLabel?: string;
 }) {
   // A ruled statement, not a dashed placeholder: the page says what is missing
-  // in the same voice it says everything else.
+  // in the same voice it says everything else — and no louder than a section
+  // heading, so the hierarchy stays intact.
   return (
     <div className="border-t border-line pt-6">
-      <p className="font-display text-2xl font-bold text-ink">{title}</p>
+      <p className="font-display text-xl font-bold text-ink">{title}</p>
       {description ? (
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-muted">{description}</p>
+        <p className="mt-2 max-w-xl text-base leading-relaxed text-ink-muted">{description}</p>
       ) : null}
       {actionHref && actionLabel ? (
         <Link href={actionHref} className="btn btn-outline mt-6">
@@ -133,8 +134,10 @@ export function Stat({
   hint?: string;
 }) {
   // A figure under a rule, the way a report sets one — not a card in a grid.
+  // The rule is a hairline: on a dashboard of twelve figures, twelve ink rules
+  // would shout as loudly as the page's own masthead.
   return (
-    <div className="border-t border-ink pt-4">
+    <div className="border-t border-line pt-4">
       <p className="label-mono">{label}</p>
       <p className="mt-3 font-display text-3xl font-bold leading-none text-ink">{value}</p>
       {hint ? <p className="mt-2 text-meta text-ink-muted">{hint}</p> : null}

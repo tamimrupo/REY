@@ -14,15 +14,13 @@ export async function QuotaBar({ userId }: { userId: string }) {
 
   if (!state.subscription || !state.plan) {
     return (
-      <div className="border-b border-line bg-cream/70">
-        <div className="container-page flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+      <div className="border-b border-line bg-cream">
+        <div className="container-page flex flex-wrap items-center gap-3 py-3 text-sm">
+          <span className="label-mono">Guest</span>
           <p className="text-ink-soft">
-            <span className="font-medium text-ink">Browsing as a guest.</span> A plan unlocks 2, 4 or
-            8 books a month.
+            <span className="font-medium text-ink">A plan unlocks 2, 4 or 8 books a month.</span>{" "}
+            Start one from the header, or keep browsing — the library is open.
           </p>
-          <Link href="/plans" className="btn btn-primary btn-sm">
-            Get a plan
-          </Link>
         </div>
       </div>
     );
@@ -44,7 +42,7 @@ export async function QuotaBar({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="border-b border-line bg-cream/70">
+    <div className="border-b border-line bg-cream">
       <div className="container-page flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
           <span className="text-ink">

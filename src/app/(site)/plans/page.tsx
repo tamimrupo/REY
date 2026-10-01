@@ -23,12 +23,12 @@ export default async function PlansPage() {
   return (
     <>
       <section className="border-b border-line bg-cream">
-        <div className="container-page py-16 text-center">
+        <div className="container-page py-16">
           <p className="eyebrow">Membership</p>
-          <h1 className="mx-auto mt-3 max-w-3xl text-ink">
+          <h1 className="mt-3 max-w-3xl text-ink">
             Pick the number of books. We handle the rest.
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-ink-soft">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft">
             Every plan includes the refundable security deposit, monthly swaps and full library
             access. Change or cancel your plan at the start of any month.
           </p>

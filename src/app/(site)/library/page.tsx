@@ -155,7 +155,7 @@ export default async function LibraryPage(props: PageProps<"/library">) {
         {pages > 1 ? (
           <nav className="mt-12 flex items-center justify-center gap-2">
             {page > 1 ? (
-              <Link href={buildQuery({ q, genre, language, rarity, page: String(page - 1) })} className="btn btn-outline btn-sm">
+              <Link href={buildQuery({ q, genre, language, rarity, page: String(page - 1) })} className="btn btn-ghost btn-sm">
                 ← Previous
               </Link>
             ) : null}
@@ -163,7 +163,7 @@ export default async function LibraryPage(props: PageProps<"/library">) {
               Page {page} of {pages}
             </span>
             {page < pages ? (
-              <Link href={buildQuery({ q, genre, language, rarity, page: String(page + 1) })} className="btn btn-outline btn-sm">
+              <Link href={buildQuery({ q, genre, language, rarity, page: String(page + 1) })} className="btn btn-ghost btn-sm">
                 Next →
               </Link>
             ) : null}

@@ -146,7 +146,7 @@ export default async function AdminBooksPage(props: PageProps<"/admin/books">) {
       {pages > 1 ? (
         <nav className="flex items-center justify-center gap-2">
           {page > 1 ? (
-            <Link href={`/admin/books?${new URLSearchParams({ q, page: String(page - 1) })}`} className="btn btn-outline btn-sm">
+            <Link href={`/admin/books?${new URLSearchParams({ q, page: String(page - 1) })}`} className="btn btn-ghost btn-sm">
               ← Previous
             </Link>
           ) : null}
@@ -154,7 +154,7 @@ export default async function AdminBooksPage(props: PageProps<"/admin/books">) {
             Page {page} of {pages}
           </span>
           {page < pages ? (
-            <Link href={`/admin/books?${new URLSearchParams({ q, page: String(page + 1) })}`} className="btn btn-outline btn-sm">
+            <Link href={`/admin/books?${new URLSearchParams({ q, page: String(page + 1) })}`} className="btn btn-ghost btn-sm">
               Next →
             </Link>
           ) : null}

@@ -475,7 +475,7 @@
     box-shadow: 0 0 0 3px rgb(9 9 9 / 0.08);
   }
   .field::placeholder {
-    color: #a3a3a3;
+    color: var(--color-ink-muted);
   }
   /* A field the server has rejected. In monochrome the signal is contrast plus
      the message beside it — never a colour. */
@@ -658,6 +658,23 @@
   }
   .table tr:last-child td {
     border-bottom: none;
+  }
+  /* Row actions are quiet. The shadow that marks a button as pressable belongs
+     to the page's real calls to action — not to every row of a table, where
+     eight shadowed buttons compete with the data they sit next to. */
+  .table td .btn-outline,
+  .table td .btn-ghost {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    padding-inline: 0.5rem;
+  }
+  .table td .btn-outline:hover:not(:disabled),
+  .table td .btn-ghost:hover:not(:disabled) {
+    border-color: var(--color-line);
+    background: #fff;
+    transform: none;
+    box-shadow: none;
   }
   /* A link that fills a table cell is still a pointer target. */
   .table td a {

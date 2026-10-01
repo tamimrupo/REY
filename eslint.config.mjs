@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     // are not part of this project's source (see .claude/skills).
     ".claude/**",
     ".agent/**",
+    // Audit output and one-off probes (git-ignored, see scripts/audit-responsive.mjs).
+    ".audit/**",
   ]),
 ]);
 

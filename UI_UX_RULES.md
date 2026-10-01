@@ -110,6 +110,11 @@ commit that breaks it.
   action column off-screen.
 - **Status flags are square** (`.pill`, `rounded-field`), uppercase mono, and
   carried by fill and contrast — never by hue.
+- **Row actions are quiet.** A button inside a table cell loses its border and
+  shadow (`.table td .btn-outline`, `.table td .btn-ghost`) until it is hovered;
+  the page's real calls to action are the only shadowed buttons on screen.
+- **Placeholders never go lighter than `ink-muted`** (5:1). A placeholder is a
+  hint, not a label — but it still has to be readable.
 - **Every empty, loading and error state is designed.** `EmptyState`,
   `loading.tsx`, `error.tsx` — a blank panel is not an acceptable answer to "no
   data yet".

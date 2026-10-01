@@ -77,7 +77,7 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        <div className="grid gap-10 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 sm:gap-10">
           {columns.map((column) => (
             <div key={column.title}>
               <p className="label-mono !text-paper/60">{column.title}</p>

@@ -35,9 +35,6 @@ export default function SiteError({
         <Link href="/" className="btn btn-outline">
           Back to the shop
         </Link>
-        <Link href="/contact" className="btn btn-ghost">
-          Tell us what happened
-        </Link>
       </div>
     </div>
   );

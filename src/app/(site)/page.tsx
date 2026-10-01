@@ -16,30 +16,6 @@ import { couriersFor } from "@/lib/quotas";
 import { dhakaDayIndex, pickForToday, rotateForToday } from "@/lib/daily";
 import { money } from "@/lib/format";
 
-/** The open-book glyph that replaces the "o" in the headline. The hidden "o"
-    keeps the word readable to screen readers and to search engines. */
-function BookGlyph() {
-  return (
-    <>
-      <svg
-        aria-hidden
-        viewBox="6 7 20 18"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="mx-[0.05em] inline-block h-[0.58em] w-[0.66em] align-baseline"
-      >
-        <path d="M16 9.5v14" />
-        <path d="M16 11c-2.6-2.1-6.2-2.7-9.3-2.3v13c3.1-.4 6.7.2 9.3 2.3" />
-        <path d="M16 11c2.6-2.1 6.2-2.7 9.3-2.3v13c-3.1-.4-6.7.2-9.3 2.3" />
-      </svg>
-      <span className="sr-only">o</span>
-    </>
-  );
-}
-
 export default async function HomePage() {
   const [plans, features, shelfBooks, rare, courierSettings] = await Promise.all([
     getPlans(),
@@ -150,10 +126,8 @@ export default async function HomePage() {
               <span className="label-mono hidden !text-ink-soft sm:inline">Est. 2026</span>
             </div>
 
-            <h1 className="mt-8 text-display sm:text-5xl lg:text-6xl">
-              A new b
-              <BookGlyph />
-              ok every month,
+            <h1 className="mt-8">
+              A new book every month,
               <br />
               at your door.
             </h1>
@@ -212,7 +186,6 @@ export default async function HomePage() {
           <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
             <Reveal>
               <SectionHeading
-                index="01"
                 eyebrow="How it works"
                 title="Three moves from sign-up to your first box"
                 description="We handle the warehousing, the couriers and the chasing. You just decide what to read next."
@@ -245,7 +218,7 @@ export default async function HomePage() {
         <div className="container-page py-20">
           <Reveal>
             <div className="section-rule border-ink/25">
-              <span className="label-mono !text-paper/70">02 / The club in numbers</span>
+              <span className="label-mono !text-paper/70">The club in numbers</span>
               <span aria-hidden className="h-px flex-1 bg-white/20" />
             </div>
             <h2 className="mt-6 max-w-3xl text-paper">
@@ -289,7 +262,6 @@ export default async function HomePage() {
         <div className="container-page py-20">
           <Reveal>
             <SectionHeading
-              index="03"
               eyebrow="Membership"
               title="Plans built around how much you actually read"
               description={`Every plan includes the refundable deposit, monthly swaps and the full library. The most you can hold at once is ${maxBooks} books.`}
@@ -348,7 +320,6 @@ export default async function HomePage() {
             <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
               <Reveal>
                 <SectionHeading
-                  index="04"
                   eyebrow="Rare & hard to find"
                   title="Not on the shelves? Ask for it."
                   description="Out-of-print Bangla classics, imported hardbacks, academic volumes that never reach a local shop. Tell us what you are hunting for and we will do the legwork."
