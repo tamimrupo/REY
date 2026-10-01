@@ -46,6 +46,10 @@ export function BookSearchImport() {
   const [hint, setHint] = useState<string | null>(null);
   /** Books already on the shop's own shelf that match the query. */
   const [mine, setMine] = useState<ExistingRow[]>([]);
+  /** Which page of outside results is showing, and whether more exist. */
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   /** The query the current rows belong to — drives the loading state. */
   const [loadedQuery, setLoadedQuery] = useState("");
@@ -86,6 +90,8 @@ export function BookSearchImport() {
         setTotal(typeof payload.totalFound === "number" ? payload.totalFound : null);
         setHint(payload.hint ?? null);
         setMine((payload.mine ?? []) as ExistingRow[]);
+        setPage(1);
+        setHasMore(Boolean(payload.hasMore));
         setLoadedQuery(trimmed);
       } catch {
         if (cancelled) return;
@@ -106,6 +112,31 @@ export function BookSearchImport() {
   const publishValue = publish ? "true" : "false";
   const showRows = usable && settled && rows.length > 0;
   const showEmpty = usable && settled && !rows.length && !mine.length && !error;
+
+  /**
+   * The next page of outside results, appended. Fetched on demand rather than
+   * through the search effect: paging is a deliberate act, and it must not
+   * disturb the rows already on screen.
+   */
+  const showMore = async () => {
+    const next = page + 1;
+    setLoadingMore(true);
+    try {
+      const response = await fetch(
+        `/api/admin/book-search?q=${encodeURIComponent(trimmed)}&page=${next}`,
+      );
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) return;
+      setRows((prev) => [...prev, ...((payload.results ?? []) as BookSearchRow[])]);
+      setHasMore(Boolean(payload.hasMore));
+      setTotal(typeof payload.totalFound === "number" ? payload.totalFound : null);
+      setPage(next);
+    } catch {
+      // Keep what is already on screen.
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -272,6 +303,19 @@ export function BookSearchImport() {
 
       {/* A Bangla title the outside catalogues cannot see is still a book the
           shop can carry — hand it over to the manual form, Bangla intact. */}
+      {hasMore && rows.length ? (
+        <div className="flex justify-center border-t border-line pt-5">
+          <button
+            type="button"
+            onClick={showMore}
+            disabled={loadingMore}
+            className="btn btn-outline btn-sm"
+          >
+            {loadingMore ? "Loading more…" : "Show more results"}
+          </button>
+        </div>
+      ) : null}
+
       {showEmpty && query.trim().length >= 2 && hasBengaliScript(query) ? (
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
           <Link

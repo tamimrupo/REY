@@ -719,13 +719,14 @@ async function fetchEdition(isbn: string): Promise<OpenLibraryEdition | null> {
   );
 }
 
-async function searchOpenLibrary(query: string, limit: number): Promise<{ results: BookCandidate[]; total: number | null }> {
+async function searchOpenLibrary(query: string, limit: number, page = 1): Promise<{ results: BookCandidate[]; total: number | null }> {
   const asIsbn = looksLikeIsbn(query) ? normalizeIsbn(query) : null;
   const q = asIsbn ? `isbn:${asIsbn}` : query;
 
   const url = new URL("https://openlibrary.org/search.json");
   url.searchParams.set("q", q);
   url.searchParams.set("limit", String(Math.min(50, Math.max(1, limit))));
+  if (page > 1) url.searchParams.set("page", String(page));
   url.searchParams.set("fields", SEARCH_FIELDS);
   // Relevance order: a search box should answer the question that was asked.
   // (Sorting by popularity drags in unrelated bestsellers instead.)
@@ -785,7 +786,7 @@ function dedupe(candidates: BookCandidate[]): BookCandidate[] {
  * Google results (when a key is configured) are merged ahead of Open Library,
  * because they carry a full description; Open Library fills in the rest.
  */
-export async function searchBooks(query: string, limit = 12): Promise<SearchOutcome> {
+export async function searchBooks(query: string, limit = 24, page = 1): Promise<SearchOutcome> {
   const trimmed = query.trim();
   if (trimmed.length < 3) return { results: [], totalFound: null, hint: null };
 
@@ -798,8 +799,8 @@ export async function searchBooks(query: string, limit = 12): Promise<SearchOutc
   const usesKey = Boolean(process.env.GOOGLE_BOOKS_API_KEY?.trim());
 
   const [google, ...libraries] = await Promise.all([
-    usesKey ? searchGoogle(searched, limit) : Promise.resolve([]),
-    ...queries.map((query) => searchOpenLibrary(query, limit)),
+    usesKey && page === 1 ? searchGoogle(searched, limit) : Promise.resolve([]),
+    ...queries.map((q) => searchOpenLibrary(q, limit, page)),
   ]);
 
   const results = dedupe([...google, ...libraries.flatMap((library) => library.results)]).slice(

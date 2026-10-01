@@ -31,12 +31,15 @@ export async function GET(request: Request) {
     );
   }
 
-  const query = (new URL(request.url).searchParams.get("q") ?? "").trim();
+  const url = new URL(request.url);
+  const query = (url.searchParams.get("q") ?? "").trim();
+  const page = Math.max(1, Number(url.searchParams.get("page") ?? "1") || 1);
+  const perPage = 24;
   if (query.length < 3) {
     return NextResponse.json({ ok: true, results: [], totalFound: null, hint: null, message: "" });
   }
 
-  const outcome = await searchBooks(query, 12);
+  const outcome = await searchBooks(query, perPage, page);
   if (outcome.error) {
     return NextResponse.json({ ok: false, message: outcome.error, results: [] });
   }
@@ -91,10 +94,17 @@ export async function GET(request: Request) {
     results.push({ ...candidate, existing });
   }
 
+  const hasMore =
+    typeof outcome.totalFound === "number"
+      ? page * perPage < outcome.totalFound
+      : outcome.results.length === perPage;
+
   return NextResponse.json({
     ok: true,
     results,
     mine,
+    page,
+    hasMore,
     totalFound: outcome.totalFound,
     hint: outcome.hint,
     message: "",
