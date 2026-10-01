@@ -33,6 +33,7 @@ const groups: { title: string; items: { href: string; label: string }[] }[] = [
     title: "Catalog",
     items: [
       { href: "/admin/books", label: "Books" },
+      { href: "/admin/authors", label: "Authors" },
       { href: "/admin/plans", label: "Plans" },
       { href: "/admin/import", label: "Import books" },
     ],

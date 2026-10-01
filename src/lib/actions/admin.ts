@@ -81,6 +81,50 @@ async function releaseCopy(supabase: any, copyId: string | null): Promise<void> 
 /* Books                                                                       */
 /* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
+/* Authors                                                                     */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Edits an author directly: name, slug, photo and bio.
+ *
+ * One row per person, shared by every book they carry — so this is the place to
+ * turn a Latin name into Bangla, add a portrait, or write the bio that shows on
+ * their page. Doing it here saves opening a book to reach them.
+ */
+export async function saveAuthorAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!supabaseConfigured) return fail(NOT_READY);
+  await requireAdmin();
+
+  const supabase = await createClient();
+  const id = str(formData, "id");
+  const name = str(formData, "name");
+  if (!id) return fail("Missing author.");
+  if (!name) return fail("An author needs a name.");
+
+  const patch: Record<string, string | null> = {
+    name,
+    avatar_url: str(formData, "avatar_url") || null,
+    bio: str(formData, "bio") || null,
+  };
+
+  // A slug is a URL: only change it when a new one is typed, so renaming an
+  // author never breaks a link someone already shared.
+  const wanted = slugify(str(formData, "slug"));
+  if (wanted) patch.slug = wanted;
+
+  const { error } = await supabase.from("authors").update(patch).eq("id", id);
+  if (error) return fail(error.message);
+
+  revalidatePath("/admin/authors");
+  revalidatePath("/authors");
+  revalidatePath("/library");
+  return { ok: true, message: `Saved ${name}. Every book by them is updated.` };
+}
+
 export async function saveBookAction(
   _prev: ActionState,
   formData: FormData,
