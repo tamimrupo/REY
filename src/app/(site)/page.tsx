@@ -16,23 +16,27 @@ import { couriersFor } from "@/lib/quotas";
 import { dhakaDayIndex, pickForToday, rotateForToday } from "@/lib/daily";
 import { money } from "@/lib/format";
 
-/** The open-book glyph that replaces the "o" in the headline. */
+/** The open-book glyph that replaces the "o" in the headline. The hidden "o"
+    keeps the word readable to screen readers and to search engines. */
 function BookGlyph() {
   return (
-    <svg
-      aria-hidden
-      viewBox="6 7 20 18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="mx-[0.05em] inline-block h-[0.58em] w-[0.66em] align-baseline"
-    >
-      <path d="M16 9.5v14" />
-      <path d="M16 11c-2.6-2.1-6.2-2.7-9.3-2.3v13c3.1-.4 6.7.2 9.3 2.3" />
-      <path d="M16 11c2.6-2.1 6.2-2.7 9.3-2.3v13c-3.1-.4-6.7.2-9.3 2.3" />
-    </svg>
+    <>
+      <svg
+        aria-hidden
+        viewBox="6 7 20 18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="mx-[0.05em] inline-block h-[0.58em] w-[0.66em] align-baseline"
+      >
+        <path d="M16 9.5v14" />
+        <path d="M16 11c-2.6-2.1-6.2-2.7-9.3-2.3v13c3.1-.4 6.7.2 9.3 2.3" />
+        <path d="M16 11c2.6-2.1 6.2-2.7 9.3-2.3v13c-3.1-.4-6.7.2-9.3 2.3" />
+      </svg>
+      <span className="sr-only">o</span>
+    </>
   );
 }
 
@@ -121,73 +125,56 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------------------------------------------------------------- Hero */}
-      <section className="border-b border-line bg-paper">
-        {/* ---- Type: headline left, framing copy bottom-right ---- */}
-        <div className="container-page grid gap-y-8 pb-10 pt-10 lg:grid-cols-[1.35fr_0.65fr] lg:items-end lg:gap-x-16 lg:pb-11 lg:pt-14">
-          <Reveal>
-            <div className="flex items-center gap-4 border-t border-ink pt-3.5">
-              <span className="label-mono !text-ink-soft">Book rental club — Dhaka, Bangladesh</span>
-              <span aria-hidden className="h-px flex-1 bg-line" />
-              <span className="label-mono hidden !text-ink-soft sm:inline">Est. 2026</span>
-            </div>
-
-            <h1 className="mt-8 text-[2.6rem] sm:text-6xl lg:text-[4.5rem]">
-              Find your next great
-              <br />
-              b
-              <BookGlyph />
-              ok to read.
-            </h1>
-
-            <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-3">
-              <Link href="/library" className="btn btn-primary">
-                See the library <span aria-hidden>→</span>
-              </Link>
-              <Link
-                href="/plans"
-                className="label-mono underline decoration-line underline-offset-4 hover:decoration-ink"
-              >
-                Or start a plan from {money(cheapestPlan?.price_monthly ?? 299)}/mo
-              </Link>
-            </div>
-          </Reveal>
-
-          <Reveal delay={110}>
-            <p className="max-w-sm text-sm leading-relaxed text-ink-soft lg:pb-3">
-              {shelfBooks.total} titles on the shelves — biography, poems, Bangla fiction and the odd
-              classic. Choose two, four or eight a month; we deliver them, you read them, and we
-              collect them when you are done.
-            </p>
-          </Reveal>
-        </div>
-
-        {/* ---- The image: a reading scene from 1880, bled edge to edge ---- */}
-        <div className="border-y border-line bg-cream">
+      <section className="relative border-b border-line bg-paper">
+        {/* ---- The image: full-bleed down the right side on wide screens ---- */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-l border-line lg:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/hero/reader-1880.jpg"
             alt="Young woman reading at a book stand — painting by Osman Hamdi Bey, 1880"
             width={1440}
             height={1131}
-            className="h-[220px] w-full object-cover object-[70%_38%] grayscale contrast-[1.06] sm:h-[300px] lg:h-[380px]"
+            className="h-full w-full object-cover object-[66%_30%] grayscale contrast-[1.06]"
           />
+          <p className="label-mono absolute bottom-5 left-5 max-w-[13rem] bg-paper/85 px-2.5 py-1.5 leading-relaxed backdrop-blur">
+            “Young woman reading”, Osman Hamdi Bey, 1880 — public domain
+          </p>
         </div>
 
-        {/* ---- Credit line, and the facts it sits beside ---- */}
-        <div className="relative overflow-hidden">
-          <p
-            aria-hidden
-            className="pointer-events-none absolute -bottom-[0.44em] right-0 select-none font-serif text-[17vw] leading-none text-ink/[0.05]"
-          >
-            REY
-          </p>
+        {/* ---- The pitch ---- */}
+        <div className="container-page relative grid gap-y-10 pb-12 pt-12 lg:grid-cols-[1.22fr_0.4fr] lg:py-20">
+          <Reveal className="flex flex-col">
+            <div className="flex items-center gap-4 border-t border-ink pt-3.5">
+              <span className="label-mono !text-ink-soft">Book rental club — Dhaka, Bangladesh</span>
+              <span aria-hidden className="h-px flex-1 bg-line" />
+              <span className="label-mono hidden !text-ink-soft sm:inline">Est. 2026</span>
+            </div>
 
-          <div className="container-page relative flex flex-wrap items-baseline justify-between gap-x-12 gap-y-6 py-8">
-            <p className="label-mono max-w-[15rem] leading-relaxed">
-              “Young woman reading”, Osman Hamdi Bey, 1880 — public domain
+            <h1 className="mt-8 text-[2.5rem] sm:text-5xl lg:text-6xl">
+              A new b
+              <BookGlyph />
+              ok every month,
+              <br />
+              at your door.
+            </h1>
+
+            <p className="mt-7 max-w-lg text-lg leading-relaxed text-ink-soft">
+              Pick two, four or eight titles from the library. We deliver them, you read them, and
+              when the month is up we collect them and bring your next box. Refundable deposit,
+              cancel whenever.
             </p>
 
-            <dl className="flex flex-wrap gap-x-10 gap-y-5">
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <Link href="/plans" className="btn btn-primary">
+                Start your plan — from {money(cheapestPlan?.price_monthly ?? 299)}/mo
+                <span aria-hidden>→</span>
+              </Link>
+              <Link href="/library" className="btn btn-outline">
+                Browse all {shelfBooks.total} books
+              </Link>
+            </div>
+
+            <dl className="mt-12 grid max-w-[42rem] grid-cols-2 gap-x-6 gap-y-5 border-t border-line pt-6 sm:grid-cols-4 lg:mt-auto lg:pt-8">
               {heroFacts.map((fact) => (
                 <div key={fact.label}>
                   <dt className="font-serif text-2xl font-semibold leading-none tracking-tight text-ink">
@@ -197,7 +184,21 @@ export default async function HomePage() {
                 </div>
               ))}
             </dl>
-          </div>
+          </Reveal>
+
+          <div aria-hidden className="hidden lg:block" />
+        </div>
+
+        {/* ---- The same image on narrow screens ---- */}
+        <div className="border-t border-line lg:hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/hero/reader-1880.jpg"
+            alt="Young woman reading at a book stand — painting by Osman Hamdi Bey, 1880"
+            width={1440}
+            height={1131}
+            className="h-[230px] w-full object-cover object-[66%_30%] grayscale contrast-[1.06] sm:h-[320px]"
+          />
         </div>
       </section>
 
