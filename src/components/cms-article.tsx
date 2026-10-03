@@ -23,9 +23,12 @@ const STEP = /^\d+\.\s+\S/;
 export function CmsArticle({
   page,
   children,
+  hideMasthead = false,
 }: {
   page: CmsPage;
   children?: React.ReactNode;
+  /** For pages that supply their own opening above this article. */
+  hideMasthead?: boolean;
 }) {
   const raw = (page.content ?? "")
     .split(/\n{2,}/)
@@ -118,6 +121,20 @@ export function CmsArticle({
     .filter((node): node is Extract<Node, { kind: "heading" }> => node.kind === "heading")
     .map((node) => ({ id: node.id, label: node.text }));
 
+  const titleWords = page.title.trim().split(" ");
+  const titleLast = titleWords.length > 1 ? (titleWords.pop() as string) : "";
+  const titleWithAccent = (
+    <>
+      {titleWords.join(" ")}
+      {titleLast ? (
+        <>
+          {" "}
+          <em className="italic">{titleLast}</em>
+        </>
+      ) : null}
+    </>
+  );
+
   return (
     <div className="container-page py-16">
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px]">
@@ -128,21 +145,37 @@ export function CmsArticle({
         ) : null}
 
         <div className="min-w-0 lg:col-start-1 lg:row-start-1">
-          <p className="eyebrow">REY BD</p>
-          <h1 className="mt-3 text-ink">{page.title}</h1>
-          {page.excerpt ? (
-            <p className="mt-4 max-w-3xl text-lg leading-relaxed text-ink-soft">{page.excerpt}</p>
-          ) : null}
+          {hideMasthead ? null : (
+            <>
+              <p className="eyebrow">REY BD</p>
+              <h1 className="mt-3 max-w-3xl text-ink">{titleWithAccent}</h1>
+              {page.excerpt ? (
+                <p className="mt-5 max-w-2xl text-xl leading-relaxed text-ink-soft">{page.excerpt}</p>
+              ) : null}
+            </>
+          )}
 
-          <div className="mt-10 max-w-3xl space-y-5 text-body leading-relaxed text-ink-soft">
+          <div
+            className={`max-w-2xl space-y-5 text-base leading-[1.75] text-ink-soft ${
+              hideMasthead ? "" : "mt-10"
+            }`}
+          >
             {nodes.map((node, index) => {
               if (node.kind === "heading") {
                 return (
                   <h2
                     key={index}
                     id={node.id}
-                    className="scroll-mt-24 pt-4 font-display text-lg font-semibold leading-snug text-ink"
+                    className="scroll-mt-24 pt-4 font-display text-2xl font-bold leading-snug text-ink"
                   >
+                    {contents.length >= 2 ? (
+                      <span
+                        aria-hidden
+                        className="mr-3 inline-flex h-8 w-8 -translate-y-0.5 items-center justify-center rounded-full border border-ink align-middle text-micro font-medium text-ink"
+                      >
+                        {String(contents.findIndex((item) => item.id === node.id) + 1).padStart(2, "0")}
+                      </span>
+                    ) : null}
                     {node.text}
                   </h2>
                 );
