@@ -197,7 +197,7 @@ export default async function HomePage() {
                 <Reveal
                   key={step.number}
                   delay={index * 110}
-                  className="pt-5"
+                  className="border-t border-ink pt-5"
                 >
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand">{step.number}</p>
                   <h3 className="mt-3 text-lg">{step.title}</h3>
