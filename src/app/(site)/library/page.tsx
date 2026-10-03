@@ -57,18 +57,27 @@ export default async function LibraryPage(props: PageProps<"/library">) {
           {/* One bar, not five boxes: search, two selects, and the submit. */}
           <form
             method="get"
-            className="mt-8 flex flex-wrap items-stretch gap-3 border border-line bg-white p-3"
+            className="mt-8 flex flex-wrap items-stretch gap-2 border border-line bg-white p-2"
           >
-            <div className="min-w-[14rem] flex-1">
+            <div className="relative min-w-[14rem] flex-1">
               <label className="sr-only" htmlFor="q">
                 Search title or author
               </label>
+              <svg
+                aria-hidden
+                viewBox="0 0 24 24"
+                fill="none"
+                className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted"
+              >
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                <path d="M16.5 16.5 21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
               <input
                 id="q"
                 name="q"
                 defaultValue={q}
                 placeholder="Search title or author…"
-                className="field border-0 bg-transparent"
+                className="field h-14 border-0 bg-transparent pl-11 text-base"
               />
             </div>
 
@@ -76,7 +85,7 @@ export default async function LibraryPage(props: PageProps<"/library">) {
               <label className="sr-only" htmlFor="genre">
                 Genre
               </label>
-              <select id="genre" name="genre" defaultValue={genre} className="field w-auto">
+              <select id="genre" name="genre" defaultValue={genre} className="field h-14 w-auto border-0 bg-transparent">
                 <option value="">All genres</option>
                 {genres.map((g) => (
                   <option key={g.id} value={g.slug}>
@@ -90,7 +99,7 @@ export default async function LibraryPage(props: PageProps<"/library">) {
               <label className="sr-only" htmlFor="language">
                 Language
               </label>
-              <select id="language" name="language" defaultValue={language} className="field w-auto">
+              <select id="language" name="language" defaultValue={language} className="field h-14 w-auto border-0 bg-transparent">
                 <option value="">All languages</option>
                 {languages.map((l) => (
                   <option key={l} value={l}>
