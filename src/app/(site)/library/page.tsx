@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { LibrarySearch } from "@/components/library-search";
+
 import { BookCard } from "@/components/book-card";
 import { QuotaBar } from "@/components/quota-bar";
 import { EmptyState } from "@/components/ui";
@@ -54,65 +56,13 @@ export default async function LibraryPage(props: PageProps<"/library">) {
             </p>
           </div>
 
-          {/* One bar, not five boxes: search, two selects, and the submit. */}
-          <form
-            method="get"
-            className="mt-8 flex flex-wrap items-stretch gap-2 border border-line bg-white p-2"
-          >
-            <div className="relative min-w-[14rem] flex-1">
-              <label className="sr-only" htmlFor="q">
-                Search title or author
-              </label>
-              <svg
-                aria-hidden
-                viewBox="0 0 24 24"
-                fill="none"
-                className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted"
-              >
-                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-                <path d="M16.5 16.5 21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <input
-                id="q"
-                name="q"
-                defaultValue={q}
-                placeholder="Search title or author…"
-                className="field h-14 border-0 bg-transparent pl-11 text-base"
-              />
-            </div>
-
-            <div>
-              <label className="sr-only" htmlFor="genre">
-                Genre
-              </label>
-              <select id="genre" name="genre" defaultValue={genre} className="field h-14 w-auto border-0 bg-transparent">
-                <option value="">All genres</option>
-                {genres.map((g) => (
-                  <option key={g.id} value={g.slug}>
-                    {g.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="sr-only" htmlFor="language">
-                Language
-              </label>
-              <select id="language" name="language" defaultValue={language} className="field h-14 w-auto border-0 bg-transparent">
-                <option value="">All languages</option>
-                {languages.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button type="submit" className="btn btn-primary btn-sm">
-              Filter
-            </button>
-          </form>
+          <LibrarySearch
+            q={q}
+            genre={genre}
+            language={language}
+            genres={genres}
+            languages={languages}
+          />
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Link
