@@ -120,10 +120,10 @@ export default async function HomePage() {
         {/* ---- The pitch ---- */}
         <div className="container-page relative grid gap-y-10 pb-12 pt-12 lg:grid-cols-[1.22fr_0.4fr] lg:py-20">
           <Reveal className="flex flex-col">
-            <div className="flex items-center gap-4">
+            <div className="flex max-w-[42rem] items-center gap-4">
               <span className="label-mono !text-ink-soft">Book rental club — Dhaka, Bangladesh</span>
-              <span aria-hidden className="h-px flex-1 bg-ink" />
-              <span className="label-mono hidden !text-ink-soft sm:inline">Est. 2026</span>
+              <span aria-hidden className="h-px flex-1 bg-ink/20" />
+              <span className="label-mono !text-ink-soft">Est. 2026</span>
             </div>
 
             <h1 className="mt-8">
