@@ -594,8 +594,6 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    border-top: 1px solid var(--color-ink);
-    padding-top: 0.875rem;
   }
 
   .pill {
