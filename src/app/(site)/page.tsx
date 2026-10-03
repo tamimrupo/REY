@@ -101,7 +101,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------------------------------------------------------------- Hero */}
-      <section className="relative border-b border-line bg-paper">
+      <section className="relative bg-paper">
         {/* ---- The image: full-bleed down the right side on wide screens ---- */}
         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-b border-l border-ink lg:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -181,7 +181,7 @@ export default async function HomePage() {
       </div>
 
       {/* ------------------------------------------------------ How it works */}
-      <section className="border-b border-line bg-paper">
+      <section className=" bg-paper">
         <div className="container-page py-20">
           <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
             <Reveal>
@@ -258,7 +258,7 @@ export default async function HomePage() {
       </section>
 
       {/* --------------------------------------------------------------- Plans */}
-      <section id="plans" className="border-b border-line bg-cream">
+      <section id="plans" className=" bg-cream">
         <div className="container-page py-20">
           <Reveal>
             <SectionHeading
@@ -286,7 +286,7 @@ export default async function HomePage() {
 
       {/* ------------------------------------------- Featured author shelf */}
       {shelf.length ? (
-        <section className="border-b border-line bg-paper">
+        <section className=" bg-paper">
           <Reveal className="container-page py-20">
             <FeaturedShelf books={shelf} label={shelfLabel}>
               <h2 className="mt-3 text-3xl sm:text-4xl">Keep the story going.</h2>
@@ -301,7 +301,7 @@ export default async function HomePage() {
           </Reveal>
         </section>
       ) : (
-        <section className="border-b border-line bg-paper">
+        <section className=" bg-paper">
           <div className="container-page py-20">
             <EmptyState
               title="The shelves are empty"
@@ -315,7 +315,7 @@ export default async function HomePage() {
 
       {/* --------------------------------------------------------------- Rare */}
       {rare.books.length > 0 ? (
-        <section className="border-b border-line bg-cream">
+        <section className=" bg-cream">
           <div className="container-page py-20">
             <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
               <Reveal>
