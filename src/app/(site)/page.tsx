@@ -103,7 +103,7 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- Hero */}
       <section className="relative bg-paper">
         {/* ---- The image: full-bleed down the right side on wide screens ---- */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-b border-l border-ink lg:block">
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-b border-l border-line lg:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/hero/reader-1880.jpg"
@@ -197,7 +197,7 @@ export default async function HomePage() {
                 <Reveal
                   key={step.number}
                   delay={index * 110}
-                  className="border-t-2 border-ink pt-5"
+                  className="border-t border-line pt-5"
                 >
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand">{step.number}</p>
                   <h3 className="mt-3 text-lg">{step.title}</h3>
