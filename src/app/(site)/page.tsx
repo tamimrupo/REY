@@ -268,7 +268,7 @@ export default async function HomePage() {
             />
           </Reveal>
 
-          <div className="mt-12 grid gap-8 lg:grid-cols-3 lg:gap-10">
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {plans.map((plan, index) => (
               <Reveal key={plan.id} delay={index * 110} className="flex">
                 <PlanCard plan={plan} features={features} />

@@ -39,7 +39,7 @@ export default async function PlansPage() {
         {/* The cards carry h3 titles, so the grid needs its own h2 parent. */}
         <h2 className="sr-only">Choose your plan</h2>
         {plans.length ? (
-          <div className="grid gap-8 lg:grid-cols-3 lg:gap-10">
+          <div className="grid gap-6 lg:grid-cols-3">
             {plans.map((plan) => (
               <PlanCard key={plan.id} plan={plan} features={features} />
             ))}

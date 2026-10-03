@@ -25,8 +25,8 @@ export function PlanCard({
 
   return (
     <div
-      className={`flex h-full flex-col border-t pt-6 ${
-        plan.is_popular ? "border-ink" : "border-line"
+      className={`flex h-full flex-col rounded-card border bg-white p-6 ${
+        plan.is_popular ? "border-ink shadow-paper" : "border-line shadow-card"
       }`}
     >
       <p className={`label-mono ${plan.is_popular ? "text-ink" : ""}`} aria-hidden={!plan.is_popular}>
