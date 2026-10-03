@@ -374,9 +374,8 @@ export default async function HomePage() {
           ))}
         </div>
 
-        {/* Enough paper to read through, not enough to hide the wall. */}
-        <div aria-hidden className="absolute inset-0 bg-paper/60" />
-
+        {/* No scrim: the covers are meant to be seen. The offer sits on its own
+            paper panel, which is where the legibility comes from. */}
         <div className="container-page relative py-28">
           <Reveal className="mx-auto max-w-2xl rounded-card border border-line bg-paper/95 px-8 py-12 text-center shadow-paper">
             <p className="eyebrow">Ready when you are</p>
