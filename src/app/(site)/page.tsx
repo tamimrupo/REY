@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BookCard } from "@/components/book-card";
+import { BookCoverImage } from "@/components/book-cover";
 import { FeaturedShelf } from "@/components/featured-shelf";
 import { CountUp, Reveal } from "@/components/motion";
 import { PlanCard } from "@/components/plan-card";
@@ -342,13 +343,38 @@ export default async function HomePage() {
       ) : null}
 
       {/* ---------------------------------------------------------------- CTA */}
-      <section className="bg-paper">
-        <div className="container-page py-20">
-          <Reveal className="panel px-8 py-16 text-center">
+      <section className="relative overflow-hidden border-t border-line bg-paper">
+        {/* The library as the backdrop: the covers themselves, set back in grey.
+            The offer is the point; the wall of books is the proof. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 grid grid-cols-4 gap-px opacity-40 sm:grid-cols-6 lg:grid-cols-7"
+        >
+          {shelfBooks.books.map((book, index) => (
+            <div
+              key={`${book.id}-${index}`}
+              className="relative aspect-[2/3] overflow-hidden bg-mist"
+            >
+              <BookCoverImage
+                url={book.cover_url}
+                title={book.title}
+                size="md"
+                className="h-full w-full object-cover grayscale"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* A flat paper scrim, not a gradient: this is for legibility. */}
+        <div aria-hidden className="absolute inset-0 bg-paper/75" />
+
+        <div className="container-page relative py-24">
+          <Reveal className="mx-auto max-w-2xl text-center">
             <p className="eyebrow">Ready when you are</p>
-            <h2 className="mx-auto mt-4 max-w-2xl">
-              Your next twelve books are one plan away.
-            </h2>
+            <h2 className="mt-4">Your next twelve books are one plan away.</h2>
+            <p className="mt-4 text-base leading-relaxed text-ink-soft">
+              Every cover on this wall is on our shelves. Pick a plan and they start moving.
+            </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link href="/plans" className="btn btn-primary">
                 See the plans
