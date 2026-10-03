@@ -30,7 +30,7 @@
   --color-sky: #e5e5e5;
 
   /* Lines */
-  --color-line: #e5e5e5;
+  --color-line: #09090924;
   --color-danger: #090909;
 
   /* Legacy aliases — old names, monochrome values. */
@@ -594,7 +594,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    border-top: 1px solid var(--color-ink);
+    border-top: 1px solid var(--color-line);
     padding-top: 0.875rem;
   }
 

@@ -203,7 +203,7 @@ export function SearchOverlay() {
         ? createPortal(
             <div
               aria-hidden
-              className="animate-fade-in fixed inset-0 z-30 bg-ink/20"
+              className="animate-fade-in fixed inset-0 z-30 bg-line"
               onClick={() => setOpen(false)}
             />,
             document.body,

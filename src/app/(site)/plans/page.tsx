@@ -96,7 +96,7 @@ export default async function PlansPage() {
           .map((option) => (
             <div
               key={option.key}
-              className="mt-8 flex flex-col gap-5 border-t border-ink pt-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-10"
+              className="mt-8 flex flex-col gap-5 border-t border-line pt-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-10"
             >
               <div>
                 <p className="label-mono">{option.label} · Book Post</p>

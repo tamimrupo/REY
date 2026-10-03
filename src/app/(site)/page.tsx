@@ -101,7 +101,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------------------------------------------------------------- Hero */}
-      <section className="relative border-b border-ink bg-paper">
+      <section className="relative border-b border-line bg-paper">
         {/* ---- The image: full-bleed down the right side on wide screens ---- */}
         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-b border-l border-ink lg:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -122,7 +122,7 @@ export default async function HomePage() {
           <Reveal className="flex flex-col">
             <div className="flex max-w-[42rem] items-center gap-4">
               <span className="label-mono !text-ink-soft">Book rental club — Dhaka, Bangladesh</span>
-              <span aria-hidden className="h-px flex-1 bg-ink/20" />
+              <span aria-hidden className="h-px flex-1 bg-line" />
               <span className="label-mono !text-ink-soft">Est. 2026</span>
             </div>
 
@@ -148,7 +148,7 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <dl className="mt-12 grid max-w-[42rem] grid-cols-2 gap-x-6 gap-y-5 border-t border-ink pt-6 sm:grid-cols-4 lg:mt-14 lg:pt-7">
+            <dl className="mt-12 grid max-w-[42rem] grid-cols-2 gap-x-6 gap-y-5 border-t border-line pt-6 sm:grid-cols-4 lg:mt-14 lg:pt-7">
               {heroFacts.map((fact) => (
                 <div key={fact.label}>
                   <dt className="font-serif text-2xl font-semibold leading-none tracking-tight text-ink">
@@ -164,7 +164,7 @@ export default async function HomePage() {
         </div>
 
         {/* ---- The same image on narrow screens ---- */}
-        <div className="border-t border-ink lg:hidden">
+        <div className="border-t border-line lg:hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/hero/reader-1880.jpg"
@@ -181,7 +181,7 @@ export default async function HomePage() {
       </div>
 
       {/* ------------------------------------------------------ How it works */}
-      <section className="border-b border-ink bg-paper">
+      <section className="border-b border-line bg-paper">
         <div className="container-page py-20">
           <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
             <Reveal>
@@ -258,7 +258,7 @@ export default async function HomePage() {
       </section>
 
       {/* --------------------------------------------------------------- Plans */}
-      <section id="plans" className="border-b border-ink bg-cream">
+      <section id="plans" className="border-b border-line bg-cream">
         <div className="container-page py-20">
           <Reveal>
             <SectionHeading
@@ -286,7 +286,7 @@ export default async function HomePage() {
 
       {/* ------------------------------------------- Featured author shelf */}
       {shelf.length ? (
-        <section className="border-b border-ink bg-paper">
+        <section className="border-b border-line bg-paper">
           <Reveal className="container-page py-20">
             <FeaturedShelf books={shelf} label={shelfLabel}>
               <h2 className="mt-3 text-3xl sm:text-4xl">Keep the story going.</h2>
@@ -301,7 +301,7 @@ export default async function HomePage() {
           </Reveal>
         </section>
       ) : (
-        <section className="border-b border-ink bg-paper">
+        <section className="border-b border-line bg-paper">
           <div className="container-page py-20">
             <EmptyState
               title="The shelves are empty"
@@ -315,7 +315,7 @@ export default async function HomePage() {
 
       {/* --------------------------------------------------------------- Rare */}
       {rare.books.length > 0 ? (
-        <section className="border-b border-ink bg-cream">
+        <section className="border-b border-line bg-cream">
           <div className="container-page py-20">
             <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
               <Reveal>

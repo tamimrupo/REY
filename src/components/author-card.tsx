@@ -28,7 +28,7 @@ export function AuthorCard({
   const canLink = Boolean(linkName && author.slug);
 
   return (
-    <section className="border-t border-ink pt-7">
+    <section className="border-t border-line pt-7">
       <div className="grid gap-8 sm:grid-cols-[164px_1fr] sm:gap-10">
         <div className="w-32 sm:w-full">
           <div className="overflow-hidden rounded-card border border-line bg-white">
