@@ -45,7 +45,7 @@ export default async function AdminPlansPage() {
               </div>
             </summary>
 
-            <div className="mt-6 border-t border-line pt-6">
+            <div className="mt-6 border-t border-ink pt-6">
               <PlanForm plan={plan} features={features} />
             </div>
           </details>

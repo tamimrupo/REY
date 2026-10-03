@@ -125,7 +125,7 @@ export default async function AdminShipmentsPage(props: PageProps<"/admin/shipme
                   </div>
                 </summary>
 
-                <div className="mt-5 space-y-5 border-t border-line pt-5">
+                <div className="mt-5 space-y-5 border-t border-ink pt-5">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
                       <p className="label">Going out</p>

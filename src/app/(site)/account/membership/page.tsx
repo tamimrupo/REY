@@ -75,7 +75,7 @@ export default async function MembershipPage() {
               </div>
             </div>
 
-            <dl className="mt-6 grid gap-6 border-t border-line pt-6 sm:grid-cols-4">
+            <dl className="mt-6 grid gap-6 border-t border-ink pt-6 sm:grid-cols-4">
               <div>
                 <dt className="label-mono">Started</dt>
                 <dd className="mt-1 text-ink">{formatDate(current.started_at ?? current.created_at)}</dd>
@@ -98,7 +98,7 @@ export default async function MembershipPage() {
               </div>
             </dl>
 
-            <div className="mt-6 grid gap-4 border-t border-line pt-6 sm:grid-cols-3">
+            <div className="mt-6 grid gap-4 border-t border-ink pt-6 sm:grid-cols-3">
               <div className="rounded-card bg-cream/60 p-4">
                 <p className="text-xs uppercase tracking-[0.12em] text-ink-muted">Slots this month</p>
                 <p className="mt-1 font-display text-xl font-semibold text-ink">
@@ -115,7 +115,7 @@ export default async function MembershipPage() {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3 border-t border-line pt-6">
+            <div className="mt-6 flex flex-wrap gap-3 border-t border-ink pt-6">
               <Link href="/account/box" className="btn btn-primary btn-sm">
                 Pick this month&apos;s books
               </Link>
@@ -166,13 +166,13 @@ export default async function MembershipPage() {
             </div>
 
             {heldDeposit && !heldDeposit.refund_requested_at ? (
-              <div className="mt-5 border-t border-line pt-5">
+              <div className="mt-5 border-t border-ink pt-5">
                 <DepositRefundForm eligible={openRentals === 0} />
               </div>
             ) : null}
 
             {deposits.length ? (
-              <ul className="mt-5 divide-y divide-line border-t border-line pt-2 text-sm">
+              <ul className="mt-5 divide-y divide-line border-t border-ink pt-2 text-sm">
                 {deposits.map((deposit) => (
                   <li key={deposit.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                     <div>

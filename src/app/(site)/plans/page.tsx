@@ -96,7 +96,7 @@ export default async function PlansPage() {
           .map((option) => (
             <div
               key={option.key}
-              className="mt-8 flex flex-col gap-5 border-t border-line pt-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-10"
+              className="mt-8 flex flex-col gap-5 border-t border-ink pt-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-10"
             >
               <div>
                 <p className="label-mono">{option.label} · Book Post</p>
@@ -122,7 +122,7 @@ export default async function PlansPage() {
           {deliveryOptions
             .filter((option) => option.charge > 0)
             .map((option) => (
-              <div key={option.key} className="border-t border-line pt-4">
+              <div key={option.key} className="border-t border-ink pt-4">
                 <p className="label-mono">{option.label}</p>
                 <p className="mt-3 font-display text-2xl font-bold text-ink">
                   {money(option.charge)}
@@ -139,7 +139,7 @@ export default async function PlansPage() {
         </div>
       </section>
 
-      <section className="border-t border-line bg-ink py-16 text-paper">
+      <section className="border-t border-ink bg-ink py-16 text-paper">
         <div className="container-page flex flex-col items-center gap-6 text-center">
           <h2 className="max-w-2xl text-paper">
             Still deciding? Browse the shelves first.

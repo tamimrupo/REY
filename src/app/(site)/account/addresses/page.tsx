@@ -40,7 +40,7 @@ export default async function AddressesPage() {
                 <span className="text-xs text-ink-muted">Edit</span>
               </summary>
 
-              <div className="mt-6 border-t border-line pt-6">
+              <div className="mt-6 border-t border-ink pt-6">
                 <EditAddressForm address={address} />
               </div>
             </details>

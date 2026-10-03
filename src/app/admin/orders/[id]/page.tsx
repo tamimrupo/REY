@@ -72,7 +72,7 @@ export default async function AdminOrderPage(props: PageProps<"/admin/orders/[id
             </table>
           </div>
 
-          <dl className="mt-6 space-y-2 border-t border-line pt-4 text-sm">
+          <dl className="mt-6 space-y-2 border-t border-ink pt-4 text-sm">
             <div className="flex justify-between">
               <dt className="text-ink-soft">Subtotal</dt>
               <dd className="text-ink">{money(order.subtotal)}</dd>
@@ -85,7 +85,7 @@ export default async function AdminOrderPage(props: PageProps<"/admin/orders/[id
               <dt className="text-ink-soft">Delivery</dt>
               <dd className="text-ink">{money(order.delivery_fee)}</dd>
             </div>
-            <div className="flex justify-between border-t border-line pt-3 font-display text-lg font-semibold">
+            <div className="flex justify-between border-t border-ink pt-3 font-display text-lg font-semibold">
               <dt>Total</dt>
               <dd>{money(order.total)}</dd>
             </div>

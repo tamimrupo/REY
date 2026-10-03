@@ -158,7 +158,7 @@ export function ConfirmBoxPanel({
         )}
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-ink pt-5">
         <div className="text-sm">
           <p className="text-ink-muted">Courier charge for this trip</p>
           <p className="font-display text-xl font-semibold text-ink">
@@ -269,7 +269,7 @@ export function ReturnForm({
         <input type="hidden" name="address_id" value={addresses[0]?.id ?? ""} />
       ) : null}
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-ink pt-5">
         <p className="text-sm text-ink-muted">Pickup charge: {fee === 0 ? "Free" : money(fee)}</p>
         <SubmitButton pendingLabel="Submitting…">Request pickup</SubmitButton>
       </div>

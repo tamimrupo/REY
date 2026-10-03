@@ -178,7 +178,7 @@ export function CmsArticle({
 
           {children}
 
-          <div className="mt-14 flex max-w-3xl flex-wrap gap-3 border-t border-line pt-8">
+          <div className="mt-14 flex max-w-3xl flex-wrap gap-3 border-t border-ink pt-8">
             <Link href="/plans" className="btn btn-primary btn-sm">
               See the plans
             </Link>

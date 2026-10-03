@@ -90,7 +90,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
             <StatusPill status={subscription.status} />
           </div>
 
-          <dl className="mt-6 grid gap-6 border-t border-line pt-6 sm:grid-cols-4">
+          <dl className="mt-6 grid gap-6 border-t border-ink pt-6 sm:grid-cols-4">
             <div>
               <dt className="label-mono">Period ends</dt>
               <dd className="mt-1 text-ink">{formatDate(subscription.current_period_end)}</dd>
@@ -141,7 +141,7 @@ export default async function AccountOverviewPage(props: PageProps<"/account">) 
             </div>
           ) : null}
 
-          <div className="mt-6 flex flex-wrap gap-3 border-t border-line pt-6">
+          <div className="mt-6 flex flex-wrap gap-3 border-t border-ink pt-6">
             <Link href="/account/box" className="btn btn-primary btn-sm">
               Pick this month&apos;s books
             </Link>

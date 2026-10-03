@@ -174,7 +174,7 @@ export function SubscribeForm({
             {limit} book{limit === 1 ? "" : "s"} a month
           </p>
 
-          <div className="mt-5 space-y-2 border-t border-line pt-5 text-sm">
+          <div className="mt-5 space-y-2 border-t border-ink pt-5 text-sm">
             {selectedBooks.length ? (
               <ul className="space-y-1.5">
                 {selectedBooks.map((book) => (
@@ -195,7 +195,7 @@ export function SubscribeForm({
             )}
           </div>
 
-          <div className="mt-5 space-y-2 border-t border-line pt-5 text-sm">
+          <div className="mt-5 space-y-2 border-t border-ink pt-5 text-sm">
             <div className="flex justify-between">
               <span className="text-ink-soft">Plan (month 1)</span>
               <span className="text-ink">{money(plan.price_monthly)}</span>
@@ -208,7 +208,7 @@ export function SubscribeForm({
               <span className="text-ink-soft">Delivery</span>
               <span className="text-ink">{fee === 0 ? "Free" : money(fee)}</span>
             </div>
-            <div className="flex justify-between border-t border-line pt-3 font-display text-lg font-semibold">
+            <div className="flex justify-between border-t border-ink pt-3 font-display text-lg font-semibold">
               <span>First payment</span>
               <span>{money(total)}</span>
             </div>
@@ -219,7 +219,7 @@ export function SubscribeForm({
           </div>
 
           {/* --------------------------------------------------- Delivery */}
-          <div className="mt-6 border-t border-line pt-5">
+          <div className="mt-6 border-t border-ink pt-5">
             <h3 className="text-lg font-semibold text-ink">2. Delivery</h3>
             <div className="mt-3 space-y-2">
               {couriers.map((option) => (
@@ -249,7 +249,7 @@ export function SubscribeForm({
           </div>
 
           {/* ---------------------------------------------------- Address */}
-          <div className="mt-6 border-t border-line pt-5">
+          <div className="mt-6 border-t border-ink pt-5">
             <h3 className="text-lg font-semibold text-ink">3. Where should we deliver?</h3>
 
             {addresses.length ? (

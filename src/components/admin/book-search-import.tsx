@@ -337,7 +337,7 @@ export function BookSearchImport() {
       {/* A Bangla title the outside catalogues cannot see is still a book the
           shop can carry — hand it over to the manual form, Bangla intact. */}
       {hasMore && rows.length ? (
-        <div className="flex justify-center border-t border-line pt-5">
+        <div className="flex justify-center border-t border-ink pt-5">
           <button
             type="button"
             onClick={showMore}

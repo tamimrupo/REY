@@ -125,13 +125,13 @@ export default async function CheckoutPage(props: PageProps<"/checkout/[id]">) {
                   {Number(order.delivery_fee) === 0 ? "Free" : money(order.delivery_fee)}
                 </dd>
               </div>
-              <div className="flex justify-between border-t border-line pt-3 font-display text-xl font-semibold">
+              <div className="flex justify-between border-t border-ink pt-3 font-display text-xl font-semibold">
                 <dt>Total</dt>
                 <dd>{money(order.total)}</dd>
               </div>
             </dl>
 
-            <div className="mt-6 border-t border-line pt-5 text-sm">
+            <div className="mt-6 border-t border-ink pt-5 text-sm">
               <p className="text-ink-muted">
                 Questions about this order? Email us and quote{" "}
                 <span className="font-semibold text-ink">{order.order_number}</span>.

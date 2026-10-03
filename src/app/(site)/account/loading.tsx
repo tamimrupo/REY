@@ -19,7 +19,7 @@ export default function AccountLoading() {
 
       <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
         {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="border-t border-line pt-4">
+          <div key={index} className="border-t border-ink pt-4">
             <span className="skeleton block h-2.5 w-20" />
             <span className="skeleton mt-3 block h-7 w-16" />
             <span className="skeleton mt-2 block h-2.5 w-24" />
@@ -27,7 +27,7 @@ export default function AccountLoading() {
         ))}
       </div>
 
-      <div className="border-t border-line pt-6">
+      <div className="border-t border-ink pt-6">
         <span className="skeleton block h-3 w-1/3" />
         <span className="skeleton mt-4 block h-3 w-2/3" />
         <span className="skeleton mt-3 block h-3 w-1/2" />

@@ -51,7 +51,7 @@ export default function BookLoading() {
       </div>
 
       {/* Author block */}
-      <div className="mt-14 border-t border-line pt-7">
+      <div className="mt-14 border-t border-ink pt-7">
         <div className="grid gap-8 sm:grid-cols-[164px_1fr] sm:gap-10">
           <div className="skeleton aspect-square w-32 rounded-card sm:w-full" />
           <div>

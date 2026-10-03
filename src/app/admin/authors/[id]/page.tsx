@@ -62,7 +62,7 @@ export default async function AdminAuthorPage({
       </div>
 
       {books.length ? (
-        <div className="border-t border-line pt-5">
+        <div className="border-t border-ink pt-5">
           <p className="label-mono">Books by {author.name}</p>
           <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
             {books.map((book) => (

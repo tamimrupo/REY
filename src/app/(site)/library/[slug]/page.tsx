@@ -195,7 +195,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
       ) : null}
 
       {readNext.length ? (
-        <section className="border-t border-line">
+        <section className="border-t border-ink">
           <div className="container-page py-16">
             <h2 className="text-2xl font-semibold text-ink">Read this next</h2>
 

@@ -103,7 +103,7 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- Hero */}
       <section className="relative bg-paper">
         {/* ---- The image: full-bleed down the right side on wide screens ---- */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-b border-l border-line lg:block">
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[40%] overflow-hidden border-b border-l border-ink lg:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/hero/reader-1880.jpg"
@@ -148,7 +148,7 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <dl className="mt-12 grid max-w-[42rem] grid-cols-2 gap-x-6 gap-y-5 border-t border-line pt-6 sm:grid-cols-4 lg:mt-14 lg:pt-7">
+            <dl className="mt-12 grid max-w-[42rem] grid-cols-2 gap-x-6 gap-y-5 border-t border-ink pt-6 sm:grid-cols-4 lg:mt-14 lg:pt-7">
               {heroFacts.map((fact) => (
                 <div key={fact.label}>
                   <dt className="font-serif text-2xl font-semibold leading-none tracking-tight text-ink">
@@ -164,7 +164,7 @@ export default async function HomePage() {
         </div>
 
         {/* ---- The same image on narrow screens ---- */}
-        <div className="border-t border-line lg:hidden">
+        <div className="border-t border-ink lg:hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/hero/reader-1880.jpg"
@@ -197,7 +197,7 @@ export default async function HomePage() {
                 <Reveal
                   key={step.number}
                   delay={index * 110}
-                  className="border-t border-line pt-5"
+                  className="pt-5"
                 >
                   <p className="text-xs font-semibold tracking-[0.14em] text-brand">{step.number}</p>
                   <h3 className="mt-3 text-lg">{step.title}</h3>

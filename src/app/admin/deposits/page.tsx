@@ -71,7 +71,7 @@ export default async function AdminDepositsPage(props: PageProps<"/admin/deposit
                 </div>
                 <StatusPill status={deposit.status} />
               </summary>
-              <div className="mt-5 border-t border-line pt-5">
+              <div className="mt-5 border-t border-ink pt-5">
                 <DepositForm deposit={deposit} />
               </div>
             </details>

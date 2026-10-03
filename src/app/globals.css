@@ -30,7 +30,7 @@
   --color-sky: #e5e5e5;
 
   /* Lines */
-  --color-line: #09090924;
+  --color-line: #e5e5e5;
   --color-danger: #090909;
 
   /* Legacy aliases — old names, monochrome values. */
@@ -594,7 +594,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-ink);
     padding-top: 0.875rem;
   }
 
@@ -771,7 +771,7 @@
       gap: 0.5rem;
       margin-top: 0.625rem;
       padding-top: 0.75rem;
-      border-top: 1px solid var(--color-line);
+      border-top: 1px solid var(--color-ink);
       text-align: left;
     }
     .table td:has(button, form, .btn)::before {

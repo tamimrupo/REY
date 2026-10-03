@@ -38,7 +38,7 @@ export async function SiteFooter() {
   const site = await getSiteSettings();
 
   return (
-    <footer className="mt-24 border-t border-line bg-ink text-paper/80">
+    <footer className="mt-24 border-t border-ink bg-ink text-paper/80">
       <div className="container-page grid gap-12 py-16 lg:grid-cols-[1.4fr_2fr]">
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
