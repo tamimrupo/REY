@@ -58,6 +58,9 @@
   --shadow-card: 0 1px 1px #09090908;
   --shadow-paper: 0 1px 2px #0909090a, 0 18px 36px -28px #09090926;
   --shadow-lift: 0 2px 4px #09090912, 0 28px 56px -36px #09090930;
+  /* A single book cover standing off a wall: a tight ink shadow, then a wide
+     soft one under it. */
+  --shadow-tile: 0 6px 12px -6px #0909094d, 0 26px 38px -24px #0909096b;
 
   /* --- Type scale ---------------------------------------------------------
      Named by the job it does, not by the pixel size, so the role decides the
@@ -909,12 +912,41 @@
     background: var(--color-frost);
     animation: skeleton-pulse 1.6s ease-in-out infinite;
   }
+
+  /* The two cover rows behind Ready when you are. Slow enough to read as
+     drift rather than movement. */
+  .marquee-left {
+    animation: marquee-left 70s linear infinite;
+  }
+  .marquee-right {
+    animation: marquee-right 84s linear infinite;
+  }
 }
 
 /* One turn, and a breath for skeletons. */
 @keyframes spinner-turn {
   to {
     transform: rotate(1turn);
+  }
+}
+
+/* Two rows of covers drifting past each other. Each row holds its list twice,
+   so translating by half the strip loops without a seam. */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 
@@ -953,6 +985,12 @@
     animation: none !important;
     border-top-color: currentColor;
     opacity: 0.6;
+  }
+  /* Reduced motion: a marquee that cannot move must not sit half-way across the
+     screen, so the rows simply rest. */
+  .marquee-left,
+  .marquee-right {
+    animation: none !important;
   }
 }
 

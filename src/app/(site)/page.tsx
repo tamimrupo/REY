@@ -344,32 +344,41 @@ export default async function HomePage() {
 
       {/* ---------------------------------------------------------------- CTA */}
       <section className="relative overflow-hidden border-t border-line bg-paper">
-        {/* The library as the backdrop: the covers themselves, set back in grey.
-            The offer is the point; the wall of books is the proof. */}
+        {/* The library drifting past behind the offer: two rows of the covers,
+            tilted and shadowed like posters on a wall, one row each way. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 grid grid-cols-4 gap-px opacity-40 sm:grid-cols-6 lg:grid-cols-7"
+          className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-5 py-8"
         >
-          {shelfBooks.books.map((book, index) => (
+          {[0, 1].map((row) => (
             <div
-              key={`${book.id}-${index}`}
-              className="relative aspect-[2/3] overflow-hidden bg-mist"
+              key={row}
+              className={`flex w-max gap-5 ${row === 0 ? "marquee-left" : "marquee-right"}`}
             >
-              <BookCoverImage
-                url={book.cover_url}
-                title={book.title}
-                size="md"
-                className="h-full w-full object-cover grayscale"
-              />
+              {[...shelfBooks.books, ...shelfBooks.books].map((book, index) => (
+                <div
+                  key={`${row}-${book.id}-${index}`}
+                  className={`h-44 w-28 shrink-0 overflow-hidden rounded-card border border-line bg-mist shadow-tile sm:h-52 sm:w-36 ${
+                    index % 3 === 0 ? "-rotate-3" : index % 3 === 1 ? "rotate-2" : "rotate-[3.5deg]"
+                  }`}
+                >
+                  <BookCoverImage
+                    url={book.cover_url}
+                    title={book.title}
+                    size="md"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
           ))}
         </div>
 
-        {/* A flat paper scrim, not a gradient: this is for legibility. */}
-        <div aria-hidden className="absolute inset-0 bg-paper/75" />
+        {/* Enough paper to read through, not enough to hide the wall. */}
+        <div aria-hidden className="absolute inset-0 bg-paper/60" />
 
-        <div className="container-page relative py-24">
-          <Reveal className="mx-auto max-w-2xl text-center">
+        <div className="container-page relative py-28">
+          <Reveal className="mx-auto max-w-2xl rounded-card border border-line bg-paper/95 px-8 py-12 text-center shadow-paper">
             <p className="eyebrow">Ready when you are</p>
             <h2 className="mt-4">Your next twelve books are one plan away.</h2>
             <p className="mt-4 text-base leading-relaxed text-ink-soft">
