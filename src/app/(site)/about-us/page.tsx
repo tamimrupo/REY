@@ -416,9 +416,9 @@ export default async function AboutPage() {
 
       {/* --------------------------------------------------- Letter and CTA */}
       <section className="border-t border-line bg-cream">
-        <div className="container-page pb-16 pt-20">
+        <div className="container-page pb-10 pt-20">
           <Reveal className="mx-auto max-w-3xl">
-            <div className="rounded-3xl border border-line bg-white p-8 shadow-paper sm:p-14">
+            <div className="rounded-3xl border border-line bg-white p-6 shadow-paper sm:p-10">
               <p className="label-mono">A note from the shelf</p>
 
               <div className="mt-8 space-y-5 font-display text-lg leading-[1.7] text-ink">
