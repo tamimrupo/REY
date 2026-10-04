@@ -5,15 +5,14 @@ import { useEffect, useRef, useState } from "react";
 /**
  * The story timeline.
  *
- * Scrolling lights it up: each row paints its own segment of the rail in ink and
- * fills its dot as it reaches the top third of the screen, and both stay lit. By
- * the last stage the line is solid — the reading progress the section is about.
+ * Scrolling lights it up, in both directions: a row paints its own segment of
+ * the rail in ink and fills its dot while it sits above the reading line, and
+ * gives both back when you scroll up past it. The line is the progress.
  *
  * The fill is drawn per row rather than measured, so there is nothing to
  * recalculate on resize and nothing to get wrong when the copy changes length.
  * Only colour and opacity animate; no element moves that you would have to read.
- * Without an observer the dots stay hollow and the rail stays light rather than
- * half-drawn.
+ * The scroll listener is passive and does its arithmetic once a frame.
  */
 export function Timeline({
   items,
@@ -24,25 +23,34 @@ export function Timeline({
   const rows = useRef<(HTMLLIElement | null)[]>([]);
 
   useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
+    // A row is lit while its top is above the reading line, so the timeline
+    // follows the scroll in both directions: stage by stage as you come down,
+    // and back to where you are as you go up. The line sits a third of the way
+    // down the viewport - high enough that a stage lights when you reach it,
+    // low enough that the last one is lit before the section leaves the screen.
+    const update = () => {
+      const line = window.innerHeight * 0.35;
+      const next = rows.current.map((row) => (row ? row.getBoundingClientRect().top <= line : false));
+      setReached((previous) => (previous.every((value, i) => value === next[i]) ? previous : next));
+    };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const index = rows.current.indexOf(entry.target as HTMLLIElement);
-          if (index < 0) continue;
-          setReached((previous) =>
-            previous[index] ? previous : previous.map((value, i) => (i <= index ? true : value)),
-          );
-        }
-      },
-      { rootMargin: "0px 0px -72% 0px", threshold: 0 },
-    );
+    let frame = requestAnimationFrame(update);
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        update();
+      });
+    };
 
-    for (const row of rows.current) if (row) observer.observe(row);
-    return () => observer.disconnect();
-  }, [items]);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
 
   return (
     <ol className="mt-14 border-l-2 border-line pl-8 sm:pl-12">
