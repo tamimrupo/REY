@@ -290,38 +290,45 @@ export default async function AboutPage() {
                 <div className="flex flex-wrap items-start justify-center gap-6 sm:gap-8">
                     <span className="flex flex-col items-center gap-3">
                       <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-                          <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10v13H5.5A1.5 1.5 0 0 1 4 15.5v-10Z" />
-                          <path d="M13 11h6" />
-                          <path d="M17 8l3 3-3 3" />
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-11 w-11" aria-hidden>
+                          <path d="M5 37h38" />
+                          <path d="M9 37V24h9v13" />
+                          <path d="M26 17l11-4 5 13-11 4z" />
+                          <path d="M31 13l5 13" />
                         </svg>
                       </span>
                       <span className="label-mono">Borrowed</span>
                     </span>
                     <span className="flex flex-col items-center gap-3">
                       <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-                          <path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H11v16H6.5A1.5 1.5 0 0 1 5 18.5v-13Z" />
-                          <path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H13v16h4.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" />
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-11 w-11" aria-hidden>
+                          <path d="M24 20a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z" />
+                          <path d="M13 42c0-10 5-17 11-17s11 7 11 17" />
+                          <path d="M19 33h10l5 6-5 6H19l-5-6 5-6Z" />
+                          <path d="M24 33v12" />
                         </svg>
                       </span>
                       <span className="label-mono">Read</span>
                     </span>
                     <span className="flex flex-col items-center gap-3">
                       <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-                          <path d="M4 10h16v9H4z" />
-                          <path d="M4 10l2.5-4h11L20 10" />
-                          <path d="M12 10v9" />
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-11 w-11" aria-hidden>
+                          <path d="M14 19h20v19H14z" />
+                          <path d="M14 27h20" />
+                          <path d="M24 19v19" />
+                          <path d="M9 24H5M9 31H5M9 38H5" />
                         </svg>
                       </span>
                       <span className="label-mono">Collected</span>
                     </span>
                     <span className="flex flex-col items-center gap-3">
                       <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink opacity-45">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-                          <path d="M19.5 12a7.5 7.5 0 1 1-2.6-5.7" />
-                          <path d="M19.5 4.5V9H15" />
+                                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-11 w-11" aria-hidden>
+                          <path d="M7 40h34" />
+                          <path d="M12 40V29h8v11" />
+                          <path d="M24 40V29h8v11" />
+                          <path d="M38 6c6 5 7 13 1 17" />
+                          <path d="M36 22l4-1 1 6" />
                         </svg>
                       </span>
                       <span className="label-mono">Back out</span>
