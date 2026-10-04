@@ -49,7 +49,7 @@
   --font-serif: "Overpass", "Noto Sans Bengali", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   /* A script face for the founder’s signature - used once, on About us. */
-  --font-script: "Great Vibes", cursive;
+  --font-script: "Alex Brush", cursive;
 
   /* Depth — the interface is hairline-first: cards and panels are defined by
      their border, not their shadow. Shadow is reserved for things that move or

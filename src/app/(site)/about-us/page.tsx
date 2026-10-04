@@ -56,7 +56,7 @@ function WindowNook() {
 
 /** The signature, set in a script face. */
 function Signature() {
-  return <span className="font-script text-5xl leading-none text-ink">Rey</span>;
+  return <span className="font-script text-6xl leading-none text-ink">Rey</span>;
 }
 
 const milestones = [
