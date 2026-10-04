@@ -45,8 +45,8 @@
      and author names render in a Bengali face instead of whatever the OS
      happens to have. The font files only download when Bengali is on screen. */
   --font-sans: "Inter", "Noto Sans Bengali", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Inter", "Noto Sans Bengali", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: "Playfair Display", "Noto Serif Bengali", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-display: "Overpass", "Noto Sans Bengali", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Overpass", "Noto Sans Bengali", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Depth — the interface is hairline-first: cards and panels are defined by
@@ -70,7 +70,7 @@
   --text-micro: 0.6875rem; /* 11px — mono labels, table heads */
   --text-meta: 0.75rem; /* 12px — meta lines under titles */
   --text-body-sm: 0.875rem; /* 14px — UI text, buttons, table cells */
-  --text-body: 0.9375rem; /* 15px — long-form paragraphs */
+  --text-body: 1rem; /* 16px — long-form paragraphs and descriptions */
   --text-display: 2.5rem; /* 40px — hero headline on small screens, stepped up by utilities */
 
   /* --- Motion -------------------------------------------------------------
