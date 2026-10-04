@@ -190,7 +190,7 @@ export default async function AboutPage() {
               </Link>
               <Link
                 href="/library"
-                className="text-sm text-ink-soft underline decoration-ink/30 hover:decoration-ink"
+                className="inline-flex min-h-6 items-center text-sm text-ink-soft underline decoration-ink/30 hover:decoration-ink"
               >
                 Browse the library
               </Link>
@@ -207,7 +207,7 @@ export default async function AboutPage() {
             </div>
 
             {covers.length ? (
-              <div className="absolute -bottom-6 -left-6 hidden -rotate-3 rounded-2xl border border-line bg-white p-3 shadow-lift sm:block">
+              <div className="absolute -bottom-6 -left-6 hidden -rotate-3 rounded-2xl border border-line bg-white p-3 shadow-lift lg:block">
                 <div className="flex gap-2">
                   {covers.slice(0, 4).map((book) => (
                     <BookCoverImage
@@ -364,7 +364,7 @@ export default async function AboutPage() {
                 </Link>
                 <Link
                   href="/rare"
-                  className="text-sm text-ink-soft underline decoration-ink/30 hover:decoration-ink"
+                  className="inline-flex min-h-6 items-center text-sm text-ink-soft underline decoration-ink/30 hover:decoration-ink"
                 >
                   Request a title we don&apos;t have
                 </Link>
@@ -449,7 +449,7 @@ export default async function AboutPage() {
                 </Link>
                 <Link
                   href="/plans"
-                  className="text-sm text-ink-soft underline decoration-ink/30 hover:decoration-ink"
+                  className="inline-flex min-h-6 items-center text-sm text-ink-soft underline decoration-ink/30 hover:decoration-ink"
                 >
                   Or see the rental plans
                 </Link>
