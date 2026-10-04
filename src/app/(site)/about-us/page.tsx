@@ -54,25 +54,9 @@ function WindowNook() {
   );
 }
 
-/** A handwritten mark, drawn rather than set in a script font. */
+/** The signature, set in a script face. */
 function Signature() {
-  return (
-    <svg
-      viewBox="0 0 220 60"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-      className="h-12 w-auto"
-    >
-      <path d="M18 42c10-24 18-30 22-24 4 6-6 22-2 26 5 5 16-14 22-24 4-7 2-6 4 2 2 9 8 10 14 6" />
-      <path d="M92 44c6-16 12-24 16-22 4 2 0 12-6 18-5 5-2 8 4 6 6-2 12-8 16-14" />
-      <path d="M134 46c8-14 16-22 22-20 4 1 2 8-4 14-5 5-10 6-2 4 8-2 16-8 22-14 4-4 6-2 2 6-3 7 2 10 8 8 6-2 12-6 18-12" />
-      <path d="M196 52c8-2 14-6 18-10" strokeDasharray="2 6" />
-    </svg>
-  );
+  return <span className="font-script text-5xl leading-none text-ink">Rey</span>;
 }
 
 const milestones = [
