@@ -287,30 +287,30 @@ export default async function AboutPage() {
           <Reveal className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div className="lg:order-2">
               <div className="rounded-3xl border border-line bg-white p-3 shadow-paper sm:p-4">
-                <div className="flex items-center justify-center gap-4">
-                  {[
-                    { x: 0, label: "You" },
-                    { x: 1, label: "Dhaka" },
-                    { x: 2, label: "Chattogram" },
-                    { x: 3, label: "Sylhet" },
-                  ].map((stop, index) => (
-                    <span key={stop.label} className="flex items-center gap-4">
-                      {index > 0 ? (
-                        <span aria-hidden className="h-px w-8 bg-line sm:w-14" />
-                      ) : null}
-                      <span className="flex flex-col items-center gap-2">
+                <div className="flex flex-wrap items-start justify-center gap-x-3 gap-y-6 sm:gap-x-5">
+                  {["Borrowed", "Read", "Collected", "Borrowed again"].map((stage, index) => (
+                    <span key={stage} className="flex items-start gap-3 sm:gap-5">
+                      {index > 0 ? <span aria-hidden className="mt-8 h-px w-5 bg-line sm:w-8" /> : null}
+                      <span className="flex flex-col items-center gap-3">
                         <span
-                          className={`h-3 w-3 rounded-full ${
-                            index === 0 ? "bg-ink" : "border border-ink"
+                          className={`overflow-hidden rounded-card border border-line bg-white ${
+                            index === 3 ? "opacity-45" : ""
                           }`}
-                        />
-                        <span className="label-mono">{stop.label}</span>
+                        >
+                          <BookCoverImage
+                            url={covers[0]?.cover_url}
+                            title={covers[0]?.title ?? "A book from the shelf"}
+                            size="sm"
+                            className="h-20 w-14"
+                          />
+                        </span>
+                        <span className="label-mono">{stage}</span>
                       </span>
                     </span>
                   ))}
                 </div>
                 <p className="mt-8 border-t border-line pt-5 text-center text-base leading-relaxed text-ink-soft">
-                  Nine years of reading, one bookshelf, and a rider who knows the way.
+                  The same copy, coming back round — bought once, read many times.
                 </p>
               </div>
             </div>
