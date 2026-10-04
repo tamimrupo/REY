@@ -156,7 +156,7 @@ function ValueIcon({ name }: { name: (typeof values)[number]["icon"] }) {
 }
 
 export default async function AboutPage() {
-  const shelf = await getShelfBooks(4);
+  const shelf = await getShelfBooks(6);
   const covers = shelf.books;
 
   return (
@@ -207,7 +207,7 @@ export default async function AboutPage() {
             {covers.length ? (
               <div className="absolute -bottom-6 -left-6 hidden -rotate-3 rounded-2xl border border-line bg-white p-3 shadow-lift sm:block">
                 <div className="flex gap-2">
-                  {covers.map((book) => (
+                  {covers.slice(0, 4).map((book) => (
                     <BookCoverImage
                       key={book.id}
                       url={book.cover_url}
@@ -245,17 +245,24 @@ export default async function AboutPage() {
         <div className="space-y-20 lg:space-y-28">
           <Reveal className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
             <div className="rounded-3xl border border-line bg-mist p-8 shadow-card sm:p-12">
-              <div className="grid grid-cols-3 gap-3 opacity-70">
-                {[0, 1, 2, 3, 4, 5].map((index) => (
-                  <span
-                    key={index}
-                    className={`rounded-card border border-line bg-white ${
-                      index % 3 === 1 ? "h-20" : "h-16"
+              <div className="grid grid-cols-3 gap-3">
+                {covers.slice(0, 6).map((book, index) => (
+                  <div
+                    key={book.id}
+                    className={`overflow-hidden rounded-card border border-line bg-white ${
+                      index < 2 ? "" : "opacity-40"
                     }`}
-                  />
+                  >
+                    <BookCoverImage
+                      url={book.cover_url}
+                      title={book.title}
+                      size="sm"
+                      className="aspect-[2/3] w-full"
+                    />
+                  </div>
                 ))}
               </div>
-              <p className="label-mono mt-6 text-center">Six books bought, two of them read</p>
+              <p className="label-mono mt-6 text-center">Six bought · two read</p>
             </div>
 
             <div>
