@@ -287,27 +287,43 @@ export default async function AboutPage() {
           <Reveal className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div className="lg:order-2">
               <div className="rounded-3xl border border-line bg-white p-3 shadow-paper sm:p-4">
-                <div className="flex flex-col items-center gap-6">
-                  <svg
-                    viewBox="0 0 120 120"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    role="img"
-                    aria-label="One book circulating"
-                    className="h-28 w-28 text-ink"
-                  >
-                    <path d="M12 60a48 48 0 0 1 96 0" />
-                    <path d="M100 52l8 8-8 8" />
-                    <path d="M108 60a48 48 0 0 1-96 0" />
-                    <path d="M20 52l-8 8 8 8" />
-                    <path d="M60 44c-8-5-18-6-26-4v32c8-2 18-1 26 4" />
-                    <path d="M60 44c8-5 18-6 26-4v32c-8-2-18-1-26 4" />
-                    <path d="M60 44v36" />
-                  </svg>
-                  <p className="label-mono">One copy · many readers</p>
+                <div className="flex flex-wrap items-start justify-center gap-6 sm:gap-8">
+                    <span className="flex flex-col items-center gap-3">
+                      <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
+                          <path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H11v16H6.5A1.5 1.5 0 0 1 5 18.5v-13Z" />
+                          <path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H13v16h4.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" />
+                        </svg>
+                      </span>
+                      <span className="label-mono">Borrowed</span>
+                    </span>
+                    <span className="flex flex-col items-center gap-3">
+                      <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
+                          <path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H11v16H6.5A1.5 1.5 0 0 1 5 18.5v-13Z" />
+                          <path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H13v16h4.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" />
+                        </svg>
+                      </span>
+                      <span className="label-mono">Read</span>
+                    </span>
+                    <span className="flex flex-col items-center gap-3">
+                      <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
+                          <path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H11v16H6.5A1.5 1.5 0 0 1 5 18.5v-13Z" />
+                          <path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H13v16h4.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" />
+                        </svg>
+                      </span>
+                      <span className="label-mono">Collected</span>
+                    </span>
+                    <span className="flex flex-col items-center gap-3">
+                      <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink opacity-45">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
+                          <path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H11v16H6.5A1.5 1.5 0 0 1 5 18.5v-13Z" />
+                          <path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H13v16h4.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" />
+                        </svg>
+                      </span>
+                      <span className="label-mono">Back out</span>
+                    </span>
                 </div>
                 <p className="mt-8 border-t border-line pt-5 text-center text-base leading-relaxed text-ink-soft">
                   The same copy, coming back round — bought once, read many times.
