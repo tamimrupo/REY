@@ -5,13 +5,15 @@ import { useEffect, useRef, useState } from "react";
 /**
  * The story timeline.
  *
- * Each dot fills in as its row comes up the screen and stays filled, so the rail
- * reads as progress rather than five static markers: by the time you reach the
- * last stage, all five are ink. Motion only on the dot and its label, so nothing
- * moves that you would have to read.
+ * Scrolling lights it up: each row paints its own segment of the rail in ink and
+ * fills its dot as it reaches the top third of the screen, and both stay lit. By
+ * the last stage the line is solid — the reading progress the section is about.
  *
- * If the observer is missing, or motion is off, every dot is filled — the
- * timeline is never half-drawn.
+ * The fill is drawn per row rather than measured, so there is nothing to
+ * recalculate on resize and nothing to get wrong when the copy changes length.
+ * Only colour and opacity animate; no element moves that you would have to read.
+ * Without an observer the dots stay hollow and the rail stays light rather than
+ * half-drawn.
  */
 export function Timeline({
   items,
@@ -52,6 +54,14 @@ export function Timeline({
           }}
           className="relative grid gap-2 pb-10 last:pb-0 sm:grid-cols-[8.5rem_1fr] sm:gap-10"
         >
+          {/* This row's share of the rail, painted over the hairline when reached. */}
+          <span
+            aria-hidden
+            className={`absolute -left-[2.125rem] top-0 h-full w-0.5 bg-ink transition-opacity duration-700 sm:-left-[3.125rem] ${
+              reached[index] ? "opacity-100" : "opacity-0"
+            }`}
+          />
+
           <span
             aria-hidden
             className={`absolute -left-[2.35rem] top-2 h-3 w-3 rounded-full border-2 border-ink transition-colors duration-500 sm:-left-[3.35rem] ${
