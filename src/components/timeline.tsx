@@ -34,13 +34,16 @@ export function Timeline({
       setReached((previous) => (previous.every((value, i) => value === next[i]) ? previous : next));
     };
 
-    let frame = requestAnimationFrame(update);
+    let frame = 0;
+    const tick = () => {
+      frame = 0;
+      update();
+    };
+
+    frame = requestAnimationFrame(tick);
     const onScroll = () => {
       if (frame) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        update();
-      });
+      frame = requestAnimationFrame(tick);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
