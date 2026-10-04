@@ -216,7 +216,7 @@ export function SearchOverlay() {
           ref={panelRef}
           role="dialog"
           aria-label="Search the library"
-          className="animate-pop absolute left-0 right-0 top-full z-50 border-b border-line bg-paper shadow-lift"
+          className="animate-pop absolute left-0 right-0 top-full z-50 border-b border-ink bg-cream shadow-lift"
         >
           <div className="container-page py-10">
             <div className="relative max-w-2xl">
