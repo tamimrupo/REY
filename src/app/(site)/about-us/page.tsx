@@ -241,10 +241,10 @@ export default async function AboutPage() {
       </section>
 
       {/* --------------------------------------------- Staggered narrative rows */}
-      <section className="container-page py-24">
-        <div className="space-y-20 lg:space-y-28">
+      <section className="container-page py-20">
+        <div className="space-y-14 lg:space-y-20">
           <Reveal className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-            <div className="rounded-3xl border border-line bg-mist p-8 shadow-card sm:p-12">
+            <div className="rounded-3xl border border-line bg-mist p-5 shadow-paper sm:p-7">
               <div className="grid grid-cols-3 gap-3">
                 {covers.slice(0, 6).map((book, index) => (
                   <div
@@ -286,7 +286,7 @@ export default async function AboutPage() {
 
           <Reveal className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div className="lg:order-2">
-              <div className="rounded-3xl border border-line bg-white p-8 shadow-paper sm:p-12">
+              <div className="rounded-3xl border border-line bg-white p-5 shadow-paper sm:p-7">
                 <div className="flex items-center justify-center gap-4">
                   {[
                     { x: 0, label: "You" },
