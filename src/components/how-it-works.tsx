@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Reveal } from "@/components/motion";
+import { ReadingScene } from "@/components/reading-scene";
 
 /**
  * How it works — a designed page rather than a CMS one.
@@ -157,22 +158,9 @@ export function HowItWorks() {
           </p>
 
           <Reveal className="mx-auto mt-12 max-w-4xl rounded-3xl border border-line bg-white p-8 shadow-paper sm:p-12">
-            <div className="flex items-end justify-center gap-3 sm:gap-5">
-              {[0, 1, 2, 3, 4].map((index) => (
-                <div
-                  key={index}
-                  className={`w-16 shrink-0 overflow-hidden rounded-card border border-line bg-mist sm:w-24 ${
-                    index % 2 === 0 ? "h-24 sm:h-36" : "h-20 sm:h-28"
-                  } ${index === 2 ? "-translate-y-3" : ""}`}
-                >
-                  <span className="flex h-full w-full items-center justify-center font-display text-lg font-bold text-ink-muted">
-                    rey
-                  </span>
-                </div>
-              ))}
-            </div>
+            <ReadingScene className="mx-auto h-32 w-full max-w-xl text-ink sm:h-40" />
 
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-line pt-6">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-line pt-6">
               {["Pick", "Receive", "Read", "Swap"].map((label, index) => (
                 <span key={label} className="flex items-center gap-3">
                   {index > 0 ? <span aria-hidden className="h-px w-6 bg-line" /> : null}
