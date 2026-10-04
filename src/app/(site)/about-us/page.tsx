@@ -384,16 +384,22 @@ export default async function AboutPage() {
 
           <ol className="mt-14 border-l-2 border-ink pl-8 sm:pl-12">
             {milestones.map((milestone, index) => (
-              <Reveal key={milestone.stage} delay={index * 80} className="relative pb-12 last:pb-0">
+              <Reveal
+                key={milestone.stage}
+                delay={index * 80}
+                className="relative grid gap-2 pb-10 last:pb-0 sm:grid-cols-[8.5rem_1fr] sm:gap-10"
+              >
                 <span
                   aria-hidden
-                  className="absolute -left-[2.6rem] top-1.5 h-3.5 w-3.5 rounded-full border-2 border-ink bg-mist sm:-left-[3.6rem]"
+                  className="absolute -left-[2.35rem] top-2 h-3 w-3 rounded-full border-2 border-ink bg-mist sm:-left-[3.35rem]"
                 />
-                <p className="label-mono">{milestone.stage}</p>
-                <h3 className="mt-3 text-2xl">{milestone.title}</h3>
-                <p className="mt-3 max-w-2xl text-base leading-[1.75] text-ink-soft">
-                  {milestone.body}
-                </p>
+                <p className="label-mono sm:pt-1.5">{milestone.stage}</p>
+                <div>
+                  <h3 className="text-2xl">{milestone.title}</h3>
+                  <p className="mt-2.5 max-w-xl text-base leading-[1.75] text-ink-soft">
+                    {milestone.body}
+                  </p>
+                </div>
               </Reveal>
             ))}
           </ol>
