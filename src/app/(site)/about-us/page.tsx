@@ -287,27 +287,27 @@ export default async function AboutPage() {
           <Reveal className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div className="lg:order-2">
               <div className="rounded-3xl border border-line bg-white p-3 shadow-paper sm:p-4">
-                <div className="flex flex-wrap items-start justify-center gap-x-3 gap-y-6 sm:gap-x-5">
-                  {["Borrowed", "Read", "Collected", "Borrowed again"].map((stage, index) => (
-                    <span key={stage} className="flex items-start gap-3 sm:gap-5">
-                      {index > 0 ? <span aria-hidden className="mt-8 h-px w-5 bg-line sm:w-8" /> : null}
-                      <span className="flex flex-col items-center gap-3">
-                        <span
-                          className={`overflow-hidden rounded-card border border-line bg-white ${
-                            index === 3 ? "opacity-45" : ""
-                          }`}
-                        >
-                          <BookCoverImage
-                            url={covers[0]?.cover_url}
-                            title={covers[0]?.title ?? "A book from the shelf"}
-                            size="sm"
-                            className="h-20 w-14"
-                          />
-                        </span>
-                        <span className="label-mono">{stage}</span>
-                      </span>
-                    </span>
-                  ))}
+                <div className="flex flex-col items-center gap-6">
+                  <svg
+                    viewBox="0 0 120 120"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    role="img"
+                    aria-label="One book circulating"
+                    className="h-28 w-28 text-ink"
+                  >
+                    <path d="M12 60a48 48 0 0 1 96 0" />
+                    <path d="M100 52l8 8-8 8" />
+                    <path d="M108 60a48 48 0 0 1-96 0" />
+                    <path d="M20 52l-8 8 8 8" />
+                    <path d="M60 44c-8-5-18-6-26-4v32c8-2 18-1 26 4" />
+                    <path d="M60 44c8-5 18-6 26-4v32c-8-2-18-1-26 4" />
+                    <path d="M60 44v36" />
+                  </svg>
+                  <p className="label-mono">One copy · many readers</p>
                 </div>
                 <p className="mt-8 border-t border-line pt-5 text-center text-base leading-relaxed text-ink-soft">
                   The same copy, coming back round — bought once, read many times.
