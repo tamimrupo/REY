@@ -291,8 +291,9 @@ export default async function AboutPage() {
                     <span className="flex flex-col items-center gap-3">
                       <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-                          <path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H11v16H6.5A1.5 1.5 0 0 1 5 18.5v-13Z" />
-                          <path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H13v16h4.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" />
+                          <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10v13H5.5A1.5 1.5 0 0 1 4 15.5v-10Z" />
+                          <path d="M13 11h6" />
+                          <path d="M17 8l3 3-3 3" />
                         </svg>
                       </span>
                       <span className="label-mono">Borrowed</span>
@@ -309,8 +310,9 @@ export default async function AboutPage() {
                     <span className="flex flex-col items-center gap-3">
                       <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-                          <path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H11v16H6.5A1.5 1.5 0 0 1 5 18.5v-13Z" />
-                          <path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H13v16h4.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" />
+                          <path d="M4 10h16v9H4z" />
+                          <path d="M4 10l2.5-4h11L20 10" />
+                          <path d="M12 10v9" />
                         </svg>
                       </span>
                       <span className="label-mono">Collected</span>
@@ -318,8 +320,8 @@ export default async function AboutPage() {
                     <span className="flex flex-col items-center gap-3">
                       <span className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-mist text-ink opacity-45">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-                          <path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H11v16H6.5A1.5 1.5 0 0 1 5 18.5v-13Z" />
-                          <path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H13v16h4.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" />
+                          <path d="M19.5 12a7.5 7.5 0 1 1-2.6-5.7" />
+                          <path d="M19.5 4.5V9H15" />
                         </svg>
                       </span>
                       <span className="label-mono">Back out</span>
