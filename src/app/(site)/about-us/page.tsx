@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { Timeline } from "@/components/timeline";
+
 import { Reveal } from "@/components/motion";
 import { BookCoverImage } from "@/components/book-cover";
 import { getShelfBooks } from "@/lib/data";
@@ -382,27 +384,7 @@ export default async function AboutPage() {
             </h2>
           </div>
 
-          <ol className="mt-14 border-l-2 border-ink pl-8 sm:pl-12">
-            {milestones.map((milestone, index) => (
-              <Reveal
-                key={milestone.stage}
-                delay={index * 80}
-                className="relative grid gap-2 pb-10 last:pb-0 sm:grid-cols-[8.5rem_1fr] sm:gap-10"
-              >
-                <span
-                  aria-hidden
-                  className="absolute -left-[2.35rem] top-2 h-3 w-3 rounded-full border-2 border-ink bg-mist sm:-left-[3.35rem]"
-                />
-                <p className="label-mono sm:pt-1.5">{milestone.stage}</p>
-                <div>
-                  <h3 className="text-2xl">{milestone.title}</h3>
-                  <p className="mt-2.5 max-w-xl text-base leading-[1.75] text-ink-soft">
-                    {milestone.body}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </ol>
+          <Timeline items={milestones} />
         </div>
       </section>
 
