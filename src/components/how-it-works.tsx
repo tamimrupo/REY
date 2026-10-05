@@ -288,7 +288,7 @@ export function HowItWorks() {
               The questions people <em className="italic">actually ask.</em>
             </h2>
             <p className="mt-5 max-w-sm text-base leading-relaxed text-ink-soft">
-              Anything else, and you can reach us on WhatsApp or at hello@reybd.com.
+              Anything else, and you can reach us on WhatsApp or through the contact page.
             </p>
           </div>
 
