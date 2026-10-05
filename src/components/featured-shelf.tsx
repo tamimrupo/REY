@@ -31,6 +31,12 @@ function AuthorAvatar({
  * Navigation never ends: the arrows wrap around, and autoplay keeps advancing one
  * book at a time forever. It pauses when you hover, focus, click, scroll away or
  * hide the tab, and never runs for reduced-motion users.
+ *
+ * The list renders three times so the active book always has neighbours: the
+ * middle copy is the interactive one, the outer copies fill the run-up to the
+ * first book and the run-out after the last. Without them the rail had to park
+ * the first book in the middle of an otherwise empty window; with them the
+ * wrap-around reads as one ordinary step.
  */
 export function FeaturedShelf({
   books,
@@ -51,7 +57,6 @@ export function FeaturedShelf({
   const keyboardRef = useRef(false);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [pad, setPad] = useState(0);
   const [autoplayOn, setAutoplayOn] = useState(true);
 
   const cards = useCallback((): HTMLElement[] => {
@@ -59,24 +64,30 @@ export function FeaturedShelf({
     return rail ? Array.from(rail.querySelectorAll<HTMLElement>("[data-card]")) : [];
   }, []);
 
-  /** Scroll so that `index` sits in the middle of the rail. */
+  /**
+   * Scroll so that `index` sits in the middle of the rail.
+   *
+   * Navigation always addresses the middle copy of the tripled list, which is
+   * what guarantees books on both sides of the active one.
+   */
   const goTo = useCallback(
     (index: number, behavior: ScrollBehavior = "smooth") => {
       const rail = railRef.current;
       const list = cards();
-      const card = list[index];
+      const card = list[books.length + index];
       if (!rail || !card) return;
 
       const left = card.offsetLeft - (rail.clientWidth - card.offsetWidth) / 2;
       rail.scrollTo({ left: Math.max(0, left), behavior });
     },
-    [cards],
+    [cards, books.length],
   );
 
   const commit = useCallback(() => {
     const rail = railRef.current;
     const list = cards();
-    if (!rail || !list.length) return;
+    const count = books.length;
+    if (!rail || !list.length || !count) return;
 
     const railCentre = rail.scrollLeft + rail.clientWidth / 2;
     let nearest = 0;
@@ -90,9 +101,21 @@ export function FeaturedShelf({
       }
     });
 
-    activeIndexRef.current = nearest;
-    setActiveIndex(nearest);
-  }, [cards]);
+    // A manual drag can settle in one of the filler copies. Shift the rail by
+    // whole copies — the content repeats, so the correction is invisible — and
+    // every later calculation stays inside the middle copy.
+    const copy = Math.floor(nearest / count);
+    if (copy !== 1) {
+      const width = list[count].offsetLeft - list[0].offsetLeft;
+      if (width > 0) {
+        rail.scrollTo({ left: rail.scrollLeft + (1 - copy) * width, behavior: "auto" });
+      }
+    }
+
+    const real = nearest % count;
+    activeIndexRef.current = real;
+    setActiveIndex(real);
+  }, [cards, books.length]);
 
   // Debounced so the panel does not flicker through every book mid-scroll.
   const handleScroll = useCallback(() => {
@@ -100,20 +123,12 @@ export function FeaturedShelf({
     settle.current = setTimeout(commit, 110);
   }, [commit]);
 
-  /** End spacers so the first and last book can reach the centre. */
-  const measurePad = useCallback(() => {
-    const rail = railRef.current;
-    const first = cards()[0];
-    if (!rail || !first) return;
-    setPad(Math.max(0, (rail.clientWidth - first.offsetWidth) / 2));
-  }, [cards]);
-
+  // Centre the first book on load, then keep the reported index in sync.
   useEffect(() => {
-    measurePad();
+    goTo(0, "auto");
     commit();
 
     const onResize = () => {
-      measurePad();
       commit();
     };
     window.addEventListener("resize", onResize);
@@ -121,7 +136,7 @@ export function FeaturedShelf({
       window.removeEventListener("resize", onResize);
       if (settle.current) clearTimeout(settle.current);
     };
-  }, [measurePad, commit]);
+  }, [goTo, commit]);
 
   // Endless autoplay, one book at a time. Skipped for reduced-motion users.
   useEffect(() => {
@@ -168,9 +183,9 @@ export function FeaturedShelf({
   /** Wraps around in both directions, so the shelf never "ends". */
   const step = (direction: 1 | -1) => {
     lastClickRef.current = Date.now();
-    const list = cards();
-    if (!list.length) return;
-    const next = (activeIndexRef.current + direction + list.length) % list.length;
+    const count = books.length;
+    if (!cards().length || !count) return;
+    const next = (activeIndexRef.current + direction + count) % count;
     // CSS cannot reach a JavaScript scroll, so honour the motion setting by hand.
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     goTo(next, reduced ? "auto" : "smooth");
@@ -229,7 +244,9 @@ export function FeaturedShelf({
         </div>
       </div>
 
-      {/* The rail. End spacers centre the first and last books; padding gives the
+      {/* The rail. The list renders three times so the window is always full —
+          the middle copy is the interactive one, the outer copies only fill the
+          ground before the first book and after the last. Padding gives the
           enlarged card and its shadow room. */}
       <div
         ref={railRef}
@@ -242,53 +259,54 @@ export function FeaturedShelf({
         }}
         className="no-scrollbar relative -mx-2 mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto px-2 pt-6 pb-7"
       >
-        <div aria-hidden className="shrink-0" style={{ width: pad }} />
+        {[0, 1, 2].map((copy) =>
+          books.map((book, index) => {
+            const isActive = index === activeIndex;
+            const isTop = topBorrowed > 0 && (book.borrowed ?? 0) === topBorrowed;
+            const interactive = copy === 1;
 
-        {books.map((book, index) => {
-          const isActive = index === activeIndex;
-          const isTop = topBorrowed > 0 && (book.borrowed ?? 0) === topBorrowed;
-
-          return (
-            <Link
-              key={book.id}
-              data-card
-              href={`/library/${book.slug}`}
-              aria-current={isActive ? "true" : undefined}
-              className={`group w-40 shrink-0 snap-center transition-transform duration-200 ease-out sm:w-44 lg:w-48 ${
-                isActive ? "scale-[1.07]" : "scale-100"
-              }`}
-            >
-              <div
-                className={`relative overflow-hidden rounded-card transition-shadow duration-200 ${
-                  isActive
-                    ? "shadow-lift"
-                    : "shadow-paper"
+            return (
+              <Link
+                key={`${copy}-${book.id}`}
+                data-card
+                href={`/library/${book.slug}`}
+                aria-current={interactive && isActive ? "true" : undefined}
+                aria-hidden={interactive ? undefined : true}
+                tabIndex={interactive ? undefined : -1}
+                className={`group w-40 shrink-0 snap-center transition-transform duration-200 ease-out sm:w-44 lg:w-48 ${
+                  isActive ? "scale-[1.07]" : "scale-100"
                 }`}
               >
-                <BookCover book={book} className="aspect-[2/3] w-full" />
+                <div
+                  className={`relative overflow-hidden rounded-card transition-shadow duration-200 ${
+                    isActive
+                      ? "shadow-lift"
+                      : "shadow-paper"
+                  }`}
+                >
+                  <BookCover book={book} className="aspect-[2/3] w-full" />
 
-                {isTop ? (
-                  <span className="absolute left-2.5 top-2.5 rounded-field bg-ink px-2.5 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper shadow-card">
-                    Best seller
-                  </span>
-                ) : null}
-              </div>
+                  {isTop ? (
+                    <span className="absolute left-2.5 top-2.5 rounded-field bg-ink px-2.5 py-1 text-nano font-semibold uppercase tracking-[0.12em] text-paper shadow-card">
+                      Best seller
+                    </span>
+                  ) : null}
+                </div>
 
-              <p
-                className={`mt-4 line-clamp-2 text-sm leading-snug text-ink group-hover:underline ${
-                  isActive ? "font-bold" : "font-semibold"
-                }`}
-              >
-                {book.title}
-              </p>
-              <p className="mt-0.5 line-clamp-1 text-xs text-ink-muted">
-                {book.authors?.name ?? book.genres?.name ?? "REY BD"}
-              </p>
-            </Link>
-          );
-        })}
-
-        <div aria-hidden className="shrink-0" style={{ width: pad }} />
+                <p
+                  className={`mt-4 line-clamp-2 text-sm leading-snug text-ink group-hover:underline ${
+                    isActive ? "font-bold" : "font-semibold"
+                  }`}
+                >
+                  {book.title}
+                </p>
+                <p className="mt-0.5 line-clamp-1 text-xs text-ink-muted">
+                  {book.authors?.name ?? book.genres?.name ?? "REY BD"}
+                </p>
+              </Link>
+            );
+          }),
+        )}
       </div>
 
       <div className="mt-2 flex flex-wrap items-start justify-between gap-6">
