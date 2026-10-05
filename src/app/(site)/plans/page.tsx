@@ -118,7 +118,7 @@ export default async function PlansPage() {
             </div>
           ))}
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-3">
+        <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4">
           {deliveryOptions
             .filter((option) => option.charge > 0)
             .map((option) => (
