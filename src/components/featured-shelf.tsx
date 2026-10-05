@@ -33,10 +33,11 @@ function AuthorAvatar({
  * hide the tab, and never runs for reduced-motion users.
  *
  * The list renders three times so the active book always has neighbours: the
- * middle copy is the interactive one, the outer copies fill the run-up to the
- * first book and the run-out after the last. Without them the rail had to park
- * the first book in the middle of an otherwise empty window; with them the
- * wrap-around reads as one ordinary step.
+ * middle copy is the interactive one, the outer copies let a step past either
+ * end continue smoothly into the next copy, after which the rail re-centres
+ * invisibly (the content repeats, so the shift cannot be seen). Without them
+ * the rail had to park the first book in the middle of an otherwise empty
+ * window and every wrap looked like a reset.
  */
 export function FeaturedShelf({
   books,
@@ -67,15 +68,42 @@ export function FeaturedShelf({
   /**
    * Scroll so that `index` sits in the middle of the rail.
    *
-   * Navigation always addresses the middle copy of the tripled list, which is
-   * what guarantees books on both sides of the active one.
+   * The list renders three times, so every book exists in three places. By
+   * default the occurrence nearest the current position is chosen: a step past
+   * either end then continues one ordinary step into the neighbouring copy,
+   * and `commit` re-centres it invisibly. The mount effect asks for the middle
+   * copy explicitly, so the shelf opens on the first book.
    */
   const goTo = useCallback(
-    (index: number, behavior: ScrollBehavior = "smooth") => {
+    (
+      index: number,
+      behavior: ScrollBehavior = "smooth",
+      copy: 0 | 1 | 2 | "nearest" = "nearest",
+    ) => {
       const rail = railRef.current;
       const list = cards();
-      const card = list[books.length + index];
-      if (!rail || !card) return;
+      const count = books.length;
+      if (!rail || !list.length || !count) return;
+
+      let card: HTMLElement | undefined;
+      if (copy === "nearest") {
+        const centre = rail.scrollLeft + rail.clientWidth / 2;
+        let best = Number.POSITIVE_INFINITY;
+        for (let i = 0; i < 3; i++) {
+          const candidate = list[i * count + index];
+          if (!candidate) continue;
+          const distance = Math.abs(
+            candidate.offsetLeft + candidate.offsetWidth / 2 - centre,
+          );
+          if (distance < best) {
+            best = distance;
+            card = candidate;
+          }
+        }
+      } else {
+        card = list[copy * count + index];
+      }
+      if (!card) return;
 
       const left = card.offsetLeft - (rail.clientWidth - card.offsetWidth) / 2;
       rail.scrollTo({ left: Math.max(0, left), behavior });
@@ -101,9 +129,10 @@ export function FeaturedShelf({
       }
     });
 
-    // A manual drag can settle in one of the filler copies. Shift the rail by
-    // whole copies — the content repeats, so the correction is invisible — and
-    // every later calculation stays inside the middle copy.
+    // A drag — or a step that carried into a neighbouring copy — can settle
+    // outside the middle copy. Shift the rail by whole copies — the content
+    // repeats, so the correction is invisible — and every later calculation
+    // stays inside the middle copy.
     const copy = Math.floor(nearest / count);
     if (copy !== 1) {
       const width = list[count].offsetLeft - list[0].offsetLeft;
@@ -123,9 +152,10 @@ export function FeaturedShelf({
     settle.current = setTimeout(commit, 110);
   }, [commit]);
 
-  // Centre the first book on load, then keep the reported index in sync.
+  // Centre the first book of the middle copy on load, then keep the reported
+  // index in sync.
   useEffect(() => {
-    goTo(0, "auto");
+    goTo(0, "auto", 1);
     commit();
 
     const onResize = () => {
@@ -158,8 +188,9 @@ export function FeaturedShelf({
 
       const count = books.length;
       const next = (activeIndexRef.current + 1) % count;
-      // Rewinding the whole shelf instantly is kinder than a long swoop.
-      goTo(next, next === 0 ? "auto" : "smooth");
+      // A step past the end simply continues into the next copy; `commit`
+      // re-centres invisibly once the scroll settles, so there is no reset.
+      goTo(next);
     }, AUTOPLAY_MS);
 
     // Don't keep scrolling while the shelf is off-screen.
@@ -245,8 +276,9 @@ export function FeaturedShelf({
       </div>
 
       {/* The rail. The list renders three times so the window is always full —
-          the middle copy is the interactive one, the outer copies only fill the
-          ground before the first book and after the last. Padding gives the
+          the middle copy is the interactive one, the outer copies provide the
+          run-up to the first book and the run-out after the last, and they let
+          a wrap continue smoothly into the next copy. Padding gives the
           enlarged card and its shadow room. */}
       <div
         ref={railRef}
