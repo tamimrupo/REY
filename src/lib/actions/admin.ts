@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 
 import { requireAdmin } from "@/lib/auth";
 import { getCronSecret, getRentalSettings, getWhatsappSettings } from "@/lib/data";
@@ -18,7 +19,9 @@ import {
   uniqueSlug,
 } from "@/lib/import-server";
 import { fillTemplate } from "@/lib/quotas";
+import { sendMetaEvent } from "@/lib/meta";
 import { emailConfigured, queueNotification, sendEmail } from "@/lib/notify";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionState } from "@/lib/actions/types";
 
@@ -379,6 +382,33 @@ export async function verifyPaymentAction(
   }
 
   await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
+
+  // The admin has confirmed the money arrived — this is the shop's real
+  // Purchase, sent server-side so blocked pixels and iOS still count. The phone
+  // is the identifier Bangladeshi customers actually use; the email (when the
+  // service-role key is configured) raises the match rate further.
+  const { data: customer } = await supabase
+    .from("profiles")
+    .select("full_name, phone")
+    .eq("id", order.user_id)
+    .maybeSingle();
+  const adminClient = createAdminClient();
+  let customerEmail: string | null = null;
+  if (adminClient) {
+    const { data: account } = await adminClient.auth.admin.getUserById(order.user_id);
+    customerEmail = account?.user?.email ?? null;
+  }
+  after(() =>
+    sendMetaEvent({
+      name: "Purchase",
+      eventId: `purchase-${payment.id}`,
+      email: customerEmail,
+      phone: customer?.phone ?? null,
+      value: Number(payment.amount ?? order.total) || 0,
+      currency: "BDT",
+      contentName: order.order_number,
+    }),
+  );
 
   if (order.subscription_id) {
     const rentalSettings = await getRentalSettings();

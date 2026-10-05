@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Analytics } from "@/components/analytics";
 import { BackToTop } from "@/components/motion";
+import { MetaPixel } from "@/components/meta-pixel";
 import { RouteProgress } from "@/components/route-progress";
 import { TableLabels } from "@/components/table-labels";
 import { getSiteSettingsForMetadata } from "@/lib/data";
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <BackToTop />
         <Analytics />
+        <MetaPixel />
       </body>
     </html>
   );

@@ -1,9 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 
 import { siteUrl, supabaseConfigured } from "@/lib/env";
+import { sendMetaEvent } from "@/lib/meta";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionState } from "@/lib/actions/types";
 
@@ -58,6 +61,29 @@ export async function signUpAction(
     }
     return fail(error.message);
   }
+
+  // Meta's server-side conversions stream: report the sign-up with the cookies
+  // the browser pixel left behind. `after` keeps the redirect instant even when
+  // the ad network is slow.
+  const jar = await cookies();
+  const head = await headers();
+  const fbp = jar.get("_fbp")?.value ?? null;
+  const fbc = jar.get("_fbc")?.value ?? null;
+  const clientIp = head.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  const userAgent = head.get("user-agent") ?? null;
+  after(() =>
+    sendMetaEvent({
+      name: "CompleteRegistration",
+      eventId: `signup-${data.user?.id ?? email}`,
+      email,
+      phone,
+      fbp,
+      fbc,
+      clientIp,
+      userAgent,
+      contentName: "REY BD sign-up",
+    }),
+  );
 
   // Email confirmation turned off → straight in.
   if (data.session) redirect(next);
