@@ -848,8 +848,17 @@ async function searchArchive(
   page = 1,
 ): Promise<{ results: BookCandidate[]; total: number | null }> {
   const asIsbn = looksLikeIsbn(query) ? normalizeIsbn(query) : null;
+  const phrase = query.replace(/"/g, " ").replace(/\s+/g, " ").trim();
   const url = new URL("https://archive.org/advancedsearch.php");
-  url.searchParams.set("q", asIsbn ? `isbn:${asIsbn}` : `${query} AND mediatype:texts`);
+  // Strictly a title or creator phrase. Archive's default matching is loose —
+  // "ami tapu" otherwise matches every scan that happens to say "ami" or
+  // "tapu" (CIA reports, Smash Bros rosters), which is worse than no answer.
+  url.searchParams.set(
+    "q",
+    asIsbn
+      ? `isbn:${asIsbn}`
+      : `(title:("${phrase}") OR creator:("${phrase}")) AND mediatype:texts`,
+  );
   url.searchParams.set("rows", String(Math.min(50, Math.max(1, limit))));
   if (page > 1) url.searchParams.set("page", String(page));
   for (const field of ["identifier", "title", "creator", "year", "date", "language", "isbn"]) {
@@ -886,24 +895,27 @@ function dedupe(candidates: BookCandidate[]): BookCandidate[] {
 /**
  * Searches for a title, author or ISBN.
  *
- * Google results (when a key is configured) are merged ahead of Open Library,
- * because they carry a full description; Open Library fills in the rest.
+ * Google results (when a key is configured) are merged first, because they
+ * carry a full description; the Archive leads for Bangla queries; Open Library
+ * fills the rest.
  */
 export async function searchBooks(query: string, limit = 24, page = 1): Promise<SearchOutcome> {
   const trimmed = query.trim();
   if (trimmed.length < 3) return { results: [], totalFound: null, hint: null };
 
   const bengali = hasBengaliScript(trimmed);
-  // Bengali script is not indexed anywhere useful, so search the Latin spelling
-  // of it instead and say so. The shop still keeps the Bangla the admin typed.
+  // Bengali script is indexed by the Internet Archive but not by Open Library,
+  // so it is searched as-is there and as its Latin spelling everywhere else.
   const variants = bengali ? bengaliSearchVariants(trimmed) : [];
   const searched = variants[0] ?? trimmed;
   const queries = variants.length ? variants : [trimmed];
   const usesKey = Boolean(process.env.GOOGLE_BOOKS_API_KEY?.trim());
 
   // The Archive is the one outside catalogue that indexes Bangla script, so a
-  // Bangla query goes there in Bangla as well as in transliteration.
-  const archiveQueries = bengali ? [trimmed, ...queries] : [trimmed];
+  // Bangla query goes there in Bangla and as its plain transliteration. (The
+  // closed-vowel variant below is an Open Library spelling trick, not an
+  // Archive one; on a phrase search it only adds noise.)
+  const archiveQueries = bengali ? [trimmed, searched] : [trimmed];
   const [google, archiveRuns, ...libraries] = await Promise.all([
     usesKey && page === 1 ? searchGoogle(searched, limit) : Promise.resolve([] as BookCandidate[]),
     Promise.all(archiveQueries.map((q) => searchArchive(q, limit, page))),
@@ -916,7 +928,28 @@ export async function searchBooks(query: string, limit = 24, page = 1): Promise<
   // actually holds the Bangla book — so it leads there. Elsewhere it fills the
   // tail, after the cleaner Open Library records.
   const ordered = bengali ? [...archived, ...fromLibraries] : [...fromLibraries, ...archived];
-  const results = dedupe([...google, ...ordered]).slice(0, limit);
+  const merged = dedupe([...google, ...ordered]);
+
+  // Open Library's relevance is loose enough to answer "ami tapu" with a
+  // Bible. A Bangla query keeps only what actually looks like the query —
+  // Bengali script, or a Latin record carrying a transliterated word we
+  // searched for (four letters or more, so "ami" alone cannot vouch for a row).
+  const needleWords = bengali
+    ? [
+        ...new Set(
+          queries.flatMap((q) => q.toLowerCase().split(/\s+/).filter((word) => word.length >= 4)),
+        ),
+      ]
+    : [];
+  const results = (
+    bengali && needleWords.length
+      ? merged.filter((row) => {
+          const haystack = `${row.title} ${row.authors.join(" ")}`.toLowerCase();
+          if (/[\u0980-\u09ff]/.test(haystack)) return true;
+          return needleWords.some((word) => haystack.includes(word));
+        })
+      : merged
+  ).slice(0, limit);
   const totalFound = [...libraries, ...archiveRuns].reduce<number | null>((best, run) => {
     if (typeof run.total !== "number") return best;
     return best === null ? run.total : Math.max(best, run.total);
