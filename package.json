@@ -11,6 +11,7 @@
     "db": "node --env-file=.env.local scripts/db.mjs"
   },
   "dependencies": {
+    "@next/third-parties": "^16.3.8",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "next": "16.3.7",

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { Analytics } from "@/components/analytics";
 import { BackToTop } from "@/components/motion";
 import { RouteProgress } from "@/components/route-progress";
 import { TableLabels } from "@/components/table-labels";
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <TableLabels />
         {children}
         <BackToTop />
+        <Analytics />
       </body>
     </html>
   );
