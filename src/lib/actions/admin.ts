@@ -1274,8 +1274,11 @@ export async function importCandidatesAction(
       picks = parsed
         .map((entry) => {
           const row = entry as { source?: unknown; id?: unknown };
+          const raw = row?.source;
+          const source: BookSource =
+            raw === "google" || raw === "archive" ? raw : "openlibrary";
           return {
-            source: (row?.source === "google" ? "google" : "openlibrary") as BookSource,
+            source,
             id: String(row?.id ?? "").trim(),
           };
         })

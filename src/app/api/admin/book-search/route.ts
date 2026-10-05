@@ -10,8 +10,9 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * Live metadata search for the admin import screen.
  *
- * Returns candidates from Open Library (plus Google Books when a key is set) and
- * marks the ones already in the catalogue, so the UI can show "In library".
+ * Returns candidates from Open Library and the Internet Archive (plus Google
+ * Books when a key is set) and marks the ones already in the catalogue, so the
+ * UI can show "In library".
  * Admin-only: this is the one route that reaches the public internet on demand.
  */
 

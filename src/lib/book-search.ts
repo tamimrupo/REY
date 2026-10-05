@@ -1,22 +1,23 @@
 /**
  * Book metadata lookup — the engine behind "search a title, click import".
  *
- * Open Library is the primary source: it needs no API key and answers fine from
- * serverless hosts. Google Books is used *only* when GOOGLE_BOOKS_API_KEY is
- * set, because the anonymous Google quota is spent almost instantly
- * (HTTP 429 "Quota exceeded … Queries per day") and would otherwise break every
- * search for everyone.
+ * Open Library and the Internet Archive are the keyless sources. The Archive is
+ * the one that indexes Bangla script — the catalogue this shop imports most —
+ * so a Bangla query is searched there in Bangla as well as in transliteration.
+ * Google Books is used *only* when GOOGLE_BOOKS_API_KEY is set, because the
+ * anonymous Google quota is spent almost instantly (HTTP 429 "Quota exceeded …
+ * Queries per day") and would otherwise break every search for everyone.
  *
  * Everything here is safe to run on the server only — it makes outbound calls.
  */
 
 import { normalizeIsbn } from "@/lib/import";
 
-export type BookSource = "openlibrary" | "google";
+export type BookSource = "openlibrary" | "google" | "archive";
 
 export type BookCandidate = {
   source: BookSource;
-  /** Stable id within the source: an OL work key (OL…W) or a Google volume id. */
+  /** Stable id within the source: an OL work key (OL…W), a Google volume id or an Archive identifier. */
   id: string;
   title: string;
   subtitle: string | null;
@@ -670,6 +671,81 @@ export function mapGoogleVolume(volume: GoogleVolume): BookCandidate | null {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Mapping: Internet Archive                                                   */
+/* -------------------------------------------------------------------------- */
+
+export type ArchiveDoc = {
+  identifier?: string;
+  title?: string | string[];
+  creator?: string | string[];
+  year?: string | number;
+  date?: string;
+  language?: string | string[];
+  isbn?: string | string[];
+};
+
+export type ArchiveMetadata = { metadata?: ArchiveDoc };
+
+/** Archive pairs the original script with a transliteration behind “।”. */
+function archiveText(value: string | string[] | null | undefined): string | null {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const text = cleanText(raw ?? null);
+  if (!text) return null;
+  const [first] = text.split("।");
+  return first.trim() || text;
+}
+
+function archiveLanguage(value: string | string[] | null | undefined): string | null {
+  const raw = (Array.isArray(value) ? value[0] : value)?.trim().toLowerCase();
+  if (!raw) return null;
+  if (raw === "bengali" || raw === "bangla") return "Bangla";
+  return languageName(raw.slice(0, 3));
+}
+
+export function mapArchiveDoc(doc: ArchiveDoc): BookCandidate | null {
+  const id = cleanText(doc.identifier);
+  if (!id) return null;
+
+  const creator = archiveText(doc.creator);
+  let title = archiveText(doc.title);
+  if (!title) return null;
+
+  // Scans repeat the author inside the title often enough to be worth cleaning.
+  if (creator) {
+    const suffix = ` by ${creator}`;
+    if (title.toLowerCase().endsWith(suffix.toLowerCase())) {
+      title = title.slice(0, title.length - suffix.length).trim();
+    }
+  }
+  title = title.replace(/\s*[[(]\s*\d{4}\s*[\])]\s*$/, "").trim();
+  if (!title) return null;
+
+  const isbns = (Array.isArray(doc.isbn) ? doc.isbn : doc.isbn ? [doc.isbn] : [])
+    .map((value) => normalizeIsbn(String(value)))
+    .filter(Boolean) as string[];
+
+  return {
+    source: "archive",
+    id: id.slice(0, 200),
+    title: title.slice(0, 300),
+    subtitle: null,
+    authors: creator ? [creator] : [],
+    isbn: isbns.find((value) => value.length === 13) ?? isbns[0] ?? null,
+    publisher: null,
+    year: yearFrom(doc.year ?? doc.date),
+    pages: null,
+    language: archiveLanguage(doc.language),
+    subjects: [],
+    description: null,
+    coverUrl: `https://archive.org/services/img/${encodeURIComponent(id)}`,
+    editions: null,
+    series: null,
+    seriesOrder: null,
+    authorPhoto: null,
+  };
+}
+
+/* -------------------------------------------------------------------------- */
 /* Networking                                                                  */
 /* -------------------------------------------------------------------------- */
 
@@ -766,6 +842,33 @@ async function searchGoogle(query: string, limit: number): Promise<BookCandidate
   return (payload?.items ?? []).map(mapGoogleVolume).filter((row): row is BookCandidate => Boolean(row));
 }
 
+async function searchArchive(
+  query: string,
+  limit: number,
+  page = 1,
+): Promise<{ results: BookCandidate[]; total: number | null }> {
+  const asIsbn = looksLikeIsbn(query) ? normalizeIsbn(query) : null;
+  const url = new URL("https://archive.org/advancedsearch.php");
+  url.searchParams.set("q", asIsbn ? `isbn:${asIsbn}` : `${query} AND mediatype:texts`);
+  url.searchParams.set("rows", String(Math.min(50, Math.max(1, limit))));
+  if (page > 1) url.searchParams.set("page", String(page));
+  for (const field of ["identifier", "title", "creator", "year", "date", "language", "isbn"]) {
+    url.searchParams.append("fl[]", field);
+  }
+  url.searchParams.set("output", "json");
+
+  // The slowest of the sources, but it answers in a second or two.
+  const payload = await fetchJson<{ response?: { numFound?: number; docs?: ArchiveDoc[] } }>(
+    url.toString(),
+    15_000,
+    3600,
+  );
+  const docs = payload?.response?.docs ?? [];
+  const results = docs.map(mapArchiveDoc).filter((row): row is BookCandidate => Boolean(row));
+  const total = typeof payload?.response?.numFound === "number" ? payload.response.numFound : null;
+  return { results, total };
+}
+
 function dedupe(candidates: BookCandidate[]): BookCandidate[] {
   const seen = new Set<string>();
   const out: BookCandidate[] = [];
@@ -798,31 +901,40 @@ export async function searchBooks(query: string, limit = 24, page = 1): Promise<
   const queries = variants.length ? variants : [trimmed];
   const usesKey = Boolean(process.env.GOOGLE_BOOKS_API_KEY?.trim());
 
-  const [google, ...libraries] = await Promise.all([
-    usesKey && page === 1 ? searchGoogle(searched, limit) : Promise.resolve([]),
+  // The Archive is the one outside catalogue that indexes Bangla script, so a
+  // Bangla query goes there in Bangla as well as in transliteration.
+  const archiveQueries = bengali ? [trimmed, ...queries] : [trimmed];
+  const [google, archiveRuns, ...libraries] = await Promise.all([
+    usesKey && page === 1 ? searchGoogle(searched, limit) : Promise.resolve([] as BookCandidate[]),
+    Promise.all(archiveQueries.map((q) => searchArchive(q, limit, page))),
     ...queries.map((q) => searchOpenLibrary(q, limit, page)),
   ]);
 
-  const results = dedupe([...google, ...libraries.flatMap((library) => library.results)]).slice(
-    0,
-    limit,
-  );
-  const totalFound = libraries.reduce<number | null>((best, library) => {
-    if (typeof library.total !== "number") return best;
-    return best === null ? library.total : Math.max(best, library.total);
+  const archived = archiveRuns.flatMap((run) => run.results);
+  const fromLibraries = libraries.flatMap((library) => library.results);
+  // For Bangla the libraries mostly return translations, while the Archive
+  // actually holds the Bangla book — so it leads there. Elsewhere it fills the
+  // tail, after the cleaner Open Library records.
+  const ordered = bengali ? [...archived, ...fromLibraries] : [...fromLibraries, ...archived];
+  const results = dedupe([...google, ...ordered]).slice(0, limit);
+  const totalFound = [...libraries, ...archiveRuns].reduce<number | null>((best, run) => {
+    if (typeof run.total !== "number") return best;
+    return best === null ? run.total : Math.max(best, run.total);
   }, null);
 
   let hint: string | null = null;
   if (bengali) {
     hint = results.length
-      ? `Bengali script: searched as “${queries.join("” and “")}”, which is how the outside ` +
-        `catalogues index it. Rename it to the Bangla afterwards and the shop keeps that.`
-      : `Bengali script: searched as “${queries.join("” and “")}” and found nothing. Try just the ` +
-        `author, or add the book by hand — it will keep the Bangla title.`;
+      ? `Bengali script: searched in Bangla on the Internet Archive and as “${queries.join(
+          "” and “",
+        )}” elsewhere. Edit the title after import if you want a different spelling.`
+      : `Bengali script: searched in Bangla on the Internet Archive and as “${queries.join(
+          "” and “",
+        )}” — nothing matched. Try just the author, or add the book by hand; it will keep the Bangla title.`;
   } else if (!results.length) {
     hint =
-      "Nothing matched. Try just the author or a shorter title — and remember the catalogue is " +
-      "strongest for titles published in English.";
+      "Nothing matched. Try just the author or a shorter title — Bangla books are best found " +
+      "by their Bangla title or author.";
   }
 
   return {
@@ -835,6 +947,24 @@ export async function searchBooks(query: string, limit = 24, page = 1): Promise<
 /** Re-reads one candidate from its source, so the client only ever sends an id. */
 export async function fetchCandidate(source: BookSource, id: string): Promise<BookCandidate | null> {
   if (!id) return null;
+
+  if (source === "archive") {
+    const payload = await fetchJson<ArchiveMetadata>(
+      `https://archive.org/metadata/${encodeURIComponent(id)}`,
+      15_000,
+      86_400,
+    );
+    const meta = payload?.metadata;
+    if (!meta) return null;
+    return mapArchiveDoc({
+      identifier: meta.identifier ?? id,
+      title: meta.title,
+      creator: meta.creator,
+      year: meta.year ?? meta.date,
+      language: meta.language,
+      isbn: meta.isbn,
+    });
+  }
 
   if (source === "google") {
     const key = process.env.GOOGLE_BOOKS_API_KEY?.trim();
