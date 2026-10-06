@@ -4,6 +4,12 @@ import { POSTS } from "@/lib/blog";
 import { getAuthors, getCmsPages, getGenres, getPlans, listBooks } from "@/lib/data";
 import { SITE_URL } from "@/lib/site-url";
 
+// The catalogue changes during the day; an hourly refresh keeps new books,
+// authors and posts discoverable without waiting for the next deploy. Without
+// this the sitemap is a build-time snapshot — and can even be served from a
+// previous build's cache, as it just was.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [authors, cmsPages, genres, plans] = await Promise.all([
     getAuthors(),
