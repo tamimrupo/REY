@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import { supabaseConfigured } from "@/lib/env";
 import {
   booksOut,
@@ -102,18 +104,26 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 /**
  * Public, cookie-less read used by the root layout's metadata. Keeping this off
  * the cookie-bound client lets `/_not-found` stay statically prerendered.
+ *
+ * Cached because the metadata now blocks rendering (see htmlLimitedBots in
+ * next.config.ts): a settings change shows on the site immediately and in the
+ * page's <head> within five minutes.
  */
-export async function getSiteSettingsForMetadata(): Promise<SiteSettings> {
-  const client = createPublicClient();
-  if (!client) return DEFAULT_SITE;
+export const getSiteSettingsForMetadata = unstable_cache(
+  async (): Promise<SiteSettings> => {
+    const client = createPublicClient();
+    if (!client) return DEFAULT_SITE;
 
-  try {
-    const { data } = await client.from("settings").select("value").eq("key", "site").maybeSingle();
-    return { ...DEFAULT_SITE, ...((data?.value as Partial<SiteSettings>) ?? {}) };
-  } catch {
-    return DEFAULT_SITE;
-  }
-}
+    try {
+      const { data } = await client.from("settings").select("value").eq("key", "site").maybeSingle();
+      return { ...DEFAULT_SITE, ...((data?.value as Partial<SiteSettings>) ?? {}) };
+    } catch {
+      return DEFAULT_SITE;
+    }
+  },
+  ["site-settings-for-metadata"],
+  { revalidate: 300 },
+);
 
 export async function getPaymentSettings(): Promise<PaymentSettings> {
   const value = await getSetting<Partial<PaymentSettings>>("payments", {});
