@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/json-ld";
-import { getPost } from "@/lib/blog";
+import { getPost, POSTS } from "@/lib/blog";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 
 export async function generateMetadata(props: PageProps<"/blog/[slug]">) {
@@ -14,6 +14,10 @@ export async function generateMetadata(props: PageProps<"/blog/[slug]">) {
     description: post.description,
     alternates: { canonical: `/blog/${post.slug}` },
   };
+}
+
+export function generateStaticParams() {
+  return POSTS.map((post) => ({ slug: post.slug }));
 }
 
 export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {

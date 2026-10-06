@@ -1,16 +1,12 @@
 import { BookCard } from "@/components/book-card";
 import { RareRequestForm } from "@/components/rare-request-form";
 import { SectionHeading } from "@/components/ui";
-import { getSession } from "@/lib/auth";
 import { listBooks } from "@/lib/data";
 
 export const metadata = { title: "Rare & hard to find" };
 
 export default async function RarePage() {
-  const [rare, session] = await Promise.all([
-    listBooks({ onlyRare: true, perPage: 24 }),
-    getSession(),
-  ]);
+  const rare = await listBooks({ onlyRare: true, perPage: 24 });
 
   return (
     <>
@@ -53,12 +49,10 @@ export default async function RarePage() {
             <div className="card p-6">
               <h2 className="text-xl font-semibold text-ink">Request a book</h2>
               <p className="mt-2 text-sm text-ink-soft">
-                {session
-                  ? "We will email you when it lands on the shelves."
-                  : "Leave a phone number or email and we will tell you when it arrives."}
+                Leave a phone number or email and we will tell you when it arrives.
               </p>
               <div className="mt-6">
-                <RareRequestForm contactHint={session ? "optional, we have your account" : "required"} />
+                <RareRequestForm contactHint="required" />
               </div>
             </div>
           </aside>

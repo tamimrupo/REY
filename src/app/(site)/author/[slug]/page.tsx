@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { AuthorCard } from "@/components/author-card";
 import { BookCard } from "@/components/book-card";
 import { EmptyState } from "@/components/ui";
-import { getAuthorBySlug, getAuthorTitles, getBorrowCountsByBook } from "@/lib/data";
+import { getAuthorBySlug, getAuthorTitles, getAuthors, getBorrowCountsByBook } from "@/lib/data";
 import type { Book } from "@/lib/types";
 
 export async function generateMetadata(props: PageProps<"/author/[slug]">) {
@@ -15,6 +15,11 @@ export async function generateMetadata(props: PageProps<"/author/[slug]">) {
     description: author?.bio?.slice(0, 150) ?? undefined,
     alternates: { canonical: author ? `/author/${author.slug}` : undefined },
   };
+}
+
+export async function generateStaticParams() {
+  const authors = await getAuthors();
+  return authors.map((author) => ({ slug: author.slug }));
 }
 
 /**

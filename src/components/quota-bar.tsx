@@ -1,16 +1,39 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { StatusPill } from "@/components/ui";
-import { getMembershipState } from "@/lib/data";
 import { daysLeft } from "@/lib/quotas";
 
+type QuotaState = {
+  subscription: { status: string; current_period_end: string | null } | null;
+  plan: { name: string } | null;
+  quota: number;
+  remaining: number;
+  out: unknown[];
+  box: unknown[];
+  isSwap: boolean;
+  overdue: boolean;
+};
+
 /**
- * The sticky "how many books can I take" bar from the WordPress plugin,
- * rebuilt as a server component so it always shows live numbers.
+ * The sticky "how many books can I take" bar, resolved on the client so the
+ * enclosing page can be statically cached. Anonymous visitors see nothing.
  */
-export async function QuotaBar({ userId }: { userId: string }) {
-  const state = await getMembershipState(userId);
-  const left = daysLeft(state.subscription?.current_period_end);
+export function QuotaBar() {
+  const [state, setState] = useState<QuotaState | null>(null);
+
+  useEffect(() => {
+    fetch("/api/quota", { headers: { accept: "application/json" } })
+      .then((r) => r.json())
+      .then((d) => setState(d?.session ? d.state : null))
+      .catch(() => setState(null));
+  }, []);
+
+  if (!state) return null;
+
+  const left = daysLeft(state.subscription?.current_period_end ?? null);
 
   if (!state.subscription || !state.plan) {
     return (

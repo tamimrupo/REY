@@ -7,7 +7,6 @@ import { BookCard, BookCover } from "@/components/book-card";
 import { JsonLd } from "@/components/json-ld";
 import { QuotaBar } from "@/components/quota-bar";
 import { StatusPill } from "@/components/ui";
-import { getSession } from "@/lib/auth";
 import {
   getAuthorTitles,
   getBookBySlug,
@@ -15,6 +14,7 @@ import {
   getPlans,
   getReadNext,
   getSeriesBooks,
+  listBooks,
 } from "@/lib/data";
 import { money } from "@/lib/format";
 import { bookJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
@@ -44,14 +44,25 @@ export async function generateMetadata(props: PageProps<"/library/[slug]">) {
   };
 }
 
+export async function generateStaticParams() {
+  const slugs: string[] = [];
+  let page = 1;
+  for (;;) {
+    const result = await listBooks({ page, perPage: 60 });
+    for (const book of result.books) slugs.push(book.slug);
+    if (page >= result.pages) break;
+    page += 1;
+  }
+  return slugs.map((slug) => ({ slug }));
+}
+
 export default async function BookDetailPage(props: PageProps<"/library/[slug]">) {
   const { slug } = await props.params;
   const book = await getBookBySlug(slug);
   if (!book) notFound();
 
-  const [plans, session, authorTitles, borrowCounts, seriesBooks, readNext] = await Promise.all([
+  const [plans, authorTitles, borrowCounts, seriesBooks, readNext] = await Promise.all([
     getPlans(),
-    getSession(),
     book.author_id ? getAuthorTitles(book.author_id, book.id, 5) : Promise.resolve([]),
     book.author_id
       ? getBorrowCountsByBook()
@@ -97,7 +108,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
           { name: book.title, path: `/library/${book.slug}` },
         ])}
       />
-      {session ? <QuotaBar userId={session.userId} /> : null}
+      <QuotaBar />
 
       <div className="container-page py-10">
         <nav aria-label="Breadcrumb" className="text-xs text-ink-muted">

@@ -1,14 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { addToBoxFormAction } from "@/lib/actions/storefront";
-import { getSession } from "@/lib/auth";
-import { getMembershipState } from "@/lib/data";
+
+type QuotaState = {
+  subscription: { status: string } | null;
+  remaining: number;
+  out: { book_id: string }[];
+  box: { book_id: string }[];
+  overdue: boolean;
+};
 
 /**
- * "Add to my box" / "Start a plan" — the book-page call to action.
- * Renders a plain form so it works without any client JavaScript.
+ * "Add to my box" call-to-action, resolved on the client so the book page can
+ * be statically cached. The anonymous case (the default) shows "Sign in".
  */
-export async function AddToBoxButton({
+export function AddToBoxButton({
   bookId,
   back,
   className = "btn btn-primary",
@@ -19,17 +28,22 @@ export async function AddToBoxButton({
   className?: string;
   label?: string;
 }) {
-  const session = await getSession();
+  const [state, setState] = useState<QuotaState | null>(null);
 
-  if (!session) {
+  useEffect(() => {
+    fetch("/api/quota", { headers: { accept: "application/json" } })
+      .then((r) => r.json())
+      .then((d) => setState(d?.session ? d.state : null))
+      .catch(() => setState(null));
+  }, []);
+
+  if (!state) {
     return (
       <Link href={`/login?next=${encodeURIComponent(back)}`} className={className}>
         Sign in to pick this book
       </Link>
     );
   }
-
-  const state = await getMembershipState(session.userId);
 
   if (!state.subscription || state.subscription.status !== "active") {
     return (

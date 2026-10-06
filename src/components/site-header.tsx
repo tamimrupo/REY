@@ -2,14 +2,14 @@ import Link from "next/link";
 
 import { MobileMenu } from "@/components/mobile-menu";
 import { NavLink } from "@/components/nav-link";
+import { AccountButton } from "@/components/account-button";
 import { navLinks } from "@/lib/nav-links";
 import { ScrollElevation } from "@/components/motion";
 import { SearchOverlay } from "@/components/search-overlay";
-import { getSession } from "@/lib/auth";
 import { getAnnouncement } from "@/lib/data";
 
 export async function SiteHeader() {
-  const [session, announcement] = await Promise.all([getSession(), getAnnouncement()]);
+  const announcement = await getAnnouncement();
 
   return (
     <header
@@ -51,16 +51,11 @@ export async function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <SearchOverlay />
-          <Link
-            href={session ? "/account" : "/login"}
-            className="btn btn-ghost btn-sm hidden sm:inline-flex"
-          >
-            {session ? "My account" : "Sign in"}
-          </Link>
+          <AccountButton className="btn btn-ghost btn-sm hidden sm:inline-flex" />
           <Link href="/plans" className="btn btn-primary btn-sm hidden sm:inline-flex">
             Start a plan
           </Link>
-          <MobileMenu signedIn={Boolean(session)} />
+          <MobileMenu />
         </div>
       </div>
     </header>

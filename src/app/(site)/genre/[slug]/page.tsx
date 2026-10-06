@@ -21,6 +21,11 @@ export async function generateMetadata(props: PageProps<"/genre/[slug]">) {
   };
 }
 
+export async function generateStaticParams() {
+  const genres = (await getGenres()).filter((genre) => genre.sort_order > 0);
+  return genres.map((genre) => ({ slug: genre.slug }));
+}
+
 export default async function GenrePage(props: PageProps<"/genre/[slug]">) {
   const { slug } = await props.params;
   const genre = (await getGenres()).find((g) => g.slug === slug);

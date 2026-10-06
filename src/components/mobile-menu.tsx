@@ -15,11 +15,19 @@ const itemClass =
  * Escape, on a click outside, and on the choice itself — and so it arrives with
  * the same quick pop as every other panel in the app.
  */
-export function MobileMenu({ signedIn }: { signedIn: boolean }) {
+export function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const wasOpen = useRef(false);
+
+  useEffect(() => {
+    fetch("/api/quota", { headers: { accept: "application/json" } })
+      .then((r) => r.json())
+      .then((d) => setSignedIn(Boolean(d?.session)))
+      .catch(() => {});
+  }, []);
 
   // Focus goes back to the button that opened the menu — but never on mount.
   useEffect(() => {

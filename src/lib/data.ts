@@ -66,10 +66,33 @@ async function query<T>(run: (sb: any) => PromiseLike<{ data: any; error: any }>
  * For data loaders that need custom logic (joins, counts, pagination).
  * The callback returns the finished value and should throw on error.
  */
-async function compute<T>(run: (sb: any) => Promise<T>, fallback: T): Promise<T> {
+/**
+ * Cookie-less variants for public catalog/settings reads. `createClient()`
+ * goes through `cookies()`, which marks a route dynamic; public data does not
+ * need a user session, so these let storefront pages render statically (ISR).
+ */
+async function queryPublic<T>(run: (sb: any) => PromiseLike<{ data: any; error: any }>, fallback: T): Promise<T> {
   if (!supabaseConfigured) return fallback;
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
+    if (!supabase) return fallback;
+    const { data, error } = await run(supabase);
+    if (error) {
+      console.error("[rey] query error:", error.message);
+      return fallback;
+    }
+    return (data ?? fallback) as T;
+  } catch (error) {
+    console.error("[rey] query threw:", error);
+    return fallback;
+  }
+}
+
+async function computePublic<T>(run: (sb: any) => Promise<T>, fallback: T): Promise<T> {
+  if (!supabaseConfigured) return fallback;
+  try {
+    const supabase = createPublicClient();
+    if (!supabase) return fallback;
     return await run(supabase);
   } catch (error) {
     console.error("[rey] query threw:", error);
@@ -97,8 +120,18 @@ export async function getSetting<T>(key: string, fallback: T): Promise<T> {
   return ((value as T) ?? fallback) as T;
 }
 
+/** Cookie-less settings read for public values (site name, couriers, …). */
+export async function getPublicSetting<T>(key: string, fallback: T): Promise<T> {
+  const row = await queryPublic<any>(
+    (sb) => sb.from("settings").select("value").eq("key", key).maybeSingle(),
+    null,
+  );
+  const value = Array.isArray(row) ? row[0]?.value : row?.value;
+  return ((value as T) ?? fallback) as T;
+}
+
 export async function getSiteSettings(): Promise<SiteSettings> {
-  return { ...DEFAULT_SITE, ...(await getSetting<Partial<SiteSettings>>("site", {})) };
+  return { ...DEFAULT_SITE, ...(await getPublicSetting<Partial<SiteSettings>>("site", {})) };
 }
 
 /**
@@ -135,7 +168,7 @@ export async function getPaymentSettings(): Promise<PaymentSettings> {
 }
 
 export async function getCourierSettings(): Promise<CourierSettings> {
-  const value = await getSetting<Partial<CourierSettings>>("couriers", {});
+  const value = await getPublicSetting<Partial<CourierSettings>>("couriers", {});
   return {
     methods: value.methods?.length ? value.methods : DEFAULT_COURIERS.methods,
     bdpost: { ...DEFAULT_COURIERS.bdpost, ...(value.bdpost ?? {}) },
@@ -155,7 +188,7 @@ export async function getWarehouseSettings(): Promise<WarehouseSettings> {
 }
 
 export async function getAnnouncement(): Promise<{ enabled: boolean; text: string }> {
-  return getSetting("announcement", { enabled: false, text: "" });
+  return getPublicSetting("announcement", { enabled: false, text: "" });
 }
 
 export async function getAllSettings(): Promise<Record<string, unknown>> {
@@ -175,7 +208,7 @@ export async function getCronSecret(): Promise<string> {
 /* -------------------------------------------------------------------------- */
 
 export async function getPlans(onlyActive = true): Promise<Plan[]> {
-  return query<Plan[]>((sb) => {
+  return queryPublic<Plan[]>((sb) => {
     let q = sb.from("plans").select("*").order("sort_order");
     if (onlyActive) q = q.eq("is_active", true);
     return q;
@@ -183,31 +216,31 @@ export async function getPlans(onlyActive = true): Promise<Plan[]> {
 }
 
 export async function getPlanBySlug(slug: string): Promise<Plan | null> {
-  return query<Plan | null>(
+  return queryPublic<Plan | null>(
     (sb) => sb.from("plans").select("*").eq("slug", slug).maybeSingle(),
     null,
   );
 }
 
 export async function getPlanById(id: string): Promise<Plan | null> {
-  return query<Plan | null>((sb) => sb.from("plans").select("*").eq("id", id).maybeSingle(), null);
+  return queryPublic<Plan | null>((sb) => sb.from("plans").select("*").eq("id", id).maybeSingle(), null);
 }
 
 export async function getPlanFeatures(): Promise<PlanFeature[]> {
-  return query<PlanFeature[]>((sb) => sb.from("plan_features").select("*").order("sort_order"), []);
+  return queryPublic<PlanFeature[]>((sb) => sb.from("plan_features").select("*").order("sort_order"), []);
 }
 
 export async function getGenres(): Promise<Genre[]> {
-  return query<Genre[]>((sb) => sb.from("genres").select("*").order("sort_order"), []);
+  return queryPublic<Genre[]>((sb) => sb.from("genres").select("*").order("sort_order"), []);
 }
 
 export async function getAuthors(): Promise<Author[]> {
-  return query<Author[]>((sb) => sb.from("authors").select("*").order("name"), []);
+  return queryPublic<Author[]>((sb) => sb.from("authors").select("*").order("name"), []);
 }
 
 /** One author, by the slug in their page URL. */
 export async function getAuthorBySlug(slug: string): Promise<Author | null> {
-  return query<Author | null>(
+  return queryPublic<Author | null>(
     (sb) => sb.from("authors").select("*").eq("slug", slug).maybeSingle(),
     null,
   );
@@ -240,7 +273,7 @@ export async function listBooks(filters: BookFilters = {}): Promise<{
 
   const empty = { books: [] as Book[], total: 0, page, perPage, pages: 0 };
 
-  return compute(
+  return computePublic(
     async (sb) => {
       let q = sb
         .from("books")
@@ -276,7 +309,7 @@ export async function listBooks(filters: BookFilters = {}): Promise<{
 }
 
 export async function getBookBySlug(slug: string): Promise<Book | null> {
-  return query<Book | null>(
+  return queryPublic<Book | null>(
     (sb) => sb.from("books").select(BOOK_SELECT).eq("slug", slug).maybeSingle(),
     null,
   );
@@ -290,7 +323,7 @@ export async function getBookBySlug(slug: string): Promise<Book | null> {
 export async function getShelfBooks(
   limit = 14,
 ): Promise<{ books: ShelfBook[]; total: number }> {
-  const counts = await query<{ book_id: string; borrowed: number }[]>(
+  const counts = await queryPublic<{ book_id: string; borrowed: number }[]>(
     (sb) => sb.rpc("book_borrow_counts"),
     [],
   );
@@ -300,7 +333,7 @@ export async function getShelfBooks(
     borrowedByBook.set(row.book_id, Number(row.borrowed));
   }
 
-  const result = await compute<{ books: Book[]; total: number }>(
+  const result = await computePublic<{ books: Book[]; total: number }>(
     async (sb) => {
       const { data, count, error } = await sb
         .from("books")
@@ -332,7 +365,7 @@ export async function getAuthorTitles(
   excludeBookId?: string,
   limit = 6,
 ): Promise<Book[]> {
-  return compute(
+  return computePublic(
     async (sb) => {
       const { data, error } = await sb
         .from("books")
@@ -362,7 +395,7 @@ export async function getSeriesBooks(series: string, limit = 24): Promise<Book[]
   const name = series?.trim();
   if (!name) return [];
 
-  return compute(
+  return computePublic(
     async (sb) => {
       const { data, error } = await sb
         .from("books")
@@ -381,7 +414,7 @@ export async function getSeriesBooks(series: string, limit = 24): Promise<Book[]
 
 /** Other titles on the same shelf — the last rung of the suggestion ladder. */
 export async function getGenreBooks(genreId: string, excludeId: string, limit = 4): Promise<Book[]> {
-  return compute(
+  return computePublic(
     async (sb) => {
       const { data, error } = await sb
         .from("books")
@@ -471,7 +504,7 @@ export async function getReadNext(book: Book, perSection = 4): Promise<ReadNextS
 
 /** Newest arrivals — the last-resort suggestion so a page is never a dead end. */
 export async function getNewestBooks(excludeId: string, limit = 4): Promise<Book[]> {
-  return compute(
+  return computePublic(
     async (sb) => {
       const { data, error } = await sb
         .from("books")
@@ -493,7 +526,7 @@ export type AuthorSummary = { author: Author; titles: number; series: string[] }
 export async function getAuthorsWithCounts(): Promise<AuthorSummary[]> {
   const [authors, rows] = await Promise.all([
     getAuthors(),
-    query<{ author_id: string | null; series: string | null }[]>(
+    queryPublic<{ author_id: string | null; series: string | null }[]>(
       (sb) => sb.from("books").select("author_id, series").eq("is_active", true),
       [],
     ),
@@ -524,7 +557,7 @@ export async function getAuthorsWithCounts(): Promise<AuthorSummary[]> {
 
 /** How many times each book has been borrowed, keyed by book id. */
 export async function getBorrowCountsByBook(): Promise<Record<string, number>> {
-  const rows = await query<{ book_id: string; borrowed: number }[]>(
+  const rows = await queryPublic<{ book_id: string; borrowed: number }[]>(
     (sb) => sb.rpc("book_borrow_counts"),
     [],
   );
@@ -541,7 +574,7 @@ export async function getBorrowCountsByBook(): Promise<Record<string, number>> {
  * actually has a description, so the pull-quote is real text rather than filler.
  */
 export async function getFeaturedBook(): Promise<Book | null> {
-  return query<Book | null>(
+  return queryPublic<Book | null>(
     (sb) =>
       sb
         .from("books")
@@ -556,11 +589,11 @@ export async function getFeaturedBook(): Promise<Book | null> {
 }
 
 export async function getBookById(id: string): Promise<Book | null> {
-  return query<Book | null>((sb) => sb.from("books").select(BOOK_SELECT).eq("id", id).maybeSingle(), null);
+  return queryPublic<Book | null>((sb) => sb.from("books").select(BOOK_SELECT).eq("id", id).maybeSingle(), null);
 }
 
 export async function getLanguages(): Promise<string[]> {
-  const rows = await query<{ language: string | null }[]>(
+  const rows = await queryPublic<{ language: string | null }[]>(
     (sb) => sb.from("books").select("language").eq("is_active", true),
     [],
   );
@@ -1000,7 +1033,7 @@ export async function getCustomerShipments(userId: string): Promise<Shipment[]> 
 /* -------------------------------------------------------------------------- */
 
 export async function getCmsPages(includeDrafts = false): Promise<CmsPage[]> {
-  return query<CmsPage[]>((sb) => {
+  return queryPublic<CmsPage[]>((sb) => {
     let q = sb.from("cms_pages").select("*").order("sort_order");
     if (!includeDrafts) q = q.eq("status", "published");
     return q;
@@ -1008,7 +1041,7 @@ export async function getCmsPages(includeDrafts = false): Promise<CmsPage[]> {
 }
 
 export async function getCmsPage(slug: string): Promise<CmsPage | null> {
-  return query<CmsPage | null>(
+  return queryPublic<CmsPage | null>(
     (sb) => sb.from("cms_pages").select("*").eq("slug", slug).maybeSingle(),
     null,
   );

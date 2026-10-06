@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { CmsArticle, MissingPage } from "@/components/cms-article";
-import { getCmsPage } from "@/lib/data";
+import { getCmsPage, getCmsPages } from "@/lib/data";
 
 export async function generateMetadata(props: PageProps<"/p/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
@@ -11,6 +11,11 @@ export async function generateMetadata(props: PageProps<"/p/[slug]">): Promise<M
     description: page?.excerpt ?? undefined,
     alternates: { canonical: page ? `/p/${page.slug}` : undefined },
   };
+}
+
+export async function generateStaticParams() {
+  const pages = await getCmsPages();
+  return pages.map((page) => ({ slug: page.slug }));
 }
 
 export default async function CmsPageRoute(props: PageProps<"/p/[slug]">) {
