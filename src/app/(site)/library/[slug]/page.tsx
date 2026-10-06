@@ -29,7 +29,7 @@ export async function generateMetadata(props: PageProps<"/library/[slug]">) {
     book.description?.slice(0, 160) ??
     `Rent ${book.title}${authorName ? ` by ${authorName}` : ""} from REY BD's book rental club in Bangladesh.`;
   return {
-    title: book.title,
+    title: authorName ? `${book.title} by ${authorName}` : book.title,
     description,
     alternates: { canonical: `/library/${book.slug}` },
     openGraph: {
