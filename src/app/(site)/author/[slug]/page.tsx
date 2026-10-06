@@ -13,6 +13,7 @@ export async function generateMetadata(props: PageProps<"/author/[slug]">) {
   return {
     title: author ? `${author.name} — books` : "Author",
     description: author?.bio?.slice(0, 150) ?? undefined,
+    alternates: { canonical: author ? `/author/${author.slug}` : undefined },
   };
 }
 

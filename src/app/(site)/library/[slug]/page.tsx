@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { AddToBoxButton } from "@/components/add-to-box-button";
 import { AuthorCard } from "@/components/author-card";
 import { BookCard, BookCover } from "@/components/book-card";
+import { JsonLd } from "@/components/json-ld";
 import { QuotaBar } from "@/components/quota-bar";
 import { StatusPill } from "@/components/ui";
 import { getSession } from "@/lib/auth";
@@ -16,12 +17,28 @@ import {
   getSeriesBooks,
 } from "@/lib/data";
 import { money } from "@/lib/format";
+import { bookJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import type { Book } from "@/lib/types";
 
 export async function generateMetadata(props: PageProps<"/library/[slug]">) {
   const { slug } = await props.params;
   const book = await getBookBySlug(slug);
-  return { title: book?.title ?? "Book" };
+  if (!book) return { title: "Book" };
+  const authorName = book.authors?.name;
+  const description =
+    book.description?.slice(0, 160) ??
+    `Rent ${book.title}${authorName ? ` by ${authorName}` : ""} from REY BD's book rental club in Bangladesh.`;
+  return {
+    title: book.title,
+    description,
+    alternates: { canonical: `/library/${book.slug}` },
+    openGraph: {
+      title: book.title,
+      description,
+      type: "website",
+      images: book.cover_url ? [{ url: book.cover_url }] : undefined,
+    },
+  };
 }
 
 export default async function BookDetailPage(props: PageProps<"/library/[slug]">) {
@@ -69,6 +86,14 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
 
   return (
     <>
+      <JsonLd data={bookJsonLd(book)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Library", path: "/library" },
+          { name: book.title, path: `/library/${book.slug}` },
+        ])}
+      />
       {session ? <QuotaBar userId={session.userId} /> : null}
 
       <div className="container-page py-10">

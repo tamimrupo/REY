@@ -8,7 +8,12 @@ import { EmptyState } from "@/components/ui";
 import { getSession } from "@/lib/auth";
 import { getGenres, getLanguages, listBooks } from "@/lib/data";
 
-export const metadata = { title: "Library" };
+export const metadata = {
+  title: "Browse the Library",
+  description:
+    "Browse 223+ books to rent in Bangladesh — fiction, romance, thriller, self-help and more, delivered to your door and collected when you're done.",
+  alternates: { canonical: "/library" },
+};
 
 function buildQuery(params: Record<string, string | undefined>) {
   const search = new URLSearchParams();

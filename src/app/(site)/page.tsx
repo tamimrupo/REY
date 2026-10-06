@@ -17,6 +17,15 @@ import { couriersFor } from "@/lib/quotas";
 import { dhakaDayIndex, pickForToday, rotateForToday } from "@/lib/daily";
 import { money } from "@/lib/format";
 
+export const metadata = {
+  title: {
+    absolute: "Book Rental in Bangladesh — REY BD | Rent Books Monthly from ৳299",
+  },
+  description:
+    "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door in Dhaka and across Bangladesh, collected when you're done. From ৳299/month with a refundable deposit.",
+  alternates: { canonical: "/" },
+};
+
 export default async function HomePage() {
   const [plans, features, shelfBooks, rare, courierSettings] = await Promise.all([
     getPlans(),

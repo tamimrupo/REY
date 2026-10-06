@@ -3,9 +3,12 @@ import type { Metadata } from "next";
 import { Analytics } from "@/components/analytics";
 import { BackToTop } from "@/components/motion";
 import { MetaPixel } from "@/components/meta-pixel";
+import { JsonLd } from "@/components/json-ld";
 import { RouteProgress } from "@/components/route-progress";
 import { TableLabels } from "@/components/table-labels";
 import { getSiteSettingsForMetadata } from "@/lib/data";
+import { organizationJsonLd } from "@/lib/jsonld";
+import { SITE_URL } from "@/lib/site-url";
 
 import "./globals.css";
 
@@ -16,13 +19,39 @@ export async function generateMetadata(): Promise<Metadata> {
       default: `${site.name} — Book rental club in Bangladesh`,
       template: `%s · ${site.name}`,
     },
-    description: site.tagline,
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+    description:
+      "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door and collected when you're done — from ৳299/month.",
+    metadataBase: new URL(SITE_URL),
     openGraph: {
       title: site.name,
-      description: site.tagline,
+      description:
+        "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door and collected when you're done.",
       type: "website",
+      siteName: site.name,
+      url: SITE_URL,
+      images: [{ url: `${SITE_URL}/hero/reader-1880.jpg` }],
     },
+    twitter: {
+      card: "summary_large_image",
+      title: site.name,
+      description: "Book rental club in Bangladesh — delivered to your door.",
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    applicationName: site.name,
+    creator: site.name,
+    publisher: site.name,
+    ...(process.env.GSC_VERIFICATION
+      ? { verification: { google: process.env.GSC_VERIFICATION } }
+      : {}),
   };
 }
 
@@ -51,6 +80,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <BackToTop />
         <Analytics />
         <MetaPixel />
+        <JsonLd data={organizationJsonLd()} />
       </body>
     </html>
   );

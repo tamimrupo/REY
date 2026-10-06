@@ -6,7 +6,11 @@ import { getCmsPage } from "@/lib/data";
 export async function generateMetadata(props: PageProps<"/p/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
   const page = await getCmsPage(slug);
-  return { title: page?.title ?? "Page" };
+  return {
+    title: page?.title ?? "Page",
+    description: page?.excerpt ?? undefined,
+    alternates: { canonical: page ? `/p/${page.slug}` : undefined },
+  };
 }
 
 export default async function CmsPageRoute(props: PageProps<"/p/[slug]">) {
