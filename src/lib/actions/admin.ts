@@ -858,7 +858,25 @@ export async function sendNotificationAction(
   const { data: notification } = await supabase.from("notifications").select("*").eq("id", id).single();
   if (!notification) return fail("Notification not found.");
 
-  if (!notification.email) {
+  // The queue carries a phone but not an email — the address lives in Supabase
+  // Auth. Look it up with the service key (server-side, never exposed) and
+  // remember it on the row, so the next send skips this step. This is what
+  // makes "Send email" work for dispatch notes, refunds and reminders.
+  let email = notification.email as string | null;
+  if (!email && notification.user_id) {
+    const adminClient = createAdminClient();
+    if (adminClient) {
+      const { data: account } = await adminClient.auth.admin.getUserById(
+        notification.user_id as string,
+      );
+      email = account?.user?.email ?? null;
+      if (email) {
+        await supabase.from("notifications").update({ email }).eq("id", id);
+      }
+    }
+  }
+
+  if (!email) {
     await supabase
       .from("notifications")
       .update({ status: "manual", error: "No email on file — send it over WhatsApp." })
@@ -873,11 +891,11 @@ export async function sendNotificationAction(
       .update({ status: "manual", error: "No email provider configured" })
       .eq("id", id);
     revalidateAdmin("/admin/notifications");
-    return fail("Email is not set up. Add RESEND_API_KEY, or send it over WhatsApp.");
+    return fail("Email is not set up. Add BREVO_API_KEY (or RESEND_API_KEY), or send it over WhatsApp.");
   }
 
   const result = await sendEmail(
-    notification.email,
+    email,
     notification.subject ?? "REY BD",
     notification.body,
   );
