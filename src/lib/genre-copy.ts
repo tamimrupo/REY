@@ -122,6 +122,48 @@ const CURATED: Record<string, GenreCopy> = {
     intro:
       "বাংলা সাহিত্য, on your shelf. Rent Bengali literature by the month — from classics to contemporary — delivered to your door and collected when you're done.",
   },
+  poetry: {
+    title: "Rent Poetry Books in Bangladesh",
+    description:
+      "Rent poetry books online in Bangladesh — from Tagore to world verse, delivered to your door and collected when you're done.",
+    intro:
+      "Verse, on your shelf. From Tagore to world poetry, rent poetry by the month — delivered to your door, returned when you're done.",
+  },
+  "crime-detective": {
+    title: "Rent Crime & Detective Books in Bangladesh",
+    description:
+      "Rent crime and detective books online in Bangladesh — Feluda, Byomkesh and more, delivered to your door and collected when you're done.",
+    intro:
+      "Whodunits, Bengali and beyond. Our crime & detective shelf spans Feluda, Byomkesh and classic mysteries — rent it, solve it, swap it for the next.",
+  },
+  "science-fiction": {
+    title: "Rent Science Fiction Books in Bangladesh",
+    description:
+      "Rent science fiction books online in Bangladesh — delivered to your door and collected when you're done.",
+    intro:
+      "The future, on subscription. Our science fiction shelf spans the visionary and the strange — rent it by the month, delivered to your door.",
+  },
+  "young-adult": {
+    title: "Rent Young Adult Books in Bangladesh",
+    description:
+      "Rent young adult books online in Bangladesh — delivered to your door and collected when you're done.",
+    intro:
+      "Stories that meet you where you are. Rent young adult fiction by the month — delivered to your door, returned when you're done.",
+  },
+  "historical-fiction": {
+    title: "Rent Historical Fiction Books in Bangladesh",
+    description:
+      "Rent historical fiction books online in Bangladesh — the past, reimagined, delivered to your door.",
+    intro:
+      "History, told as story. Our historical fiction shelf spans Bangladesh's past and the wider world — rent it by the month, delivered to your door.",
+  },
+  "short-stories": {
+    title: "Rent Short Story Books in Bangladesh",
+    description:
+      "Rent short story collections online in Bangladesh — delivered to your door and collected when you're done.",
+    intro:
+      "Big stories in small packages. Rent short story collections by the month — perfect for a commute or a single sitting.",
+  },
 };
 
 export function getGenreCopy(name: string, slug: string, count = 0): GenreCopy {
