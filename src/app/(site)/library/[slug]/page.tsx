@@ -25,9 +25,11 @@ export async function generateMetadata(props: PageProps<"/library/[slug]">) {
   const book = await getBookBySlug(slug);
   if (!book) return { title: "Book" };
   const authorName = book.authors?.name;
+  const fallbackDescription = `Rent ${book.title}${authorName ? ` by ${authorName}` : ""} from REY BD's book rental club in Bangladesh — delivered to your door and collected when you're done.`;
   const description =
-    book.description?.slice(0, 160) ??
-    `Rent ${book.title}${authorName ? ` by ${authorName}` : ""} from REY BD's book rental club in Bangladesh.`;
+    book.description && book.description.trim().length >= 50
+      ? book.description.slice(0, 160)
+      : fallbackDescription;
   return {
     title: authorName ? `${book.title} by ${authorName}` : book.title,
     description,
@@ -36,7 +38,8 @@ export async function generateMetadata(props: PageProps<"/library/[slug]">) {
       title: book.title,
       description,
       type: "website",
-      images: book.cover_url ? [{ url: book.cover_url }] : undefined,
+      url: `/library/${book.slug}`,
+      images: book.cover_url ? [{ url: book.cover_url }] : [{ url: "/hero/reader-1880.jpg" }],
     },
   };
 }
