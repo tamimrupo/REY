@@ -155,7 +155,7 @@ insert into settings (key, value) values
   ('site', jsonb_build_object(
     'name','REY BD',
     'tagline','Choose your plan, pick your books.',
-    'email','hello@reybd.com',
+    'email','hello@rey.bd',
     'phone','+880 17921 02092',
     'address','House # 28, Road # 8/A, Nikunjo-1, Dhaka-1229',
     'facebook','https://www.facebook.com/',
@@ -208,7 +208,7 @@ insert into cms_pages (slug, title, excerpt, content, status, sort_order) values
    'published',3),
   ('privacy-policy','Privacy Policy',
    'What we collect and why.',
-   E'We collect your name, phone number, delivery address and email so we can deliver books and reach you about your membership.\n\nWe never sell your data. Payment details you submit (such as a bKash transaction ID) are used only to confirm your payment.\n\nYou can ask us to delete your account and data at any time by emailing hello@reybd.com.',
+   E'We collect your name, phone number, delivery address and email so we can deliver books and reach you about your membership.\n\nWe never sell your data. Payment details you submit (such as a bKash transaction ID) are used only to confirm your payment.\n\nYou can ask us to delete your account and data at any time by emailing hello@rey.bd.',
    'published',4),
   ('return-refund-deposit-policy','Return, Refund & Deposit Policy',
    'How deposits work and when refunds happen.',
@@ -224,7 +224,7 @@ insert into cms_pages (slug, title, excerpt, content, status, sort_order) values
    'published',7),
   ('faq','FAQ & Help Centre',
    'Quick answers to the questions we get most.',
-   E'Q: Can I change my plan? Yes — from your account page, at the start of any month.\n\nQ: Can I keep a book longer than a month? Yes, just keep it in your box and it stays with you.\n\nQ: What if I want a book you do not have? Use the Rare & Requests page and we will try to source it.\n\nQ: When am I charged? On sign-up, and every month on the same date afterwards.\n\nStill stuck? Email hello@reybd.com or call +880 17921 02092.',
+   E'Q: Can I change my plan? Yes — from your account page, at the start of any month.\n\nQ: Can I keep a book longer than a month? Yes, just keep it in your box and it stays with you.\n\nQ: What if I want a book you do not have? Use the Rare & Requests page and we will try to source it.\n\nQ: When am I charged? On sign-up, and every month on the same date afterwards.\n\nStill stuck? Email hello@rey.bd or call +880 17921 02092.',
    'published',8)
 on conflict (slug) do nothing;
 

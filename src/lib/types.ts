@@ -390,7 +390,7 @@ export type DashboardStats = {
 export const DEFAULT_SITE: SiteSettings = {
   name: "REY BD",
   tagline: "Choose your plan, pick your books.",
-  email: "hello@reybd.com",
+  email: "hello@rey.bd",
   phone: "+880 17921 02092",
   address: "House # 28, Road # 8/A, Nikunjo-1, Dhaka-1229",
   facebook: "",
