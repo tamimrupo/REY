@@ -8,6 +8,7 @@ const columns = [
     title: "Rent & Read",
     links: [
       { href: "/library", label: "Browse Catalog" },
+      { href: "/genres", label: "Browse Genres" },
       { href: "/plans", label: "Subscription Plans" },
       { href: "/how-it-works", label: "How It Works" },
       { href: "/p/rental-rules", label: "Rental Rules" },
