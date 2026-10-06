@@ -11,7 +11,10 @@
  * Everything here is safe to run on the server only — it makes outbound calls.
  */
 
+import { hasBengaliScript, transliterateBengali } from "@/lib/bengali";
 import { normalizeIsbn } from "@/lib/import";
+
+export { hasBengaliScript } from "@/lib/bengali";
 
 export type BookSource = "openlibrary" | "google" | "archive";
 
@@ -63,124 +66,6 @@ const ISBN_RE = /^(?:\d{9}[\dXx]|\d{13})$/;
 /** True for anything that should be looked up as an ISBN rather than a title. */
 export function looksLikeIsbn(query: string): boolean {
   return ISBN_RE.test(query.replace(/[-\s]/g, ""));
-}
-
-/** True when the query contains Bengali script, which Open Library cannot index. */
-export function hasBengaliScript(query: string): boolean {
-  return /[\u0980-\u09ff]/.test(query);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Bengali transliteration                                                     */
-/* -------------------------------------------------------------------------- */
-
-/** Consonants, in the order the script teaches them. */
-const CONSONANTS: Record<string, string> = {
-  ক: "k", খ: "kh", গ: "g", ঘ: "gh", ঙ: "ng",
-  চ: "ch", ছ: "chh", জ: "j", ঝ: "jh", ঞ: "n",
-  ট: "t", ঠ: "th", ড: "d", ঢ: "dh", ণ: "n",
-  ত: "t", থ: "th", দ: "d", ধ: "dh", ন: "n",
-  প: "p", ফ: "ph", ব: "b", ভ: "bh", ম: "m",
-  য: "j", র: "r", ল: "l", শ: "sh", ষ: "sh", স: "s", হ: "h",
-  ড়: "r", ঢ়: "rh", য়: "y", ৎ: "t",
-};
-
-/** Independent vowels and the vowel signs that follow a consonant. */
-const VOWELS: Record<string, string> = {
-  অ: "a", আ: "a", ই: "i", ঈ: "i", উ: "u", ঊ: "u", ঋ: "ri",
-  এ: "e", ঐ: "oi", ও: "o", ঔ: "ou",
-};
-
-const VOWEL_SIGNS: Record<string, string> = {
-  "া": "a", "ি": "i", "ী": "i", "ু": "u", "ূ": "u", "ৃ": "ri",
-  "ে": "e", "ৈ": "oi", "ো": "o", "ৌ": "ou",
-};
-
-const SIGNS: Record<string, string> = {
-  "ং": "ng", "ঁ": "n", "ঃ": "h",
-};
-
-const VIRAMA = "\u09cd";
-
-/**
- * Renders Bengali script as Latin letters, so it can be searched.
- *
- * It follows the writing system rather than a pronunciation dictionary: a
- * consonant takes its inherent vowel only when nothing follows to silence it
- * (a vowel sign, a virama, or the end of the word). That is enough to turn
- * পথের পাঁচালী into "pather panchali" and হুমায়ূন আহমেদ into "humayun ahmed" —
- * the spellings the outside catalogues actually index.
- *
- * It is a search aid, never a display: the shop keeps the Bangla.
- */
-export function transliterateBengali(input: string): string {
-  let out = "";
-  // য়, ড় and ঢ় are composition exclusions, so NFC will not join the letter and
-  // its nukta — some keyboards send them as two code points. Join them here, or
-  // হুমায়ূন comes out as "humaja una".
-  const composed = input
-    .replace(/\u09af\u09bc/g, "\u09df")
-    .replace(/\u09a1\u09bc/g, "\u09dc")
-    .replace(/\u09a2\u09bc/g, "\u09dd")
-    .normalize("NFC");
-  const chars = Array.from(composed);
-  // য is "j" at the start of a word and "y" after a vowel — সুয → suj, মায়া → maya.
-  let afterVowel = false;
-
-  for (let i = 0; i < chars.length; i += 1) {
-    const char = chars[i];
-    const next = chars[i + 1];
-
-    if (char in CONSONANTS) {
-      out += char === "য" && afterVowel ? "y" : CONSONANTS[char];
-      // Inherent vowel: only when the consonant is not silenced by what follows
-      // — a vowel sign, a virama, the end of the word, or a space.
-      const silenced =
-        next === VIRAMA || next === " " || next === "\u09bc" || (next ? next in VOWEL_SIGNS : true);
-      if (!silenced) out += "a";
-      afterVowel = false;
-      continue;
-    }
-
-    if (char in VOWEL_SIGNS) {
-      out += VOWEL_SIGNS[char];
-      afterVowel = true;
-      continue;
-    }
-
-    if (char in VOWELS) {
-      out += VOWELS[char];
-      afterVowel = true;
-      continue;
-    }
-
-    if (char in SIGNS) {
-      out += SIGNS[char];
-      afterVowel = false;
-      continue;
-    }
-
-    if (char === VIRAMA) {
-      afterVowel = false;
-      continue;
-    }
-
-    // Any other Bengali mark (nukta and friends) is a join, not a separator:
-    // ignoring it is what keeps হুমায়ূন as "humayun" rather than "humaya una".
-    if (char >= "\u0980" && char <= "\u09ff") continue;
-
-    // Bengali digits, and anything already Latin, pass through.
-    if (char >= "০" && char <= "৯") {
-      out += String(char.codePointAt(0)! - 0x09e6);
-      afterVowel = false;
-      continue;
-    }
-
-    out += /[a-zA-Z0-9\s'&.-]/.test(char) ? char : " ";
-    afterVowel = false;
-  }
-
-  return out.replace(/\s+/g, " ").trim();
 }
 
 /**

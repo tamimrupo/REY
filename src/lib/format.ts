@@ -1,3 +1,5 @@
+import { hasBengaliScript, transliterateBengali } from "@/lib/bengali";
+
 export const CURRENCY = "৳";
 
 export function money(value: number | string | null | undefined): string {
@@ -43,7 +45,11 @@ export function seriesName(value: string | null | undefined): string | null {
 }
 
 export function slugify(input: string): string {
-  return input
+  // Bengali titles have no Latin letters to slug, so a raw pass leaves an empty
+  // string and the caller falls back to "book-<timestamp>". Transliterate first
+  // — চাঁদের পাহাড় becomes chander-pahar.
+  const text = hasBengaliScript(input) ? transliterateBengali(input) : input;
+  return text
     .toLowerCase()
     .normalize("NFKD")
     .replace(/[^\w\s-]/g, "")
