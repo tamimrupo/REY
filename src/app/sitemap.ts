@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { POSTS } from "@/lib/blog";
 import { getAuthors, getCmsPages, getGenres, getPlans, listBooks } from "@/lib/data";
 import { SITE_URL } from "@/lib/site-url";
 
@@ -28,6 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/how-it-works", priority: 0.8 },
     { path: "/book-rental-dhaka", priority: 0.8 },
     { path: "/genres", priority: 0.7 },
+    { path: "/blog", priority: 0.6 },
     { path: "/authors", priority: 0.6 },
     { path: "/rare", priority: 0.5 },
     { path: "/about-us", priority: 0.5 },
@@ -71,6 +73,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "monthly" as const,
         priority: 0.4,
       })),
+    ...POSTS.map((post) => ({
+      url: `${SITE_URL}/blog/${post.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
   ];
 
   return entries;
