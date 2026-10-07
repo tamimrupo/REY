@@ -22,17 +22,32 @@ export function MetaPixel() {
   const pathname = usePathname();
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() ?? "";
   const lastTracked = useRef<string | null>(null);
+  const firstRun = useRef(true);
+  // Meta IDs are 15–16 digits. A mangled value — two IDs pasted together, a
+  // stray character — would otherwise be injected into the page and rejected
+  // at runtime; refuse to render instead.
+  const usable = /^\d{15,16}$/.test(pixelId);
 
   useEffect(() => {
-    if (!pixelId || pathname.startsWith("/admin")) return;
+    if (!usable || pathname.startsWith("/admin")) return;
+
+    // The inline snippet below sends the PageView for a full page load. This
+    // effect exists for client-side navigation after it, so it stays silent on
+    // its own first run — otherwise the load would be counted twice.
+    if (firstRun.current) {
+      firstRun.current = false;
+      lastTracked.current = pathname;
+      return;
+    }
+
     if (lastTracked.current === pathname) return;
     lastTracked.current = pathname;
     if (typeof window !== "undefined" && typeof window.fbq === "function") {
       window.fbq("track", "PageView");
     }
-  }, [pathname, pixelId]);
+  }, [pathname, usable]);
 
-  if (!pixelId || pathname.startsWith("/admin")) return null;
+  if (!usable || pathname.startsWith("/admin")) return null;
 
   return (
     <Script id="meta-pixel" strategy="afterInteractive">
