@@ -1,4 +1,5 @@
 import { supabaseConfigured } from "@/lib/env";
+import { SITE_URL } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
 import type { AppNotification, NotificationKind } from "@/lib/types";
 
@@ -33,6 +34,54 @@ export function emailProviderLabel(): string {
   return "Not configured";
 }
 
+const escapeHtml = (value: string) =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+/**
+ * Wraps a plain-text outbox message in the REY BD email shell so admin emails
+ * match the branded auth emails (logo, monochrome card, footer).
+ */
+export function renderEmailHtml(body: string): string {
+  const paragraphs = escapeHtml(body.trim())
+    .split(/\n{2,}/)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .map((chunk) => `<p style="margin:0 0 16px 0;">${chunk.replace(/\n/g, "<br />")}</p>`)
+    .join("");
+  if (!paragraphs) return "";
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f4;margin:0;">
+  <tr>
+    <td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;">
+        <tr>
+          <td style="padding:0 0 18px 4px;">
+            <img src="${SITE_URL}/brand/rey-logo-black.png" alt="REY BD" width="96" height="49" style="display:block;border:0;outline:none;text-decoration:none;" />
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color:#ffffff;border:1px solid #e6e6e6;border-radius:8px;padding:32px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#3d3d3d;">
+            ${paragraphs}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 4px 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:19px;color:#8f8f8f;">
+            <p style="margin:0 0 6px 0;">REY BD — rent books monthly, delivered anywhere in Bangladesh.</p>
+            <p style="margin:0;">Questions? Just reply to this email or write to <a href="mailto:hello@rey.bd" style="color:#8f8f8f;">hello@rey.bd</a>.</p>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding:14px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:16px;color:#a3a3a3;">© ${new Date().getFullYear()} REY BD · <a href="${SITE_URL}" style="color:#a3a3a3;">rey.bd</a></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>`;
+}
+
 export async function sendEmail(
   to: string,
   subject: string,
@@ -46,7 +95,7 @@ export async function sendEmail(
           Authorization: `Bearer ${RESEND_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ from: FROM, to, subject, text: body }),
+        body: JSON.stringify({ from: FROM, to, subject, text: body, html: renderEmailHtml(body) }),
       });
       if (!response.ok) return { ok: false, error: (await response.text()).slice(0, 400) };
       return { ok: true };
@@ -65,6 +114,7 @@ export async function sendEmail(
           to: [{ email: to }],
           subject,
           textContent: body,
+          htmlContent: renderEmailHtml(body),
         }),
       });
       if (!response.ok) return { ok: false, error: (await response.text()).slice(0, 400) };
