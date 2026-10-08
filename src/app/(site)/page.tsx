@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AvatarImage } from "@/components/avatar-image";
 import { BookCard } from "@/components/book-card";
 import { BookCoverImage } from "@/components/book-cover";
 import { FeaturedShelf } from "@/components/featured-shelf";
@@ -7,6 +8,7 @@ import { CountUp, Reveal } from "@/components/motion";
 import { PlanCard } from "@/components/plan-card";
 import { EmptyState, SectionHeading, SetupNotice, Money } from "@/components/ui";
 import {
+  getAuthorsWithCounts,
   getCourierSettings,
   getGenres,
   getPlanFeatures,
@@ -28,14 +30,19 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const [plans, features, shelfBooks, rare, courierSettings, genres] = await Promise.all([
+  const [plans, features, shelfBooks, rare, courierSettings, genres, authors] = await Promise.all([
     getPlans(),
     getPlanFeatures(),
     getShelfBooks(14),
     listBooks({ onlyRare: true, perPage: 5 }),
     getCourierSettings(),
     getGenres(),
+    getAuthorsWithCounts(),
   ]);
+
+  // Authors with the most titles lead — a dofollow link from the homepage to
+  // their individual pages so those pages aren't reachable only from /authors.
+  const topAuthors = authors.slice(0, 10);
 
   // Only curated genres (sort_order > 0) have landing pages — the same filter
   // the /genres index and the genre pages themselves use.
@@ -296,6 +303,47 @@ export default async function HomePage() {
                     </span>
                     <span aria-hidden className="text-ink-muted">
                       →
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ------------------------------------------------------- Browse authors
+          A dofollow link from the homepage to each popular author's page, so
+          author pages gain inlinks beyond the single /authors index. */}
+      {topAuthors.length ? (
+        <section className="bg-cream">
+          <div className="container-page py-20">
+            <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
+              <SectionHeading
+                eyebrow="Browse by author"
+                title="Follow the writer behind the shelf"
+                description="Start with the authors we hold the most titles by, and see everything the club keeps by each of them."
+              />
+              <Link href="/authors" className="btn btn-outline btn-sm">
+                See all authors <span aria-hidden>→</span>
+              </Link>
+            </div>
+
+            <ul className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {topAuthors.map(({ author, titles }) => (
+                <li key={author.id}>
+                  <Link
+                    href={`/author/${author.slug}`}
+                    className="group flex items-center gap-4 rounded-card border border-line bg-white p-4 shadow-paper transition hover:-translate-y-0.5"
+                  >
+                    <AvatarImage name={author.name} url={author.avatar_url} variant="circle" />
+                    <span className="min-w-0">
+                      <span className="block truncate font-display text-base font-semibold leading-snug text-ink group-hover:underline">
+                        {author.name}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-ink-muted">
+                        {titles} title{titles === 1 ? "" : "s"}
+                      </span>
                     </span>
                   </Link>
                 </li>

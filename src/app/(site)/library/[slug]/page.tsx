@@ -24,6 +24,20 @@ import type { Book } from "@/lib/types";
 // keeps TTFB low instead of hitting Supabase on every request.
 export const revalidate = 3600;
 
+/**
+ * Keep the <title> tag short enough that Google/Semrush stop flagging it as
+ * "title too long". The "by {author}" suffix is the usual culprit, so when the
+ * combined string would overflow we drop the suffix first and only truncate the
+ * book title itself as a last resort.
+ */
+const MAX_TITLE_LENGTH = 60;
+function composeTitle(bookTitle: string, authorName?: string): string {
+  const withAuthor = authorName ? `${bookTitle} by ${authorName}` : bookTitle;
+  if (withAuthor.length <= MAX_TITLE_LENGTH) return withAuthor;
+  if (bookTitle.length <= MAX_TITLE_LENGTH) return bookTitle;
+  return `${bookTitle.slice(0, MAX_TITLE_LENGTH - 1).trimEnd()}…`;
+}
+
 export async function generateMetadata(props: PageProps<"/library/[slug]">) {
   const { slug } = await props.params;
   const book = await getBookBySlug(slug);
@@ -35,7 +49,7 @@ export async function generateMetadata(props: PageProps<"/library/[slug]">) {
       ? book.description.slice(0, 160)
       : fallbackDescription;
   return {
-    title: authorName ? `${book.title} by ${authorName}` : book.title,
+    title: composeTitle(book.title, authorName),
     description,
     alternates: { canonical: `/library/${book.slug}` },
     openGraph: {

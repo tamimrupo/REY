@@ -9,7 +9,13 @@ import { money } from "@/lib/format";
 export async function generateMetadata(props: PageProps<"/subscribe/[slug]">) {
   const { slug } = await props.params;
   const plan = await getPlanBySlug(slug);
-  return { title: plan ? `Subscribe · ${plan.name}` : "Subscribe" };
+  const title = plan ? `Subscribe · ${plan.name}` : "Subscribe";
+  // Each plan page needs its own meta description (price + book count) instead
+  // of the shared site-wide one the root layout falls back to.
+  const description = plan
+    ? `Rent ${plan.books_per_month} books a month for ${money(plan.price_monthly)} with the ${plan.name} plan — delivered to your door in Bangladesh, with a refundable deposit.`
+    : undefined;
+  return { title, ...(description ? { description } : {}) };
 }
 
 export default async function SubscribePage(props: PageProps<"/subscribe/[slug]">) {

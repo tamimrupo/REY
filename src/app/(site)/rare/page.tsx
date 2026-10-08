@@ -3,7 +3,11 @@ import { RareRequestForm } from "@/components/rare-request-form";
 import { SectionHeading } from "@/components/ui";
 import { listBooks } from "@/lib/data";
 
-export const metadata = { title: "Rare & hard to find" };
+export const metadata = {
+  title: "Rare & hard to find",
+  description:
+    "Request out-of-print Bangla classics and hard-to-find books from REY BD. Tell us what you are hunting for and we will try to source it for the club.",
+};
 
 export default async function RarePage() {
   const rare = await listBooks({ onlyRare: true, perPage: 24 });

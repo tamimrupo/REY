@@ -1,0 +1,20 @@
+# REY BD — Book Rental Club in Bangladesh
+
+> REY BD rents books online in Bangladesh: choose 2, 4 or 8 titles a month, we deliver them to your door across Dhaka and all 64 districts, and collect them when you're done. Refundable deposit, cancel anytime.
+
+REY BD is a book rental club based in Dhaka, Bangladesh. Members pick their own titles each month from a catalogue of English and Bangla books — fiction, romance, thriller, self-help, biographies and translated classics — and we handle warehousing, courier delivery and collection. Plans start at ৳299/month with a refundable security deposit.
+
+## Key pages
+
+- [Membership plans](https://rey.bd/plans): the three plans (2, 4 or 8 books a month), pricing and how the refundable deposit works.
+- [Browse the library](https://rey.bd/library): the full catalogue of rentable titles, searchable by title, author, genre and language.
+- [How it works](https://rey.bd/how-it-works): from sign-up to first delivery, explained step by step.
+- [Rare & hard to find](https://rey.bd/rare): request out-of-print Bangla classics and hard-to-find books we will try to source.
+- [About us](https://rey.bd/about-us): who REY BD is and how the club works.
+- [Contact](https://rey.bd/contact): email, phone and WhatsApp for questions about plans, delivery or a book you can't find.
+
+## Notes
+
+- Delivery is nationwide across Bangladesh via courier partners, with Bangladesh Post's Book Post service offered free where its rules are followed.
+- Payments are collected via bKash, Nagad and Rocket.
+- Every book page links to its author's page, and every author page lists everything the club holds by that writer.

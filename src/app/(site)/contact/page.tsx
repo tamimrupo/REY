@@ -4,7 +4,11 @@ import { NewsletterForm } from "@/components/newsletter-form";
 import { SectionHeading } from "@/components/ui";
 import { getSiteSettings } from "@/lib/data";
 
-export const metadata = { title: "Contact" };
+export const metadata = {
+  title: "Contact",
+  description:
+    "Contact REY BD, the book rental club in Bangladesh. Email, phone and WhatsApp for questions about plans, delivery or a book you cannot find.",
+};
 
 export default async function ContactPage() {
   const site = await getSiteSettings();
