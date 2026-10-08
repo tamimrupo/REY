@@ -1,9 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 
 import { requireUser } from "@/lib/auth";
+import { sendMetaEvent } from "@/lib/meta";
 import { quoteCourier } from "@/lib/quotas";
 import {
   getCourierSettings,
@@ -182,6 +185,30 @@ export async function startSubscriptionAction(
     .select("id, order_number")
     .single();
   if (orderError) return fail(orderError.message);
+
+  // Meta funnel: the checkout has begun — report it server-side so blocked
+  // pixels still count. `after` keeps the redirect instant even when the ad
+  // network is slow (same pattern as sign-up and Purchase).
+  const jar = await cookies();
+  const head = await headers();
+  const fbp = jar.get("_fbp")?.value ?? null;
+  const fbc = jar.get("_fbc")?.value ?? null;
+  const clientIp = head.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  const userAgent = head.get("user-agent") ?? null;
+  after(() =>
+    sendMetaEvent({
+      name: "InitiateCheckout",
+      eventId: `checkout-${order.id}`,
+      email: session.email,
+      phone: session.profile?.phone ?? null,
+      fbp,
+      fbc,
+      clientIp,
+      userAgent,
+      value: total,
+      currency: "BDT",
+    }),
+  );
 
   // 3. the books, as rentals waiting in the box
   const { error: rentalError } = await supabase.from("rentals").insert(

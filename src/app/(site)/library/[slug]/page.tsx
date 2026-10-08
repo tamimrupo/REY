@@ -5,6 +5,7 @@ import { AddToBoxButton } from "@/components/add-to-box-button";
 import { AuthorCard } from "@/components/author-card";
 import { BookCard, BookCover } from "@/components/book-card";
 import { JsonLd } from "@/components/json-ld";
+import { TrackViewContent } from "@/components/meta-view-content";
 import { QuotaBar } from "@/components/quota-bar";
 import { StatusPill } from "@/components/ui";
 import {
@@ -127,6 +128,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
         ])}
       />
       <QuotaBar />
+      <TrackViewContent contentId={book.id} />
 
       <div className="container-page py-10">
         <nav aria-label="Breadcrumb" className="text-xs text-ink-muted">

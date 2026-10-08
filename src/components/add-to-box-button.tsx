@@ -81,7 +81,19 @@ export function AddToBoxButton({
   }
 
   return (
-    <form action={addToBoxFormAction}>
+    <form
+      action={addToBoxFormAction}
+      onSubmit={() => {
+        // Fire the AddToCart signal before the server action runs — the action
+        // redirects on success, so there is no later client-side moment to use.
+        if (typeof window !== "undefined" && typeof window.fbq === "function") {
+          window.fbq("track", "AddToCart", {
+            content_ids: [bookId],
+            content_type: "product",
+          });
+        }
+      }}
+    >
       <input type="hidden" name="book_id" value={bookId} />
       <input type="hidden" name="back" value={back} />
       <button type="submit" className={className}>
