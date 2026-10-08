@@ -8,6 +8,7 @@ import { PlanCard } from "@/components/plan-card";
 import { EmptyState, SectionHeading, SetupNotice, Money } from "@/components/ui";
 import {
   getCourierSettings,
+  getGenres,
   getPlanFeatures,
   getPlans,
   getShelfBooks,
@@ -27,13 +28,18 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const [plans, features, shelfBooks, rare, courierSettings] = await Promise.all([
+  const [plans, features, shelfBooks, rare, courierSettings, genres] = await Promise.all([
     getPlans(),
     getPlanFeatures(),
     getShelfBooks(14),
     listBooks({ onlyRare: true, perPage: 5 }),
     getCourierSettings(),
+    getGenres(),
   ]);
+
+  // Only curated genres (sort_order > 0) have landing pages — the same filter
+  // the /genres index and the genre pages themselves use.
+  const curatedGenres = genres.filter((genre) => genre.sort_order > 0);
 
   // Rank the shelf by real borrow counts, then rotate it once a day so the
   // line-up looks different every morning.
@@ -266,6 +272,38 @@ export default async function HomePage() {
           </dl>
         </div>
       </section>
+
+      {/* ------------------------------------------------------ Browse by genre
+          A dofollow link from the homepage to every genre landing page, so the
+          genre pages are reachable from more than just the /genres index. */}
+      {curatedGenres.length ? (
+        <section className="bg-paper">
+          <div className="container-page py-20">
+            <SectionHeading
+              eyebrow="Browse by genre"
+              title="A shelf for every kind of reader"
+              description="Jump straight to the kind of book you want this month — every genre links to its own shelf."
+            />
+            <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {curatedGenres.map((genre) => (
+                <li key={genre.id}>
+                  <Link
+                    href={`/genre/${genre.slug}`}
+                    className="group flex items-center justify-between rounded-card border border-line bg-white p-5 shadow-paper transition hover:-translate-y-0.5"
+                  >
+                    <span className="font-display text-base font-semibold leading-snug text-ink group-hover:underline">
+                      {genre.name}
+                    </span>
+                    <span aria-hidden className="text-ink-muted">
+                      →
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
 
       {/* --------------------------------------------------------------- Plans */}
       <section id="plans" className=" bg-cream">

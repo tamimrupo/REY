@@ -11,8 +11,8 @@ export default async function ContactPage() {
 
   return (
     <div className="container-page py-16">
+      <h1>Contact</h1>
       <SectionHeading
-        eyebrow="Contact"
         title="Talk to a human"
         description="Questions about a plan, a delivery or a book you cannot find? We answer every message, usually the same day."
       />

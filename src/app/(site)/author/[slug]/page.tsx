@@ -4,8 +4,12 @@ import { notFound } from "next/navigation";
 import { AuthorCard } from "@/components/author-card";
 import { BookCard } from "@/components/book-card";
 import { EmptyState } from "@/components/ui";
-import { getAuthorBySlug, getAuthorTitles, getAuthors, getBorrowCountsByBook } from "@/lib/data";
+import { getAuthorBySlug, getAuthorTitles, getAuthorsWithCounts, getBorrowCountsByBook } from "@/lib/data";
 import type { Book } from "@/lib/types";
+
+// Public catalogue page with no per-user data — safe to cache. One-hour ISR
+// keeps TTFB low instead of hitting Supabase on every request.
+export const revalidate = 3600;
 
 export async function generateMetadata(props: PageProps<"/author/[slug]">) {
   const { slug } = await props.params;
@@ -18,8 +22,11 @@ export async function generateMetadata(props: PageProps<"/author/[slug]">) {
 }
 
 export async function generateStaticParams() {
-  const authors = await getAuthors();
-  return authors.map((author) => ({ slug: author.slug }));
+  // Only authors we actually hold titles by get a page. An author with no books
+  // would otherwise produce an orphan URL — in the sitemap with nothing on the
+  // site linking to it.
+  const authors = await getAuthorsWithCounts();
+  return authors.map(({ author }) => ({ slug: author.slug }));
 }
 
 /**

@@ -39,15 +39,17 @@ export function AuthorCard({
         <div className="min-w-0">
           <p className="label-mono">Author</p>
 
-          <h2 className="mt-3 text-2xl sm:text-3xl">
-            {canLink ? (
+          {canLink ? (
+            <h2 className="mt-3 text-2xl sm:text-3xl">
               <Link href={`/author/${author.slug}`} className="hover:underline">
                 {author.name}
               </Link>
-            ) : (
-              author.name
-            )}
-          </h2>
+            </h2>
+          ) : (
+            // On the author's own page the name is the page title, so it is the
+            // sole <h1>. On a book page it stays an <h2> under the book title.
+            <h1 className="mt-3 text-2xl sm:text-3xl">{author.name}</h1>
+          )}
 
           {stats ? <p className="mt-2 text-sm text-ink-muted">{stats}</p> : null}
 

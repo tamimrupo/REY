@@ -11,6 +11,7 @@ const columns = [
       { href: "/genres", label: "Browse Genres" },
       { href: "/plans", label: "Subscription Plans" },
       { href: "/how-it-works", label: "How It Works" },
+      { href: "/book-rental-dhaka", label: "Book Rental in Dhaka" },
       { href: "/blog", label: "Blog & Guides" },
       { href: "/p/rental-rules", label: "Rental Rules" },
       { href: "/p/security-deposit-guide", label: "Security Deposit Guide" },

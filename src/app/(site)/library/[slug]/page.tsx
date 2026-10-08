@@ -20,6 +20,10 @@ import { money } from "@/lib/format";
 import { bookJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import type { Book } from "@/lib/types";
 
+// Public catalogue page with no per-user data — safe to cache. One-hour ISR
+// keeps TTFB low instead of hitting Supabase on every request.
+export const revalidate = 3600;
+
 export async function generateMetadata(props: PageProps<"/library/[slug]">) {
   const { slug } = await props.params;
   const book = await getBookBySlug(slug);

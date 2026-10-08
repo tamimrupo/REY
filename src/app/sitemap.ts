@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { POSTS } from "@/lib/blog";
-import { getAuthors, getCmsPages, getGenres, getPlans, listBooks } from "@/lib/data";
+import { getAuthorsWithCounts, getCmsPages, getGenres, getPlans, listBooks } from "@/lib/data";
 import { SITE_URL } from "@/lib/site-url";
 
 // The catalogue changes during the day; an hourly refresh keeps new books,
@@ -12,7 +12,8 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [authors, cmsPages, genres, plans] = await Promise.all([
-    getAuthors(),
+    // Only authors with titles: a zero-book author would be an orphan URL.
+    getAuthorsWithCounts(),
     getCmsPages(),
     getGenres(),
     getPlans(),
@@ -60,7 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "weekly" as const,
         priority: 0.7,
       })),
-    ...authors.map((author) => ({
+    ...authors.map(({ author }) => ({
       url: `${SITE_URL}/author/${author.slug}`,
       changeFrequency: "monthly" as const,
       priority: 0.5,
