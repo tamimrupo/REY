@@ -25,7 +25,7 @@ const steps = [
   {
     n: "02",
     title: "Delivered to your door",
-    body: "We ride to you anywhere in Bangladesh. Patheo, Steadfast or RedX for ৳40 a trip, or free through Bangladesh Post's Book Post.",
+    body: "We ride to you anywhere in Bangladesh. Pathao, Steadfast or RedX for ৳40 a trip, or free through Bangladesh Post's Book Post.",
     note: "Free with BD Post",
     icon: "door",
   },
@@ -45,34 +45,36 @@ const steps = [
   },
 ] as const;
 
-const tiers = [
-  {
-    key: "lite",
-    name: "Lite reader",
-    books: 2,
-    price: "৳299",
-    deposit: "৳500",
-    perks: [
-      "2 books a month, swapped when you are done",
-      "Doorstep delivery and collection",
-      "Full library access — 135 titles and growing",
-      "Cancel or pause any month",
-    ],
-  },
-  {
-    key: "avid",
-    name: "Avid reader",
-    books: 4,
-    price: "৳499",
-    deposit: "৳500",
-    perks: [
-      "4 books a month, swapped when you are done",
-      "Priority on new arrivals",
-      "Doorstep delivery and collection",
-      "Cancel or pause any month",
-    ],
-  },
-] as const;
+function getTiers(bookCount: number) {
+  return [
+    {
+      key: "lite",
+      name: "Lite reader",
+      books: 2,
+      price: "৳299",
+      deposit: "৳500",
+      perks: [
+        "2 books a month, swapped when you are done",
+        "Doorstep delivery and collection",
+        `Full library access — ${bookCount} titles and growing`,
+        "Cancel or pause any month",
+      ],
+    },
+    {
+      key: "avid",
+      name: "Avid reader",
+      books: 4,
+      price: "৳499",
+      deposit: "৳500",
+      perks: [
+        "4 books a month, swapped when you are done",
+        "Priority on new arrivals",
+        "Doorstep delivery and collection",
+        "Cancel or pause any month",
+      ],
+    },
+  ] as const;
+}
 
 const questions = [
   {
@@ -140,7 +142,8 @@ function Icon({ name }: { name: (typeof steps)[number]["icon"] }) {
   );
 }
 
-export function HowItWorks() {
+export function HowItWorks({ bookCount = 0 }: { bookCount?: number }) {
+  const tiers = getTiers(bookCount);
   const [tier, setTier] = useState<(typeof tiers)[number]["key"]>("avid");
   const active = tiers.find((t) => t.key === tier) ?? tiers[1];
 

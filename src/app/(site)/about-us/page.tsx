@@ -10,6 +10,7 @@ export const metadata = {
   title: "About us",
   description:
     "Rey Book Rental Services is a home-delivery book subscription for Bangladesh: books meant to travel, not to sit on a shelf.",
+  alternates: { canonical: "/about-us" },
 };
 
 /** A reader in a window nook, drawn in the page's own ink. */

@@ -1,4 +1,5 @@
 import { HowItWorks } from "@/components/how-it-works";
+import { getBooksCount } from "@/lib/data";
 
 export const metadata = {
   title: "How it works",
@@ -7,6 +8,7 @@ export const metadata = {
   alternates: { canonical: "/how-it-works" },
 };
 
-export default function HowItWorksPage() {
-  return <HowItWorks />;
+export default async function HowItWorksPage() {
+  const bookCount = await getBooksCount();
+  return <HowItWorks bookCount={bookCount} />;
 }

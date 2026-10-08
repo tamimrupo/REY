@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { PlanCard } from "@/components/plan-card";
 import { EmptyState, SectionHeading } from "@/components/ui";
-import { getCourierSettings, getPlanFeatures, getPlans } from "@/lib/data";
+import { getBooksCount, getCourierSettings, getPlanFeatures, getPlans } from "@/lib/data";
 import { couriersFor } from "@/lib/quotas";
 import { money } from "@/lib/format";
 
@@ -14,10 +14,11 @@ export const metadata = {
 };
 
 export default async function PlansPage() {
-  const [plans, features, courierSettings] = await Promise.all([
+  const [plans, features, courierSettings, bookCount] = await Promise.all([
     getPlans(),
     getPlanFeatures(),
     getCourierSettings(),
+    getBooksCount(),
   ]);
 
   const deliveryOptions = couriersFor(courierSettings, "outbound");
@@ -150,7 +151,7 @@ export default async function PlansPage() {
             Still deciding? Browse the shelves first.
           </h2>
           <p className="max-w-xl text-base leading-relaxed text-paper/70">
-            The library has thousands of English and Bangla titles, from biographies to translated
+            The library has {bookCount} English and Bangla titles, from biographies to translated
             classics.
           </p>
           <Link href="/library" className="btn btn-primary">

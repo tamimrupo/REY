@@ -134,7 +134,7 @@ export const POSTS: BlogPost[] = [
       { label: "11/22/63", href: "/library/11-22-63" },
       { label: "1984", href: "/library/1984" },
       { label: "A Brief History of Time", href: "/library/a-brief-history-of-time" },
-      { label: "Browse all 223 titles", href: "/library" },
+      { label: "Browse the library", href: "/library" },
     ],
   },
 ];

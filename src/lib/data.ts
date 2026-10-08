@@ -316,6 +316,34 @@ export async function getBookBySlug(slug: string): Promise<Book | null> {
 }
 
 /**
+ * The single source of truth for "how many books are in the library": the
+ * number of active rows in the `books` table. Used anywhere the copy states a
+ * catalogue size (homepage, /library, /how-it-works, /plans) so the number is
+ * one live count instead of several hardcoded, drifting figures. Cached briefly
+ * because it backs metadata and a couple of storefront sections.
+ */
+export const getBooksCount = unstable_cache(
+  async (): Promise<number> => {
+    const client = createPublicClient();
+    if (!client) return 0;
+
+    try {
+      const { count, error } = await client
+        .from("books")
+        .select("id", { count: "exact", head: true })
+        .eq("is_active", true);
+      if (error) throw new Error(error.message);
+      return count ?? 0;
+    } catch (error) {
+      console.error("[rey] getBooksCount threw:", error);
+      return 0;
+    }
+  },
+  ["books-count"],
+  { revalidate: 300 },
+);
+
+/**
  * Books for the home-page shelf, with descriptions, author photos and a real
  * borrow count so the panel beside the rail can follow the active book and the
  * "most borrowed" ranking is genuine rather than decorative.

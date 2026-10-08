@@ -23,7 +23,9 @@ export async function generateMetadata(): Promise<Metadata> {
       "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door and collected when you're done — from ৳299/month.",
     metadataBase: new URL(SITE_URL),
     openGraph: {
-      title: site.name,
+      // No explicit title: og:title inherits each page's <title> (with the
+      // "%s · REY BD" template applied) instead of the hardcoded site.name,
+      // so every page's share title reflects its real title.
       description:
         "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door and collected when you're done.",
       type: "website",
@@ -33,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: site.name,
+      // No explicit title: twitter:title inherits each page's <title> too.
       description: "Book rental club in Bangladesh — delivered to your door.",
     },
     robots: {

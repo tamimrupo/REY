@@ -5,14 +5,16 @@ import { LibrarySearch } from "@/components/library-search";
 import { BookCard } from "@/components/book-card";
 import { QuotaBar } from "@/components/quota-bar";
 import { EmptyState } from "@/components/ui";
-import { getGenres, getLanguages, listBooks } from "@/lib/data";
+import { getBooksCount, getGenres, getLanguages, listBooks } from "@/lib/data";
 
-export const metadata = {
-  title: "Browse the Library",
-  description:
-    "Browse 223+ books to rent in Bangladesh — fiction, romance, thriller, self-help and more, delivered to your door and collected when you're done.",
-  alternates: { canonical: "/library" },
-};
+export async function generateMetadata() {
+  const count = await getBooksCount();
+  return {
+    title: "Browse the Library",
+    description: `Browse ${count} books to rent in Bangladesh — fiction, romance, thriller, self-help and more, delivered to your door and collected when you're done.`,
+    alternates: { canonical: "/library" },
+  };
+}
 
 function buildQuery(params: Record<string, string | undefined>) {
   const search = new URLSearchParams();
