@@ -1,9 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { JsonLd } from "@/components/json-ld";
 import { getPost, POSTS } from "@/lib/blog";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
+import { absoluteUrl } from "@/lib/site-url";
 
 export async function generateMetadata(props: PageProps<"/blog/[slug]">) {
   const { slug } = await props.params;
@@ -13,7 +15,10 @@ export async function generateMetadata(props: PageProps<"/blog/[slug]">) {
     title: post.title,
     description: post.description,
     alternates: { canonical: `/blog/${post.slug}` },
-    openGraph: { url: `/blog/${post.slug}` },
+    openGraph: {
+      url: `/blog/${post.slug}`,
+      images: [{ url: absoluteUrl(post.image), alt: post.title }],
+    },
   };
 }
 
@@ -52,6 +57,18 @@ export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {
             {post.date} · {post.readingMinutes} min read
           </p>
           <h1 className="mt-3 max-w-3xl">{post.title}</h1>
+
+          <div className="mt-8 overflow-hidden rounded-card border border-line bg-white shadow-paper">
+            <Image
+              src={post.image}
+              alt={post.title}
+              width={1200}
+              height={630}
+              priority
+              sizes="(min-width: 1216px) 1168px, 100vw"
+              className="h-auto w-full object-cover"
+            />
+          </div>
         </div>
       </section>
 

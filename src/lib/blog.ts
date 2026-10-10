@@ -6,6 +6,8 @@ export type BlogPost = {
   description: string;
   date: string;
   readingMinutes: number;
+  /** Hero/featured image, a public asset path (e.g. "/blog/blog-best-books.jpg"). */
+  image: string;
   sections: BlogSection[];
   related: { label: string; href: string }[];
 };
@@ -18,6 +20,7 @@ export const POSTS: BlogPost[] = [
       "Do the real math on renting books versus buying them in Bangladesh — the cost of a new hardcover against a monthly rental plan, and when each one wins.",
     date: "2026-10-06",
     readingMinutes: 4,
+    image: "/blog/blog-rental-vs-buying.jpg",
     sections: [
       {
         heading: "The real cost of owning a book in Bangladesh",
@@ -60,6 +63,7 @@ export const POSTS: BlogPost[] = [
       "Practical ways to actually read more in 2026 — build the habit, keep the next book ready, and borrow instead of buying so cost never stops you.",
     date: "2026-10-06",
     readingMinutes: 4,
+    image: "/blog/blog-read-more.jpg",
     sections: [
       {
         heading: "Start small, then let the habit grow",
@@ -100,6 +104,7 @@ export const POSTS: BlogPost[] = [
       "The books readers in Bangladesh are borrowing most in 2026 — fiction that stays, ideas that change how you think, and page-turners for the weekend.",
     date: "2026-10-06",
     readingMinutes: 5,
+    image: "/blog/blog-best-books.jpg",
     sections: [
       {
         heading: "Fiction that stays with you",
