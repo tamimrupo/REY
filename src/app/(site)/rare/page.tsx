@@ -2,13 +2,14 @@ import { BookCard } from "@/components/book-card";
 import { RareRequestForm } from "@/components/rare-request-form";
 import { SectionHeading } from "@/components/ui";
 import { listBooks } from "@/lib/data";
+import { openGraph } from "@/lib/open-graph";
 
 export const metadata = {
   title: "Rare & hard to find",
   description:
     "Request out-of-print Bangla classics and hard-to-find books from REY BD. Tell us what you are hunting for and we will try to source it for the club.",
   alternates: { canonical: "/rare" },
-  openGraph: { url: "/rare" },
+  openGraph: openGraph({ url: "/rare" }),
 };
 
 export default async function RarePage() {

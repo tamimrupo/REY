@@ -3,13 +3,14 @@ import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { POSTS } from "@/lib/blog";
+import { openGraph } from "@/lib/open-graph";
 
 export const metadata = {
   title: "The REY BD Blog",
   description:
     "Guides on reading more, borrowing instead of buying, and the best books to read in Bangladesh — from the REY BD book rental club.",
   alternates: { canonical: "/blog" },
-  openGraph: { url: "/blog" },
+  openGraph: openGraph({ url: "/blog" }),
 };
 
 export default function BlogIndexPage() {

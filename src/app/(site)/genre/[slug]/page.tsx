@@ -8,6 +8,7 @@ import { getGenres, getPlans, listBooks } from "@/lib/data";
 import { money } from "@/lib/format";
 import { getGenreCopy } from "@/lib/genre-copy";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
+import { openGraph } from "@/lib/open-graph";
 
 // Public catalogue page with no per-user data — safe to cache. One-hour ISR
 // keeps TTFB low instead of hitting Supabase on every request.
@@ -22,7 +23,7 @@ export async function generateMetadata(props: PageProps<"/genre/[slug]">) {
     title: copy.title,
     description: copy.description,
     alternates: { canonical: `/genre/${genre.slug}` },
-    openGraph: { url: `/genre/${genre.slug}` },
+    openGraph: openGraph({ url: `/genre/${genre.slug}` }),
   };
 }
 

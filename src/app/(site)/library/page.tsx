@@ -6,6 +6,7 @@ import { BookCard } from "@/components/book-card";
 import { QuotaBar } from "@/components/quota-bar";
 import { EmptyState } from "@/components/ui";
 import { getBooksCount, getGenres, getLanguages, listBooks } from "@/lib/data";
+import { openGraph } from "@/lib/open-graph";
 
 export async function generateMetadata() {
   const count = await getBooksCount();
@@ -13,7 +14,7 @@ export async function generateMetadata() {
     title: "Browse the Library",
     description: `Browse ${count} books to rent in Bangladesh — fiction, romance, thriller, self-help and more, delivered to your door and collected when you're done.`,
     alternates: { canonical: "/library" },
-    openGraph: { url: "/library" },
+    openGraph: openGraph({ url: "/library" }),
   };
 }
 

@@ -83,6 +83,10 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
   const book = await getBookBySlug(slug);
   if (!book) notFound();
 
+  // A book without an author yields no valid Book schema (Schema.org requires
+  // `author`); render the JSON-LD only when one is present.
+  const bookSchema = bookJsonLd(book);
+
   const [plans, authorTitles, borrowCounts, seriesBooks, readNext] = await Promise.all([
     getPlans(),
     book.author_id ? getAuthorTitles(book.author_id, book.id, 5) : Promise.resolve([]),
@@ -122,7 +126,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
 
   return (
     <>
-      <JsonLd data={bookJsonLd(book)} />
+      {bookSchema ? <JsonLd data={bookSchema} /> : null}
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },

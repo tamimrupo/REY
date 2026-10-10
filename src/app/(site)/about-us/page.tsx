@@ -5,13 +5,14 @@ import { Timeline } from "@/components/timeline";
 import { Reveal } from "@/components/motion";
 import { BookCoverImage } from "@/components/book-cover";
 import { getShelfBooks } from "@/lib/data";
+import { openGraph } from "@/lib/open-graph";
 
 export const metadata = {
   title: "About us",
   description:
     "Rey Book Rental Services is a home-delivery book subscription for Bangladesh: books meant to travel, not to sit on a shelf.",
   alternates: { canonical: "/about-us" },
-  openGraph: { url: "/about-us" },
+  openGraph: openGraph({ url: "/about-us" }),
 };
 
 /** A reader in a window nook, drawn in the page's own ink. */

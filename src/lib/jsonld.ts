@@ -32,14 +32,18 @@ export function organizationJsonLd() {
   };
 }
 
-export function bookJsonLd(book: Book) {
+export function bookJsonLd(book: Book): Record<string, unknown> | null {
   const author = book.authors?.name ? { "@type": "Person", name: book.authors.name } : undefined;
+  // A Book without an `author` fails Schema.org validation, so omit the schema
+  // entirely rather than emit an invalid one. Pages must skip rendering when
+  // this returns null.
+  if (!author) return null;
   return {
     "@context": "https://schema.org",
     "@type": "Book",
     name: book.title,
     ...(book.subtitle ? { alternativeHeadline: book.subtitle } : {}),
-    ...(author ? { author } : {}),
+    author,
     ...(book.isbn ? { isbn: book.isbn } : {}),
     ...(book.publisher ? { publisher: book.publisher } : {}),
     ...(book.published_year ? { datePublished: String(book.published_year) } : {}),

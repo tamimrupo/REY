@@ -3,13 +3,14 @@ import Link from "next/link";
 import { AvatarImage } from "@/components/avatar-image";
 import { EmptyState } from "@/components/ui";
 import { getAuthorsWithCounts } from "@/lib/data";
+import { openGraph } from "@/lib/open-graph";
 
 export const metadata = {
   title: "Authors",
   description:
     "Every author on our shelves, with a short bio and how many titles the club holds — browse the writers behind the REY BD library.",
   alternates: { canonical: "/authors" },
-  openGraph: { url: "/authors" },
+  openGraph: openGraph({ url: "/authors" }),
 };
 
 /**

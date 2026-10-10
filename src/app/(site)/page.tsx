@@ -19,6 +19,7 @@ import {
 import { couriersFor } from "@/lib/quotas";
 import { dhakaDayIndex, pickForToday, rotateForToday } from "@/lib/daily";
 import { money } from "@/lib/format";
+import { openGraph } from "@/lib/open-graph";
 
 export const metadata = {
   title: {
@@ -27,7 +28,7 @@ export const metadata = {
   description:
     "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door and collected when you're done. From ৳299/month.",
   alternates: { canonical: "/" },
-  openGraph: { url: "/" },
+  openGraph: openGraph({ url: "/" }),
 };
 
 export default async function HomePage() {

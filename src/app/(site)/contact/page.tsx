@@ -3,13 +3,14 @@ import Link from "next/link";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { SectionHeading } from "@/components/ui";
 import { getSiteSettings } from "@/lib/data";
+import { openGraph } from "@/lib/open-graph";
 
 export const metadata = {
   title: "Contact",
   description:
     "Contact REY BD, the book rental club in Bangladesh. Email, phone and WhatsApp for questions about plans, delivery or a book you cannot find.",
   alternates: { canonical: "/contact" },
-  openGraph: { url: "/contact" },
+  openGraph: openGraph({ url: "/contact" }),
 };
 
 export default async function ContactPage() {

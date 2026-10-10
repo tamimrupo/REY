@@ -5,13 +5,14 @@ import { EmptyState, SectionHeading } from "@/components/ui";
 import { getBooksCount, getCourierSettings, getPlanFeatures, getPlans } from "@/lib/data";
 import { couriersFor } from "@/lib/quotas";
 import { money } from "@/lib/format";
+import { openGraph } from "@/lib/open-graph";
 
 export const metadata = {
   title: "Book Subscription Plans",
   description:
     "Rent 2, 4 or 8 books a month with REY BD. Plans from ৳299/month with home delivery across Bangladesh and a refundable deposit.",
   alternates: { canonical: "/plans" },
-  openGraph: { url: "/plans" },
+  openGraph: openGraph({ url: "/plans" }),
 };
 
 export default async function PlansPage() {

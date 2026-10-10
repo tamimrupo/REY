@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { CmsArticle, MissingPage } from "@/components/cms-article";
 import { getCmsPage, getCmsPages } from "@/lib/data";
 import { clipDescription } from "@/lib/seo";
+import { openGraph } from "@/lib/open-graph";
 
 /**
  * Curated meta descriptions for the legal/info pages. Their CMS excerpts are
@@ -46,7 +47,7 @@ export async function generateMetadata(props: PageProps<"/p/[slug]">): Promise<M
     title: page?.title ?? "Page",
     description,
     alternates: { canonical: page ? `/p/${page.slug}` : undefined },
-    openGraph: { url: page ? `/p/${page.slug}` : undefined },
+    openGraph: page ? openGraph({ url: `/p/${page.slug}` }) : undefined,
   };
 }
 

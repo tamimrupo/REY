@@ -29,6 +29,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page += 1;
   }
 
+  // CMS pages whose /p/… URL 301s to a top-level static page (see the
+  // `redirects()` list in next.config.ts). Their /p/… address is never the
+  // canonical one, so keep it out of the sitemap — Ahrefs flags "3xx redirect
+  // in sitemap" otherwise.
+  const REDIRECTED_CMS_SLUGS = new Set(["about-us", "how-it-works"]);
+
   const staticPages = [
     { path: "", priority: 1 },
     { path: "/plans", priority: 0.9 },
@@ -74,7 +80,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.5,
       })),
     ...cmsPages
-      .filter((page) => page.status === "published")
+      .filter((page) => page.status === "published" && !REDIRECTED_CMS_SLUGS.has(page.slug))
       .map((page) => ({
         url: `${SITE_URL}/p/${page.slug}`,
         changeFrequency: "monthly" as const,

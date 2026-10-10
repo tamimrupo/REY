@@ -6,6 +6,7 @@ import { BookCard } from "@/components/book-card";
 import { EmptyState } from "@/components/ui";
 import { getAuthorBySlug, getAuthorTitles, getAuthorsWithCounts, getBorrowCountsByBook } from "@/lib/data";
 import { clipDescription } from "@/lib/seo";
+import { openGraph } from "@/lib/open-graph";
 import type { Book } from "@/lib/types";
 
 // Public catalogue page with no per-user data — safe to cache. One-hour ISR
@@ -27,7 +28,7 @@ export async function generateMetadata(props: PageProps<"/author/[slug]">) {
     title: author ? `${author.name} — books` : "Author",
     description,
     alternates: { canonical: author ? `/author/${author.slug}` : undefined },
-    openGraph: { url: author ? `/author/${author.slug}` : undefined },
+    openGraph: author ? openGraph({ url: `/author/${author.slug}` }) : undefined,
   };
 }
 

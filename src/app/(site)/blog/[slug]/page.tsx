@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/json-ld";
 import { getPost, POSTS } from "@/lib/blog";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { absoluteUrl } from "@/lib/site-url";
+import { openGraph } from "@/lib/open-graph";
 
 export async function generateMetadata(props: PageProps<"/blog/[slug]">) {
   const { slug } = await props.params;
@@ -15,10 +16,11 @@ export async function generateMetadata(props: PageProps<"/blog/[slug]">) {
     title: post.title,
     description: post.description,
     alternates: { canonical: `/blog/${post.slug}` },
-    openGraph: {
+    openGraph: openGraph({
       url: `/blog/${post.slug}`,
+      type: "article",
       images: [{ url: absoluteUrl(post.image), alt: post.title }],
-    },
+    }),
   };
 }
 
