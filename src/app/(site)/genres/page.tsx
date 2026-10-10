@@ -5,8 +5,9 @@ import { getGenres } from "@/lib/data";
 export const metadata = {
   title: "Browse Books by Genre",
   description:
-    "Browse books by genre to rent in Bangladesh — fiction, romance, thriller, self-help, kids and more, delivered to your door and collected when you're done.",
+    "Browse books to rent in Bangladesh by genre — fiction, romance, thriller, self-help and more, delivered to your door and collected when you're done.",
   alternates: { canonical: "/genres" },
+  openGraph: { url: "/genres" },
 };
 
 export default async function GenresPage() {

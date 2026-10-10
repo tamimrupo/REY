@@ -30,7 +30,9 @@ export async function generateMetadata(): Promise<Metadata> {
         "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door and collected when you're done.",
       type: "website",
       siteName: site.name,
-      url: SITE_URL,
+      // No hardcoded `url` here: each page sets its own `openGraph.url` (a
+      // relative path resolved against metadataBase) so og:url always equals
+      // that page's canonical URL instead of the homepage.
       images: [{ url: `${SITE_URL}/hero/reader-1880.jpg` }],
     },
     twitter: {

@@ -7,7 +7,9 @@ import { getAuthorsWithCounts } from "@/lib/data";
 export const metadata = {
   title: "Authors",
   description:
-    "Every author on our shelves, with their photo and how many titles the club holds.",
+    "Every author on our shelves, with a short bio and how many titles the club holds — browse the writers behind the REY BD library.",
+  alternates: { canonical: "/authors" },
+  openGraph: { url: "/authors" },
 };
 
 /**

@@ -19,6 +19,7 @@ import {
 } from "@/lib/data";
 import { money } from "@/lib/format";
 import { bookJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
+import { clipDescription } from "@/lib/seo";
 import type { Book } from "@/lib/types";
 
 // Public catalogue page with no per-user data — safe to cache. One-hour ISR
@@ -44,11 +45,13 @@ export async function generateMetadata(props: PageProps<"/library/[slug]">) {
   const book = await getBookBySlug(slug);
   if (!book) return { title: "Book" };
   const authorName = book.authors?.name;
-  const fallbackDescription = `Rent ${book.title}${authorName ? ` by ${authorName}` : ""} from REY BD's book rental club in Bangladesh — delivered to your door and collected when you're done.`;
+  const fallbackDescription = `Rent ${book.title}${authorName ? ` by ${authorName}` : ""} from REY BD's book rental club in Bangladesh — delivered to your door and collected when you're done, with no due dates or fines.`;
+  // Prefer the book's own description when it is long enough to be useful,
+  // otherwise fall back to a keyword-rich template. Both are clipped to the
+  // 120–155 character band Ahrefs expects.
+  const source = book.description?.trim() ?? "";
   const description =
-    book.description && book.description.trim().length >= 50
-      ? book.description.slice(0, 160)
-      : fallbackDescription;
+    source.length >= 120 ? clipDescription(source) : clipDescription(fallbackDescription);
   return {
     title: composeTitle(book.title, authorName),
     description,

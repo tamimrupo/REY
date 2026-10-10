@@ -11,6 +11,7 @@ export const metadata = {
   description:
     "Rent 2, 4 or 8 books a month with REY BD. Plans from ৳299/month with home delivery across Bangladesh and a refundable deposit.",
   alternates: { canonical: "/plans" },
+  openGraph: { url: "/plans" },
 };
 
 export default async function PlansPage() {

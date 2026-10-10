@@ -10,6 +10,9 @@ import type { Book } from "./types";
  */
 
 export function organizationJsonLd() {
+  // Only real social profiles belong in `sameAs`; an empty array fails Schema.org
+  // validation, so omit the property entirely when none are configured.
+  const sameAs = [DEFAULT_SITE.facebook, DEFAULT_SITE.instagram].filter(Boolean);
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -25,7 +28,7 @@ export function organizationJsonLd() {
       postalCode: "1229",
       addressCountry: "BD",
     },
-    sameAs: [DEFAULT_SITE.facebook, DEFAULT_SITE.instagram].filter(Boolean),
+    ...(sameAs.length ? { sameAs } : {}),
   };
 }
 
@@ -55,7 +58,7 @@ export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: `${SITE_URL}${item.path}`,
+      item: { "@id": `${SITE_URL}${item.path}` },
     })),
   };
 }

@@ -9,6 +9,7 @@ export const metadata = {
   description:
     "Guides on reading more, borrowing instead of buying, and the best books to read in Bangladesh — from the REY BD book rental club.",
   alternates: { canonical: "/blog" },
+  openGraph: { url: "/blog" },
 };
 
 export default function BlogIndexPage() {

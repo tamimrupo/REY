@@ -5,6 +5,7 @@ import { AuthorCard } from "@/components/author-card";
 import { BookCard } from "@/components/book-card";
 import { EmptyState } from "@/components/ui";
 import { getAuthorBySlug, getAuthorTitles, getAuthorsWithCounts, getBorrowCountsByBook } from "@/lib/data";
+import { clipDescription } from "@/lib/seo";
 import type { Book } from "@/lib/types";
 
 // Public catalogue page with no per-user data — safe to cache. One-hour ISR
@@ -14,10 +15,19 @@ export const revalidate = 3600;
 export async function generateMetadata(props: PageProps<"/author/[slug]">) {
   const { slug } = await props.params;
   const author = await getAuthorBySlug(slug);
+  const bio = author?.bio?.trim();
+  const description = author
+    ? bio && bio.length >= 120
+      ? clipDescription(bio)
+      : clipDescription(
+          `Rent books by ${author.name} from REY BD's book rental club in Bangladesh — delivered to your door and collected when you're done, with no due dates or fines.`,
+        )
+    : undefined;
   return {
     title: author ? `${author.name} — books` : "Author",
-    description: author?.bio?.slice(0, 150) ?? undefined,
+    description,
     alternates: { canonical: author ? `/author/${author.slug}` : undefined },
+    openGraph: { url: author ? `/author/${author.slug}` : undefined },
   };
 }
 

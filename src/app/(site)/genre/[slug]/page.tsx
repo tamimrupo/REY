@@ -22,6 +22,7 @@ export async function generateMetadata(props: PageProps<"/genre/[slug]">) {
     title: copy.title,
     description: copy.description,
     alternates: { canonical: `/genre/${genre.slug}` },
+    openGraph: { url: `/genre/${genre.slug}` },
   };
 }
 

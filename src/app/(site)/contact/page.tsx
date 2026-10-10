@@ -8,6 +8,8 @@ export const metadata = {
   title: "Contact",
   description:
     "Contact REY BD, the book rental club in Bangladesh. Email, phone and WhatsApp for questions about plans, delivery or a book you cannot find.",
+  alternates: { canonical: "/contact" },
+  openGraph: { url: "/contact" },
 };
 
 export default async function ContactPage() {

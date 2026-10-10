@@ -13,6 +13,7 @@ export async function generateMetadata() {
     title: "Browse the Library",
     description: `Browse ${count} books to rent in Bangladesh — fiction, romance, thriller, self-help and more, delivered to your door and collected when you're done.`,
     alternates: { canonical: "/library" },
+    openGraph: { url: "/library" },
   };
 }
 

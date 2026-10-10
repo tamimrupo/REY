@@ -25,8 +25,9 @@ export const metadata = {
     absolute: "Book Rental in Bangladesh — REY BD | Rent Books Monthly from ৳299",
   },
   description:
-    "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door in Dhaka and across Bangladesh, collected when you're done. From ৳299/month with a refundable deposit.",
+    "Rent books online in Bangladesh with REY BD. Choose 2, 4 or 8 titles a month, delivered to your door and collected when you're done. From ৳299/month.",
   alternates: { canonical: "/" },
+  openGraph: { url: "/" },
 };
 
 export default async function HomePage() {

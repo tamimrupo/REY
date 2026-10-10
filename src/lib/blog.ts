@@ -97,7 +97,7 @@ export const POSTS: BlogPost[] = [
     slug: "best-books-2026-bangladesh",
     title: "Best Books to Read in 2026 in Bangladesh",
     description:
-      "The books readers in Bangladesh are borrowing most in 2026 — fiction that stays with you, ideas that change how you think, and page-turners for the weekend.",
+      "The books readers in Bangladesh are borrowing most in 2026 — fiction that stays, ideas that change how you think, and page-turners for the weekend.",
     date: "2026-10-06",
     readingMinutes: 5,
     sections: [

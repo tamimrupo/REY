@@ -6,8 +6,9 @@ import { money } from "@/lib/format";
 export const metadata = {
   title: "Book Rental in Dhaka — Rent Books Delivered to Your Door",
   description:
-    "Book rental in Dhaka with REY BD. Rent 2, 4 or 8 books a month from ৳299, delivered to your door by Steadfast, Pathao, RedX or BD Post, and collected when you're done.",
+    "Book rental in Dhaka with REY BD. Rent 2, 4 or 8 books a month from ৳299, delivered to your door and collected when you're done.",
   alternates: { canonical: "/book-rental-dhaka" },
+  openGraph: { url: "/book-rental-dhaka" },
 };
 
 export default async function BookRentalDhakaPage() {
