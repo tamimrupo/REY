@@ -17,6 +17,7 @@ export function AuthorCard({
   bio,
   titles,
   linkName = true,
+  heading,
 }: {
   author: { name: string; slug?: string; avatar_url?: string | null };
   stats: string;
@@ -24,6 +25,8 @@ export function AuthorCard({
   titles: Book[];
   /** Off when the card is already on that author's own page. */
   linkName?: boolean;
+  /** Overrides the author name in the heading (e.g. an SEO H1). */
+  heading?: string;
 }) {
   const canLink = Boolean(linkName && author.slug);
 
@@ -48,7 +51,7 @@ export function AuthorCard({
           ) : (
             // On the author's own page the name is the page title, so it is the
             // sole <h1>. On a book page it stays an <h2> under the book title.
-            <h1 className="mt-3 text-2xl sm:text-3xl">{author.name}</h1>
+            <h1 className="mt-3 text-2xl sm:text-3xl">{heading ?? author.name}</h1>
           )}
 
           {stats ? <p className="mt-2 text-sm text-ink-muted">{stats}</p> : null}

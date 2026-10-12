@@ -32,7 +32,17 @@ export function organizationJsonLd() {
   };
 }
 
-export function bookJsonLd(book: Book): Record<string, unknown> | null {
+export type BookSchemaOverrides = {
+  /** Additional genre labels (e.g. ["Personal Finance"]). */
+  genre?: string[];
+  /** A LeaseOut subscription offer. */
+  offer?: { price: number | string; currency: string };
+};
+
+export function bookJsonLd(
+  book: Book,
+  overrides?: BookSchemaOverrides,
+): Record<string, unknown> | null {
   const author = book.authors?.name ? { "@type": "Person", name: book.authors.name } : undefined;
   // A Book without an `author` fails Schema.org validation, so omit the schema
   // entirely rather than emit an invalid one. Pages must skip rendering when
@@ -50,7 +60,34 @@ export function bookJsonLd(book: Book): Record<string, unknown> | null {
     ...(book.pages ? { numberOfPages: book.pages } : {}),
     ...(book.language ? { inLanguage: book.language } : {}),
     ...(book.description ? { description: book.description.slice(0, 300) } : {}),
+    ...(overrides?.genre?.length ? { genre: overrides.genre } : {}),
+    ...(overrides?.offer
+      ? {
+          offers: {
+            "@type": "Offer",
+            priceCurrency: overrides.offer.currency,
+            price: overrides.offer.price,
+            availability: "https://schema.org/InStock",
+            businessFunction: "https://schema.org/LeaseOut",
+            description: "Rental via monthly subscription from ৳299/month",
+          },
+        }
+      : {}),
     ...(book.cover_url ? { image: book.cover_url } : {}),
+  };
+}
+
+export function personJsonLd(person: {
+  name: string;
+  url: string;
+  sameAs?: string[];
+}): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: person.name,
+    url: person.url,
+    ...(person.sameAs?.length ? { sameAs: person.sameAs } : {}),
   };
 }
 

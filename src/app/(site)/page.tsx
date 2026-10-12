@@ -157,6 +157,13 @@ export default async function HomePage() {
               at your door.
             </h1>
 
+            <p className="mt-6 font-semibold text-ink" lang="bn">
+              রে বিডি (REY BD)
+            </p>
+            <p className="mt-2 max-w-lg leading-relaxed text-ink-soft" lang="bn">
+              বই ভাড়া — মাসে ২/৪/৮টি বই, ঢাকায় হোম ডেলিভারি, ৳২৯৯/মাস থেকে।
+            </p>
+
             <p className="mt-7 max-w-lg text-lg leading-relaxed text-ink-soft">
               Pick two, four or eight titles from the library. We deliver them, you read them, and
               when the month is up we collect them and bring your next box. Refundable deposit,

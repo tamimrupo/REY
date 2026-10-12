@@ -24,6 +24,16 @@ const nextConfig: NextConfig = {
       },
       { source: "/p/about-us", destination: "/about-us", statusCode: 301 },
       { source: "/p/how-it-works", destination: "/how-it-works", statusCode: 301 },
+
+      // Duplicate-edition canonicalization (GSC round-1). A handful of catalog
+      // titles were imported twice — once under a "-2" suffix or a second
+      // transliteration — and the two URLs were splitting ranking signals.
+      // 301 the loser to the canonical edition. Kept out of the sitemap (see
+      // sitemap.ts) so no redirecting URL is ever advertised.
+      { source: "/library/rich-dad-poor-dad-2", destination: "/library/rich-dad-poor-dad", statusCode: 301 },
+      { source: "/library/putul-nacher-itikatha", destination: "/library/putulanacher-itikatha", statusCode: 301 },
+      { source: "/library/chander-pahar-2", destination: "/library/chander-pahar", statusCode: 301 },
+      { source: "/library/gora-2", destination: "/library/gora", statusCode: 301 },
     ];
   },
 };

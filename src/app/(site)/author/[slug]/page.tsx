@@ -3,10 +3,14 @@ import { notFound } from "next/navigation";
 
 import { AuthorCard } from "@/components/author-card";
 import { BookCard } from "@/components/book-card";
+import { JsonLd } from "@/components/json-ld";
 import { EmptyState } from "@/components/ui";
 import { getAuthorBySlug, getAuthorTitles, getAuthorsWithCounts, getBorrowCountsByBook } from "@/lib/data";
-import { clipDescription } from "@/lib/seo";
+import { AUTHOR_COPY, BOOKS_HEADING } from "@/lib/gsc-round-1";
+import { breadcrumbJsonLd, personJsonLd } from "@/lib/jsonld";
 import { openGraph } from "@/lib/open-graph";
+import { clipDescription } from "@/lib/seo";
+import { absoluteUrl } from "@/lib/site-url";
 import type { Book } from "@/lib/types";
 
 // Public catalogue page with no per-user data — safe to cache. One-hour ISR
@@ -16,16 +20,25 @@ export const revalidate = 3600;
 export async function generateMetadata(props: PageProps<"/author/[slug]">) {
   const { slug } = await props.params;
   const author = await getAuthorBySlug(slug);
+  const copy = AUTHOR_COPY[slug];
   const bio = author?.bio?.trim();
   const description = author
-    ? bio && bio.length >= 120
-      ? clipDescription(bio)
-      : clipDescription(
-          `Rent books by ${author.name} from REY BD's book rental club in Bangladesh — delivered to your door and collected when you're done, with no due dates or fines.`,
-        )
+    ? copy?.description ??
+      (bio && bio.length >= 120
+        ? clipDescription(bio)
+        : clipDescription(
+            `Rent books by ${author.name} from REY BD's book rental club in Bangladesh — delivered to your door and collected when you're done, with no due dates or fines.`,
+          ))
     : undefined;
   return {
-    title: author ? `${author.name} — books` : "Author",
+    // Override titles are the finalized copy (some already carry the brand),
+    // so render them verbatim via `absolute` — the root layout's "· REY BD"
+    // template would otherwise double the brand.
+    title: author
+      ? copy?.title
+        ? { absolute: copy.title }
+        : `${author.name} — books`
+      : "Author",
     description,
     alternates: { canonical: author ? `/author/${author.slug}` : undefined },
     openGraph: author ? openGraph({ url: `/author/${author.slug}` }) : undefined,
@@ -48,6 +61,7 @@ export default async function AuthorPage(props: PageProps<"/author/[slug]">) {
   const { slug } = await props.params;
   const author = await getAuthorBySlug(slug);
   if (!author) notFound();
+  const copy = AUTHOR_COPY[slug];
 
   const [books, borrowCounts] = await Promise.all([
     getAuthorTitles(author.id, undefined, 60),
@@ -90,34 +104,82 @@ export default async function AuthorPage(props: PageProps<"/author/[slug]">) {
   }
 
   const bio =
+    copy?.bio?.trim() ||
     author.bio?.trim() ||
     (books.length
       ? `We hold ${books.length} title${books.length === 1 ? "" : "s"} by ${author.name}. Add one to your box and we will bring it to your door.`
       : `${author.name} has titles on our shelves.`);
 
   return (
-    <div className="container-page py-12">
-      <nav aria-label="Breadcrumb" className="text-xs text-ink-muted">
-        <Link href="/library" className="inline-block py-1.5 hover:text-ink">
-          Library
-        </Link>
-        <span aria-hidden className="mx-2">
-          /
-        </span>
-        <span aria-current="page">{author.name}</span>
-      </nav>
-
-      <div className="mt-8">
-        <AuthorCard
-          author={{ name: author.name, slug: author.slug, avatar_url: author.avatar_url }}
-          stats={statsParts.join(" · ")}
-          bio={bio}
-          titles={[]}
-          linkName={false}
+    <>
+      {copy?.person ? (
+        <JsonLd
+          data={personJsonLd({
+            name: copy.person.name,
+            url: absoluteUrl(`/author/${author.slug}`),
+            sameAs: copy.person.sameAs,
+          })}
         />
-      </div>
+      ) : null}
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Authors", path: "/authors" },
+          { name: author.name, path: `/author/${author.slug}` },
+        ])}
+      />
 
-      <section className="mt-14">
+      <div className="container-page py-12">
+        <nav aria-label="Breadcrumb" className="text-xs text-ink-muted">
+          <Link href="/authors" className="inline-block py-1.5 hover:text-ink">
+            Authors
+          </Link>
+          <span aria-hidden className="mx-2">
+            /
+          </span>
+          <span aria-current="page">{author.name}</span>
+        </nav>
+
+        <div className="mt-8">
+          <AuthorCard
+            author={{ name: author.name, slug: author.slug, avatar_url: author.avatar_url }}
+            stats={statsParts.join(" · ")}
+            bio={bio}
+            titles={[]}
+            linkName={false}
+            heading={copy?.h1}
+          />
+        </div>
+
+        {copy?.bestOf ? (
+          <section className="mt-14 max-w-3xl border-t border-line pt-8">
+            <div className="space-y-5">
+              {copy.bestOf.intro.map((paragraph) => (
+                <p key={paragraph} className="leading-relaxed text-ink-soft">
+                  {paragraph}
+                </p>
+              ))}
+              {copy.bestOf.books.length ? (
+                <>
+                  <p className="font-semibold text-ink">{BOOKS_HEADING}</p>
+                  <ul className="list-disc space-y-2 pl-5">
+                    {copy.bestOf.books.map((item) => (
+                      <li key={item.bold} className="leading-relaxed text-ink-soft">
+                        <strong className="font-semibold text-ink">{item.bold}</strong>
+                        {item.rest}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
+              {copy.bestOf.hook ? (
+                <p className="leading-relaxed text-ink-soft">{copy.bestOf.hook}</p>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="mt-14">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <h2 className="text-2xl sm:text-3xl">
             {books.length === 1 ? "The book" : "All books"} by {author.name}
@@ -182,6 +244,7 @@ export default async function AuthorPage(props: PageProps<"/author/[slug]">) {
           </div>
         )}
       </section>
-    </div>
+      </div>
+    </>
   );
 }

@@ -18,6 +18,7 @@ import {
   listBooks,
 } from "@/lib/data";
 import { money } from "@/lib/format";
+import { BOOK_COPY } from "@/lib/gsc-round-1";
 import { bookJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { clipDescription } from "@/lib/seo";
 import type { Book } from "@/lib/types";
@@ -44,20 +45,27 @@ export async function generateMetadata(props: PageProps<"/library/[slug]">) {
   const { slug } = await props.params;
   const book = await getBookBySlug(slug);
   if (!book) return { title: "Book" };
+  const copy = BOOK_COPY[slug];
   const authorName = book.authors?.name;
   const fallbackDescription = `Rent ${book.title}${authorName ? ` by ${authorName}` : ""} from REY BD's book rental club in Bangladesh — delivered to your door and collected when you're done, with no due dates or fines.`;
   // Prefer the book's own description when it is long enough to be useful,
   // otherwise fall back to a keyword-rich template. Both are clipped to the
-  // 120–155 character band Ahrefs expects.
+  // 120–155 character band Ahrefs expects. A GSC round-1 override wins outright.
   const source = book.description?.trim() ?? "";
-  const description =
-    source.length >= 120 ? clipDescription(source) : clipDescription(fallbackDescription);
+  const description = copy?.description
+    ? copy.description
+    : source.length >= 120
+      ? clipDescription(source)
+      : clipDescription(fallbackDescription);
   return {
-    title: composeTitle(book.title, authorName),
+    // Override titles are the finalized copy (some already carry the brand),
+    // so render them verbatim via `absolute` — the root layout's "· REY BD"
+    // template would otherwise double the brand.
+    title: copy?.title ? { absolute: copy.title } : composeTitle(book.title, authorName),
     description,
     alternates: { canonical: `/library/${book.slug}` },
     openGraph: {
-      title: book.title,
+      title: copy?.h1 ?? book.title,
       description,
       type: "website",
       url: `/library/${book.slug}`,
@@ -82,10 +90,11 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
   const { slug } = await props.params;
   const book = await getBookBySlug(slug);
   if (!book) notFound();
+  const copy = BOOK_COPY[slug];
 
   // A book without an author yields no valid Book schema (Schema.org requires
   // `author`); render the JSON-LD only when one is present.
-  const bookSchema = bookJsonLd(book);
+  const bookSchema = bookJsonLd(book, copy?.schema);
 
   const [plans, authorTitles, borrowCounts, seriesBooks, readNext] = await Promise.all([
     getPlans(),
@@ -131,7 +140,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Library", path: "/library" },
-          { name: book.title, path: `/library/${book.slug}` },
+          { name: copy?.h1 ?? book.title, path: `/library/${book.slug}` },
         ])}
       />
       <QuotaBar />
@@ -168,7 +177,7 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
               ) : null}
             </div>
 
-            <h1 className="mt-5 leading-tight text-ink">{book.title}</h1>
+            <h1 className="mt-5 leading-tight text-ink">{copy?.h1 ?? book.title}</h1>
             {book.subtitle ? (
               <p className="mt-2 text-lg text-ink-muted">{book.subtitle}</p>
             ) : null}
@@ -244,6 +253,84 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
           </div>
         </div>
       </div>
+
+      {copy ? (
+        <section className="border-t border-ink">
+          <div className="container-page py-16">
+            <div className="max-w-2xl space-y-12">
+              {copy.summary?.length ? (
+                <div>
+                  <h2 className="text-2xl font-semibold text-ink">About this book</h2>
+                  <div className="mt-5 space-y-4">
+                    {copy.summary.map((paragraph) => (
+                      <p key={paragraph} className="leading-relaxed text-ink-soft">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {copy.banglaSummary?.length ? (
+                <div lang="bn" className="space-y-4">
+                  {copy.banglaSummary.map((paragraph) => (
+                    <p key={paragraph} className="leading-relaxed text-ink-soft">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
+
+              {copy.pdfLine ? (
+                <p lang="bn" className="leading-relaxed text-ink">
+                  <strong className="font-semibold">{copy.pdfLine.bold}</strong>
+                  {copy.pdfLine.rest}
+                </p>
+              ) : null}
+
+              {copy.whyRent?.length ? (
+                <div>
+                  <h2 className="text-2xl font-semibold text-ink">Why rent it</h2>
+                  <ul className="mt-5 list-disc space-y-2 pl-5">
+                    {copy.whyRent.map((item) => (
+                      <li key={item} className="leading-relaxed text-ink-soft">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              {copy.plans?.length ? (
+                <div>
+                  <h2 className="text-2xl font-semibold text-ink">Plans</h2>
+                  <div className="mt-5 space-y-2">
+                    {copy.plans.map((line) => (
+                      <p key={line} className="leading-relaxed text-ink-soft">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {copy.faq?.length ? (
+                <div>
+                  <h2 className="text-2xl font-semibold text-ink">FAQ</h2>
+                  <dl className="mt-5 space-y-6">
+                    {copy.faq.map((item) => (
+                      <div key={item.q}>
+                        <dt className="font-semibold text-ink">{item.q}</dt>
+                        <dd className="mt-1 leading-relaxed text-ink-soft">{item.a}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {book.authors?.name ? (
         <div className="container-page pb-16">

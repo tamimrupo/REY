@@ -35,6 +35,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // in sitemap" otherwise.
   const REDIRECTED_CMS_SLUGS = new Set(["about-us", "how-it-works"]);
 
+  // Duplicate-edition book slugs that 301 to a canonical edition (see the
+  // `redirects()` list in next.config.ts). Keep their redirecting URLs out of
+  // the sitemap for the same reason as the CMS slugs above.
+  const REDIRECTED_BOOK_SLUGS = new Set([
+    "rich-dad-poor-dad-2",
+    "putul-nacher-itikatha",
+    "chander-pahar-2",
+    "gora-2",
+  ]);
+
   const staticPages = [
     { path: "", priority: 1 },
     { path: "/plans", priority: 0.9 },
@@ -55,11 +65,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: p.priority,
     })),
-    ...bookSlugs.map((slug) => ({
-      url: `${SITE_URL}/library/${slug}`,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
+    ...bookSlugs
+      .filter((slug) => !REDIRECTED_BOOK_SLUGS.has(slug))
+      .map((slug) => ({
+        url: `${SITE_URL}/library/${slug}`,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      })),
     ...genres
       .filter((genre) => genre.sort_order > 0)
       .map((genre) => ({
