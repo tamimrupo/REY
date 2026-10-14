@@ -17,8 +17,8 @@ export interface AgentResult {
   lead: ExtractedLead;
 }
 
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "openai/gpt-4o-mini";
+const LLM_URL = "https://api.deepseek.com/chat/completions";
+const DEFAULT_MODEL = "deepseek-chat";
 
 /* -------------------------------------------------------------------------- */
 /* Language detection                                                          */
@@ -160,7 +160,7 @@ function normalisePlan(value: string): Plan | null {
 }
 
 async function callLlm(inboundText: string, history: string): Promise<AgentResult | null> {
-  const key = process.env.OPENROUTER_API_KEY?.trim();
+  const key = process.env.DEEPSEEK_API_KEY?.trim();
   const model = process.env.META_AGENT_MODEL?.trim() || DEFAULT_MODEL;
   if (!key) return null;
 
@@ -168,13 +168,11 @@ async function callLlm(inboundText: string, history: string): Promise<AgentResul
   const timer = setTimeout(() => controller.abort(), 10_000);
 
   try {
-    const res = await fetch(OPENROUTER_URL, {
+    const res = await fetch(LLM_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://rey.bd",
-        "X-Title": "REY BD Sales Bot",
       },
       body: JSON.stringify({
         model,
@@ -189,7 +187,7 @@ async function callLlm(inboundText: string, history: string): Promise<AgentResul
     });
 
     if (!res.ok) {
-      console.error(`[rey:agent] OpenRouter ${res.status}: ${(await res.text()).slice(0, 300)}`);
+      console.error(`[rey:agent] DeepSeek ${res.status}: ${(await res.text()).slice(0, 300)}`);
       return null;
     }
 
