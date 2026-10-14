@@ -16,7 +16,7 @@ const VERIFY_TOKEN = () => process.env.META_VERIFY_TOKEN?.trim() || "";
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const mode = params.get("hub.mode");
-  const token = params.get("hub.verify_token");
+  const token = params.get("hub.verify_token")?.trim();
   const challenge = params.get("hub.challenge");
 
   if (mode === "subscribe" && token && token === VERIFY_TOKEN()) {
