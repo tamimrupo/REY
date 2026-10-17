@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BookCard } from "@/components/book-card";
 import { JsonLd } from "@/components/json-ld";
 import { EmptyState } from "@/components/ui";
-import { getGenres, getPlans, listBooks } from "@/lib/data";
+import { getGenreBookCount, getGenres, getPlans, listBooks } from "@/lib/data";
 import { money } from "@/lib/format";
 import { getGenreCopy } from "@/lib/genre-copy";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
@@ -19,11 +19,15 @@ export async function generateMetadata(props: PageProps<"/genre/[slug]">) {
   const genre = (await getGenres()).find((g) => g.slug === slug);
   if (!genre) return {};
   const copy = getGenreCopy(genre.name, genre.slug);
+  // A genre with no active titles is de-indexed until it is stocked. Dynamic,
+  // no hardcoded slugs — any empty shelf gets `noindex, follow` for now.
+  const empty = (await getGenreBookCount(genre.id)) === 0;
   return {
     title: copy.title,
     description: copy.description,
     alternates: { canonical: `/genre/${genre.slug}` },
     openGraph: openGraph({ url: `/genre/${genre.slug}` }),
+    ...(empty ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

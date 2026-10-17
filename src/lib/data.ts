@@ -620,6 +620,40 @@ export async function getBookById(id: string): Promise<Book | null> {
   return queryPublic<Book | null>((sb) => sb.from("books").select(BOOK_SELECT).eq("id", id).maybeSingle(), null);
 }
 
+/**
+ * The slug of the primary edition a variant points at via `canonical_book_id`.
+ * Used by the book page's metadata to emit `alternates.canonical` as the
+ * primary's own URL instead of the variant's self-reference.
+ */
+export async function getBookSlugById(id: string): Promise<string | null> {
+  return computePublic(
+    async (sb) => {
+      const { data } = await sb.from("books").select("slug").eq("id", id).maybeSingle();
+      return data?.slug ?? null;
+    },
+    null,
+  );
+}
+
+/**
+ * Number of active books in one genre. Backs the empty-genre `noindex` on
+ * `/genre/[slug]` so a shelf with no titles is de-indexed until it is stocked.
+ */
+export async function getGenreBookCount(genreId: string): Promise<number> {
+  return computePublic(
+    async (sb) => {
+      const { count, error } = await sb
+        .from("books")
+        .select("id", { count: "exact", head: true })
+        .eq("genre_id", genreId)
+        .eq("is_active", true);
+      if (error) throw new Error(error.message);
+      return count ?? 0;
+    },
+    0,
+  );
+}
+
 export async function getLanguages(): Promise<string[]> {
   const rows = await queryPublic<{ language: string | null }[]>(
     (sb) => sb.from("books").select("language").eq("is_active", true),

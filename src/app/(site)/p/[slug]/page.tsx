@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 
 import { CmsArticle, MissingPage } from "@/components/cms-article";
+import { JsonLd } from "@/components/json-ld";
 import { getCmsPage, getCmsPages } from "@/lib/data";
+import { faqJsonLd, parseFaq } from "@/lib/jsonld";
 import { clipDescription } from "@/lib/seo";
 import { openGraph } from "@/lib/open-graph";
 
@@ -60,5 +62,13 @@ export default async function CmsPageRoute(props: PageProps<"/p/[slug]">) {
   const { slug } = await props.params;
   const page = await getCmsPage(slug);
   if (!page) return <MissingPage slug={slug} />;
-  return <CmsArticle page={page} />;
+  // FAQPage structured data only on the FAQ page, parsed from its own CMS
+  // content so the schema always mirrors what the page shows.
+  const faqSchema = slug === "faq" ? faqJsonLd(parseFaq(page.content ?? "")) : null;
+  return (
+    <>
+      {faqSchema ? <JsonLd data={faqSchema} /> : null}
+      <CmsArticle page={page} />
+    </>
+  );
 }

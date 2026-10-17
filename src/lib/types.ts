@@ -67,6 +67,11 @@ export type Book = {
   series: string | null;
   /** Position within the series, 1-based. Null when nobody has said. */
   series_order: number | null;
+  /**
+   * The primary edition this row duplicates. When set, the variant's page
+   * canonicalizes to the primary's own URL instead of self-referencing.
+   */
+  canonical_book_id: string | null;
   created_at: string;
   // joined
   authors?: {

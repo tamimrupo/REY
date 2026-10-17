@@ -11,6 +11,7 @@ import { StatusPill } from "@/components/ui";
 import {
   getAuthorTitles,
   getBookBySlug,
+  getBookSlugById,
   getBorrowCountsByBook,
   getPlans,
   getReadNext,
@@ -57,13 +58,18 @@ export async function generateMetadata(props: PageProps<"/library/[slug]">) {
     : source.length >= 120
       ? clipDescription(source)
       : clipDescription(fallbackDescription);
+  // A variant edition canonicalizes to its primary's URL (from the primary's
+  // own slug), falling back to self-reference only when the primary row is gone.
+  const canonicalSlug = book.canonical_book_id
+    ? (await getBookSlugById(book.canonical_book_id)) ?? book.slug
+    : book.slug;
   return {
     // Override titles are the finalized copy (some already carry the brand),
     // so render them verbatim via `absolute` — the root layout's "· REY BD"
     // template would otherwise double the brand.
     title: copy?.title ? { absolute: copy.title } : composeTitle(book.title, authorName),
     description,
-    alternates: { canonical: `/library/${book.slug}` },
+    alternates: { canonical: `/library/${canonicalSlug}` },
     openGraph: {
       title: copy?.h1 ?? book.title,
       description,

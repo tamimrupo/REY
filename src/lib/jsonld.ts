@@ -103,3 +103,43 @@ export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
     })),
   };
 }
+
+/**
+ * Pulls Question/Answer pairs out of the CMS FAQ page's plain-text content.
+ * The FAQ page stores each entry as a "Q: …" / "A: …" line pair separated by a
+ * blank line; answers may wrap onto more lines. The trailing "Still stuck?"
+ * prose has no "Q:" so it is ignored.
+ */
+export function parseFaq(content: string): { q: string; a: string }[] {
+  const items: { q: string; a: string }[] = [];
+  for (const block of (content ?? "").split(/\n{2,}/)) {
+    let q = "";
+    const answer: string[] = [];
+    for (const rawLine of block.split("\n")) {
+      const line = rawLine.trim();
+      if (/^Q:\s*/i.test(line)) q = line.replace(/^Q:\s*/i, "").trim();
+      else if (/^A:\s*/i.test(line)) answer.push(line.replace(/^A:\s*/i, "").trim());
+      else if (q) answer.push(line);
+    }
+    if (q && answer.length) items.push({ q, a: answer.join(" ").replace(/\s+/g, " ").trim() });
+  }
+  return items;
+}
+
+/**
+ * FAQPage JSON-LD. Returns null (render nothing) when there are no valid Q/A
+ * pairs, so a malformed or empty FAQ never emits an invalid schema block.
+ */
+export function faqJsonLd(qas: { q: string; a: string }[]): Record<string, unknown> | null {
+  const mainEntity = qas.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  }));
+  if (!mainEntity.length) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity,
+  };
+}
