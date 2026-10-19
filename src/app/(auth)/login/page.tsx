@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { LoginForm, ResendConfirmationForm } from "@/components/auth-forms";
+import { LoginForm, MagicLinkForm, ResendConfirmationForm } from "@/components/auth-forms";
 import { SetupNotice } from "@/components/ui";
 
 export const metadata = {
@@ -27,6 +27,18 @@ export default async function LoginPage(props: PageProps<"/login">) {
       <div className="mt-8">
         <LoginForm next={next} />
       </div>
+
+      <details className="mt-6 rounded-card border border-line bg-white/60 p-4">
+        <summary className="cursor-pointer py-1.5 text-sm text-ink-soft">
+          Prefer no password? Email me a sign-in link
+        </summary>
+        <p className="mt-3 text-sm text-ink-soft">
+          We will email you a one-time link. Open it on this device and you are in.
+        </p>
+        <div className="mt-4">
+          <MagicLinkForm next={next} />
+        </div>
+      </details>
 
       <p className="mt-6 text-sm text-ink-soft">
         New to REY?{" "}

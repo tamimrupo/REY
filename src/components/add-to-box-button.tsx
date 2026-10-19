@@ -23,11 +23,13 @@ export function AddToBoxButton({
   back,
   className = "btn btn-primary",
   label = "Add to my box",
+  compact = false,
 }: {
   bookId: string;
   back: string;
   className?: string;
   label?: string;
+  compact?: boolean;
 }) {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [state, setState] = useState<QuotaState | null>(null);
@@ -51,7 +53,7 @@ export function AddToBoxButton({
   }
 
   if (!authed) {
-    return <GuestPickButton bookId={bookId} className={className} />;
+    return <GuestPickButton bookId={bookId} className={className} compact={compact} />;
   }
 
   if (!state) {

@@ -252,11 +252,12 @@ export type BookFilters = {
   language?: string;
   rarity?: string;
   demand?: string;
+  /** "az" (default) or "newest" — the library's sort control. */
+  sort?: "az" | "newest";
   page?: number;
   perPage?: number;
   includeInactive?: boolean;
   onlyRare?: boolean;
-  sort?: string;
 };
 
 export async function listBooks(filters: BookFilters = {}): Promise<{
@@ -275,10 +276,11 @@ export async function listBooks(filters: BookFilters = {}): Promise<{
 
   return computePublic(
     async (sb) => {
+      const newestFirst = filters.sort === "newest";
       let q = sb
         .from("books")
         .select(BOOK_SELECT_LIST, { count: "exact" })
-        .order("title", { ascending: true })
+        .order(newestFirst ? "created_at" : "title", { ascending: !newestFirst })
         .range(from, to);
 
       if (!filters.includeInactive) q = q.eq("is_active", true);

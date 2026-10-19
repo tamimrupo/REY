@@ -33,10 +33,11 @@ export default async function LibraryPage(props: PageProps<"/library">) {
   const genre = typeof search.genre === "string" ? search.genre : "";
   const language = typeof search.language === "string" ? search.language : "";
   const rarity = typeof search.rarity === "string" ? search.rarity : "";
+  const sort = search.sort === "newest" ? "newest" : "";
   const page = Number(typeof search.page === "string" ? search.page : "1") || 1;
 
   const [{ books, total, pages }, genres, languages] = await Promise.all([
-    listBooks({ q, genre, language, rarity, page, perPage: 24 }),
+    listBooks({ q, genre, language, rarity, sort: sort === "newest" ? "newest" : "az", page, perPage: 24 }),
     getGenres(),
     getLanguages(),
   ]);
@@ -67,20 +68,21 @@ export default async function LibraryPage(props: PageProps<"/library">) {
             q={q}
             genre={genre}
             language={language}
+            sort={sort}
             genres={genres}
             languages={languages}
           />
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Link
-              href={buildQuery({ q, genre, language })}
+              href={buildQuery({ q, genre, language, sort })}
               className="chip"
               data-active={rarity === ""}
             >
               All titles
             </Link>
             <Link
-              href={buildQuery({ q, genre, language, rarity: "rare" })}
+              href={buildQuery({ q, genre, language, rarity: "rare", sort })}
               className="chip"
               data-active={rarity === "rare"}
             >
@@ -103,6 +105,12 @@ export default async function LibraryPage(props: PageProps<"/library">) {
       </section>
 
       <section className="container-page py-12">
+        {total > 0 ? (
+          <p className="label-mono mb-6">
+            Showing {(page - 1) * 24 + 1}–{Math.min(page * 24, total)} of {total}
+          </p>
+        ) : null}
+
         {books.length === 0 ? (
           <EmptyState
             title="Nothing matched that search"
@@ -121,7 +129,7 @@ export default async function LibraryPage(props: PageProps<"/library">) {
         {pages > 1 ? (
           <nav className="mt-12 flex items-center justify-center gap-2">
             {page > 1 ? (
-              <Link href={buildQuery({ q, genre, language, rarity, page: String(page - 1) })} className="btn btn-ghost btn-sm">
+              <Link href={buildQuery({ q, genre, language, rarity, sort, page: String(page - 1) })} className="btn btn-ghost btn-sm">
                 ← Previous
               </Link>
             ) : null}
@@ -129,7 +137,7 @@ export default async function LibraryPage(props: PageProps<"/library">) {
               Page {page} of {pages}
             </span>
             {page < pages ? (
-              <Link href={buildQuery({ q, genre, language, rarity, page: String(page + 1) })} className="btn btn-ghost btn-sm">
+              <Link href={buildQuery({ q, genre, language, rarity, sort, page: String(page + 1) })} className="btn btn-ghost btn-sm">
                 Next →
               </Link>
             ) : null}

@@ -121,6 +121,40 @@ export async function resendConfirmationAction(
   return { ok: true, message: "Sent. Check your inbox and your spam folder." };
 }
 
+/** Passwordless sign-in: emails a one-time link. */
+export async function sendMagicLinkAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!supabaseConfigured) return fail(NOT_READY);
+
+  const email = String(formData.get("email") ?? "").trim();
+  const next = String(formData.get("next") ?? "/account");
+
+  if (!email.includes("@")) return fail("Enter a valid email address.");
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`,
+      shouldCreateUser: true,
+    },
+  });
+
+  if (error) {
+    if (/rate limit|too many|429/i.test(error.message)) {
+      return fail("Too many emails have been sent just now. Wait a few minutes and try again.");
+    }
+    return fail(error.message);
+  }
+
+  return {
+    ok: true,
+    message: "Sent. Open the link in your inbox to sign in — no password needed.",
+  };
+}
+
 export async function signInAction(
   _prev: ActionState,
   formData: FormData,

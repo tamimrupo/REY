@@ -260,6 +260,30 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
         </div>
       </div>
 
+      {/* Mobile quick action: the primary CTA stays within thumb reach while
+          the customer reads the page. */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 lg:hidden">
+        <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="label-mono">Rent this book</p>
+            {cheapest ? (
+              <p className="mt-0.5 truncate text-meta text-ink-muted">
+                from {money(cheapest.price_monthly)}/mo
+              </p>
+            ) : null}
+          </div>
+          <div className="shrink-0">
+            <AddToBoxButton
+              bookId={book.id}
+              back={`/library/${book.slug}`}
+              className="btn btn-primary"
+              label="Add to my box"
+              compact
+            />
+          </div>
+        </div>
+      </div>
+
       {copy ? (
         <section className="border-t border-ink">
           <div className="container-page py-16">
@@ -381,6 +405,9 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
           </div>
         </section>
       ) : null}
+
+      {/* Clearance for the sticky mobile action bar. */}
+      <div aria-hidden className="h-24 lg:hidden" />
     </>
   );
 }

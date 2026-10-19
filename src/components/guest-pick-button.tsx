@@ -29,9 +29,12 @@ function getServerPicksCookie() {
 export function GuestPickButton({
   bookId,
   className = "btn btn-primary",
+  compact = false,
 }: {
   bookId: string;
   className?: string;
+  /** Hides the "view box" helper — used in the sticky mobile bar. */
+  compact?: boolean;
 }) {
   const cookieString = useSyncExternalStore(
     subscribePicks,
@@ -100,7 +103,7 @@ export function GuestPickButton({
           {pending ? "Adding…" : "Pick this book"}
         </button>
       </form>
-      {count > 0 ? (
+      {!compact && count > 0 ? (
         <Link
           href="/checkout"
           className="mt-2 inline-block text-xs text-ink-muted underline hover:text-ink"

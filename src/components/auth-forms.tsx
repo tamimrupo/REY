@@ -6,6 +6,7 @@ import { ActionForm } from "@/components/forms/action-form";
 import {
   forgotPasswordAction,
   resendConfirmationAction,
+  sendMagicLinkAction,
   signInAction,
   signUpAction,
 } from "@/lib/actions/auth";
@@ -101,6 +102,32 @@ export function ForgotPasswordForm() {
         </label>
         <input
           id="email"
+          name="email"
+          type="email"
+          required
+          className="field"
+          autoComplete="email"
+        />
+      </div>
+    </ActionForm>
+  );
+}
+
+export function MagicLinkForm({ next = "/account" }: { next?: string }) {
+  return (
+    <ActionForm
+      action={sendMagicLinkAction}
+      submitLabel="Email me a sign-in link"
+      pendingLabel="Sending…"
+      submitClassName="btn btn-outline"
+    >
+      <input type="hidden" name="next" value={next} />
+      <div>
+        <label className="label" htmlFor="magic-email">
+          Email
+        </label>
+        <input
+          id="magic-email"
           name="email"
           type="email"
           required

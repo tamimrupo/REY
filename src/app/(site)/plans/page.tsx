@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { PlanCard } from "@/components/plan-card";
+import { TableLabels } from "@/components/table-labels";
 import { EmptyState, SectionHeading } from "@/components/ui";
 import { getBooksCount, getCourierSettings, getPlanFeatures, getPlans } from "@/lib/data";
 import { couriersFor } from "@/lib/quotas";
@@ -61,6 +62,46 @@ export default async function PlansPage() {
           />
         )}
       </section>
+
+      {plans.length ? (
+        <section className="container-page pb-16">
+          <SectionHeading
+            eyebrow="Compare"
+            title="Every plan, side by side"
+            description="All plans include monthly swaps, the refundable deposit and full library access. The only difference is how many books arrive each month."
+          />
+
+          <div className="mt-8 table-wrap">
+            <TableLabels />
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">Plan</th>
+                  <th scope="col">Books / month</th>
+                  <th scope="col">Monthly price</th>
+                  <th scope="col">Refundable deposit</th>
+                  <th scope="col">Swaps</th>
+                  <th scope="col">Delivery</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plans.map((plan) => (
+                  <tr key={plan.id}>
+                    <td className="font-medium text-ink">{plan.name}</td>
+                    <td>{plan.books_per_month}</td>
+                    <td>{money(plan.price_monthly)}</td>
+                    <td>{money(plan.security_deposit)}</td>
+                    <td>Every month</td>
+                    <td>
+                      {minDelivery === 0 ? "Free with BD Post" : `From ${money(minDelivery)}`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
 
       <section className="border-y border-line bg-white">
         <div className="container-page grid gap-10 py-16 lg:grid-cols-2">

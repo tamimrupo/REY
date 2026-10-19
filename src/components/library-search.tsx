@@ -15,12 +15,14 @@ export function LibrarySearch({
   q,
   genre,
   language,
+  sort,
   genres,
   languages,
 }: {
   q: string;
   genre: string;
   language: string;
+  sort: string;
   genres: { id: string; slug: string; name: string }[];
   languages: string[];
 }) {
@@ -122,6 +124,22 @@ export function LibrarySearch({
               {l}
             </option>
           ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="sr-only" htmlFor="sort">
+          Sort titles
+        </label>
+        <select
+          id="sort"
+          name="sort"
+          defaultValue={sort}
+          onChange={submitNow}
+          className="field h-14 w-auto border-0 bg-transparent"
+        >
+          <option value="">A–Z</option>
+          <option value="newest">Newest first</option>
         </select>
       </div>
 
