@@ -202,6 +202,7 @@ async function main() {
     ["/account/payments", "account-payments"],
     ["/account/addresses", "account-addresses"],
     ["/account/profile", "account-profile"],
+    ["/checkout", "checkout-guest"],
     [dyn.checkout, "checkout"],
     ["/admin", "admin"],
     ["/admin/orders", "admin-orders"],

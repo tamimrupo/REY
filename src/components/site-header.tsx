@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MobileMenu } from "@/components/mobile-menu";
 import { NavLink } from "@/components/nav-link";
 import { AccountButton } from "@/components/account-button";
+import { GuestBoxLink } from "@/components/guest-box-link";
 import { navLinks } from "@/lib/nav-links";
 import { ScrollElevation } from "@/components/motion";
 import { SearchOverlay } from "@/components/search-overlay";
@@ -51,6 +52,7 @@ export async function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <SearchOverlay />
+          <GuestBoxLink className="btn btn-ghost btn-sm" />
           <AccountButton className="btn btn-ghost btn-sm hidden sm:inline-flex" />
           <Link href="/plans" className="btn btn-primary btn-sm hidden sm:inline-flex">
             Start a plan

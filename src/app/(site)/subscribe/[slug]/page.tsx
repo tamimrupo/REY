@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { SubscribeForm, type PickBook } from "@/components/subscribe-form";
-import { requireUser } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { getAddresses, getCourierSettings, getPlanBySlug, getPlanFeatures, listBooks } from "@/lib/data";
 import { couriersFor } from "@/lib/quotas";
 import { money } from "@/lib/format";
@@ -20,7 +20,10 @@ export async function generateMetadata(props: PageProps<"/subscribe/[slug]">) {
 
 export default async function SubscribePage(props: PageProps<"/subscribe/[slug]">) {
   const { slug } = await props.params;
-  const session = await requireUser(`/subscribe/${slug}`);
+  const session = await getSession();
+  // Guests finish the same flow at the box checkout, where the account is
+  // created with the order instead of before it.
+  if (!session) redirect(`/checkout?plan=${encodeURIComponent(slug)}`);
 
   const [plan, features, catalog, addresses, courierSettings] = await Promise.all([
     getPlanBySlug(slug),

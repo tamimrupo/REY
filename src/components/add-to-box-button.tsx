@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { GuestPickButton } from "@/components/guest-pick-button";
 import { addToBoxFormAction } from "@/lib/actions/storefront";
 
 type QuotaState = {
@@ -28,19 +29,35 @@ export function AddToBoxButton({
   className?: string;
   label?: string;
 }) {
+  const [authed, setAuthed] = useState<boolean | null>(null);
   const [state, setState] = useState<QuotaState | null>(null);
 
   useEffect(() => {
     fetch("/api/quota", { headers: { accept: "application/json" } })
       .then((r) => r.json())
-      .then((d) => setState(d?.session ? d.state : null))
-      .catch(() => setState(null));
+      .then((d) => {
+        setAuthed(Boolean(d?.session));
+        setState(d?.session ? d.state : null);
+      })
+      .catch(() => setAuthed(false));
   }, []);
+
+  if (authed === null) {
+    return (
+      <button type="button" className={className} disabled aria-busy="true">
+        Pick this book
+      </button>
+    );
+  }
+
+  if (!authed) {
+    return <GuestPickButton bookId={bookId} className={className} />;
+  }
 
   if (!state) {
     return (
-      <Link href={`/login?next=${encodeURIComponent(back)}`} className={className}>
-        Sign in to pick this book
+      <Link href="/account/box" className={className}>
+        Open your box
       </Link>
     );
   }

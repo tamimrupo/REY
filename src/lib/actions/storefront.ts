@@ -5,8 +5,10 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 
-import { requireUser } from "@/lib/auth";
+import { getSession, requireUser } from "@/lib/auth";
 import { sendMetaEvent } from "@/lib/meta";
+import { MAX_PICKS } from "@/lib/picks-shared";
+import { clearPicks, readPicks, writePicks } from "@/lib/picks";
 import { quoteCourier } from "@/lib/quotas";
 import {
   getCourierSettings,
@@ -14,7 +16,9 @@ import {
   getPlanBySlug,
 } from "@/lib/data";
 import { supabaseConfigured } from "@/lib/env";
+import { createAdminClient, supabaseAdminConfigured } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import type { Plan } from "@/lib/types";
 import type { ActionState } from "@/lib/actions/types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -93,8 +97,225 @@ export async function deleteAddressAction(formData: FormData) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Guest box (no account needed)                                               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Adds a book to the guest's box. Works signed in or out — the box is a cookie,
+ * and the account is only created later at checkout.
+ */
+async function addPickById(bookId: string): Promise<ActionState> {
+  if (!bookId) return fail("Pick a book first.");
+
+  const picks = await readPicks();
+  if (picks.includes(bookId)) {
+    return { ok: true, message: "This book is already in your box." };
+  }
+  if (picks.length >= MAX_PICKS) {
+    return fail(`Your box holds up to ${MAX_PICKS} books. Remove one to add another.`);
+  }
+
+  const next = await writePicks([...picks, bookId]);
+  return {
+    ok: true,
+    message: `Added to your box — ${next.length} book${next.length === 1 ? "" : "s"} picked.`,
+  };
+}
+
+async function removePickById(bookId: string): Promise<ActionState> {
+  if (!bookId) return fail("Missing book.");
+
+  const picks = await readPicks();
+  await writePicks(picks.filter((id) => id !== bookId));
+  revalidatePath("/checkout");
+  return { ok: true, message: "Removed from your box." };
+}
+
+/** Form action used by the book page's "Pick this book" button. */
+export async function pickBookAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  return addPickById(String(formData.get("book_id") ?? "").trim());
+}
+
+export async function unpickBookAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  return removePickById(String(formData.get("book_id") ?? "").trim());
+}
+
+/** Programmatic variants used by the checkout's book picker. */
+export async function addPickAction(bookId: string): Promise<ActionState> {
+  return addPickById(bookId);
+}
+
+export async function removePickAction(bookId: string): Promise<ActionState> {
+  return removePickById(bookId);
+}
+
+/* -------------------------------------------------------------------------- */
 /* Checkout: plan + first box                                                  */
 /* -------------------------------------------------------------------------- */
+
+type SignupOrderInput = {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  userId: string;
+  email: string | null;
+  phone: string | null;
+  plan: Plan;
+  bookIds: string[];
+  addressId: string;
+  courier: string;
+  deliveryFee: number;
+  depositAmount: number;
+};
+
+/**
+ * Creates the membership, the first box (rentals), the outbound shipment and
+ * the invoice lines for a new member. Shared by the plan page and the guest
+ * checkout so the two paths cannot drift apart.
+ */
+async function createSignupOrder(
+  input: SignupOrderInput,
+): Promise<{ orderId: string } | { error: string }> {
+  const {
+    supabase,
+    userId,
+    email,
+    phone,
+    plan,
+    bookIds,
+    addressId,
+    courier,
+    deliveryFee,
+    depositAmount,
+  } = input;
+
+  const subtotal = Number(plan.price_monthly);
+  const total = subtotal + depositAmount + deliveryFee;
+
+  // 1. the membership (pending until the payment is verified)
+  const { data: subscription, error: subError } = await supabase
+    .from("subscriptions")
+    .insert({ user_id: userId, plan_id: plan.id, status: "pending" })
+    .select("id")
+    .single();
+  if (subError) return { error: subError.message };
+
+  // 2. the order
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .insert({
+      user_id: userId,
+      subscription_id: subscription.id,
+      type: "subscription_signup",
+      status: "pending_payment",
+      subtotal,
+      delivery_fee: deliveryFee,
+      deposit_amount: depositAmount,
+      total,
+      address_id: addressId,
+      courier,
+      trip_type: "outbound",
+      notes: `Courier: ${courier}`,
+    })
+    .select("id, order_number")
+    .single();
+  if (orderError) return { error: orderError.message };
+
+  // Meta funnel: the checkout has begun — report it server-side so blocked
+  // pixels still count. `after` keeps the redirect instant even when the ad
+  // network is slow (same pattern as sign-up and Purchase).
+  const jar = await cookies();
+  const head = await headers();
+  const fbp = jar.get("_fbp")?.value ?? null;
+  const fbc = jar.get("_fbc")?.value ?? null;
+  const clientIp = head.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  const userAgent = head.get("user-agent") ?? null;
+  after(() =>
+    sendMetaEvent({
+      name: "InitiateCheckout",
+      eventId: `checkout-${order.id}`,
+      email,
+      phone,
+      fbp,
+      fbc,
+      clientIp,
+      userAgent,
+      value: total,
+      currency: "BDT",
+    }),
+  );
+
+  // 3. the books, as rentals waiting in the box
+  const { error: rentalError } = await supabase.from("rentals").insert(
+    bookIds.map((bookId) => ({
+      user_id: userId,
+      subscription_id: subscription.id,
+      book_id: bookId,
+      order_id: order.id,
+      status: "pending",
+      due_at: new Date(Date.now() + 30 * 86_400_000).toISOString(),
+    })),
+  );
+  if (rentalError) return { error: rentalError.message };
+
+  const { data: rentals } = await supabase
+    .from("rentals")
+    .select("id, book_id, books(title)")
+    .eq("order_id", order.id);
+
+  // 4. the first trip
+  const { data: shipment } = await supabase
+    .from("shipments")
+    .insert({
+      user_id: userId,
+      order_id: order.id,
+      subscription_id: subscription.id,
+      address_id: addressId,
+      type: "outbound",
+      courier,
+      status: "pending",
+      customer_charge: deliveryFee,
+      merchant_charge: 0,
+    })
+    .select("id")
+    .single();
+
+  if (shipment && rentals?.length) {
+    await supabase.from("shipment_items").insert(
+      rentals.map((rental: { id: string }) => ({
+        shipment_id: shipment.id,
+        rental_id: rental.id,
+        direction: "out",
+      })),
+    );
+  }
+
+  // 5. the invoice lines
+  const bookLines = ((rentals ?? []) as any[]).map((rental) => ({
+    order_id: order.id,
+    book_id: rental.book_id as string,
+    label: `Rental — ${rental.books?.title ?? "Book"}`,
+    quantity: 1,
+    unit_price: 0,
+  }));
+
+  await supabase.from("order_items").insert([
+    ...bookLines,
+    { order_id: order.id, label: `Plan — ${plan.name} (month 1)`, quantity: 1, unit_price: subtotal },
+    ...(depositAmount > 0
+      ? [{ order_id: order.id, label: "Refundable security deposit", quantity: 1, unit_price: depositAmount }]
+      : []),
+    ...(deliveryFee > 0
+      ? [{ order_id: order.id, label: `Delivery — ${courier}`, quantity: 1, unit_price: deliveryFee }]
+      : []),
+  ]);
+
+  return { orderId: order.id };
+}
 
 /**
  * Creates the membership, the first box (rentals) and the outbound shipment.
@@ -154,128 +375,184 @@ export async function startSubscriptionAction(
     .maybeSingle();
   const depositAmount = existingDeposit ? 0 : Number(plan.security_deposit);
 
-  const subtotal = Number(plan.price_monthly);
-  const total = subtotal + depositAmount + deliveryFee;
+  if (!addressId) return fail("Add a delivery address before continuing.");
 
-  // 1. the membership (pending until the payment is verified)
-  const { data: subscription, error: subError } = await supabase
-    .from("subscriptions")
-    .insert({ user_id: session.userId, plan_id: plan.id, status: "pending" })
-    .select("id")
-    .single();
-  if (subError) return fail(subError.message);
+  const result = await createSignupOrder({
+    supabase,
+    userId: session.userId,
+    email: session.email,
+    phone: session.profile?.phone ?? null,
+    plan,
+    bookIds,
+    addressId,
+    courier,
+    deliveryFee,
+    depositAmount,
+  });
+  if ("error" in result) return fail(result.error);
 
-  // 2. the order
-  const { data: order, error: orderError } = await supabase
-    .from("orders")
-    .insert({
-      user_id: session.userId,
-      subscription_id: subscription.id,
-      type: "subscription_signup",
-      status: "pending_payment",
-      subtotal,
-      delivery_fee: deliveryFee,
-      deposit_amount: depositAmount,
-      total,
-      address_id: addressId,
-      courier,
-      trip_type: "outbound",
-      notes: `Courier: ${courier}`,
-    })
-    .select("id, order_number")
-    .single();
-  if (orderError) return fail(orderError.message);
+  redirect(`/checkout/${result.orderId}`);
+}
 
-  // Meta funnel: the checkout has begun — report it server-side so blocked
-  // pixels still count. `after` keeps the redirect instant even when the ad
-  // network is slow (same pattern as sign-up and Purchase).
-  const jar = await cookies();
-  const head = await headers();
-  const fbp = jar.get("_fbp")?.value ?? null;
-  const fbc = jar.get("_fbc")?.value ?? null;
-  const clientIp = head.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
-  const userAgent = head.get("user-agent") ?? null;
-  after(() =>
-    sendMetaEvent({
-      name: "InitiateCheckout",
-      eventId: `checkout-${order.id}`,
-      email: session.email,
-      phone: session.profile?.phone ?? null,
-      fbp,
-      fbc,
-      clientIp,
-      userAgent,
-      value: total,
-      currency: "BDT",
-    }),
-  );
+/**
+ * Guest checkout: creates the account, the first box and the order in one
+ * submission. This is the "pick first, sign up at checkout" path — the account
+ * exists by the time the payment page opens.
+ */
+export async function startGuestCheckoutAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!supabaseConfigured) return fail(NOT_READY);
 
-  // 3. the books, as rentals waiting in the box
-  const { error: rentalError } = await supabase.from("rentals").insert(
-    bookIds.map((bookId) => ({
-      user_id: session.userId,
-      subscription_id: subscription.id,
-      book_id: bookId,
-      order_id: order.id,
-      status: "pending",
-      due_at: new Date(Date.now() + 30 * 86_400_000).toISOString(),
-    })),
-  );
-  if (rentalError) return fail(rentalError.message);
+  // Honeypot — bots fill hidden fields; people never see this one.
+  if (String(formData.get("website") ?? "").trim()) {
+    return fail("Something went wrong. Please try again.");
+  }
 
-  const { data: rentals } = await supabase
-    .from("rentals")
-    .select("id, book_id, books(title)")
-    .eq("order_id", order.id);
+  const planSlug = String(formData.get("plan") ?? "");
+  const plan = await getPlanBySlug(planSlug);
+  if (!plan || !plan.is_active) return fail("That plan is no longer available.");
 
-  // 4. the first trip
-  const { data: shipment } = await supabase
-    .from("shipments")
-    .insert({
-      user_id: session.userId,
-      order_id: order.id,
-      subscription_id: subscription.id,
-      address_id: addressId,
-      type: "outbound",
-      courier,
-      status: "pending",
-      customer_charge: deliveryFee,
-      merchant_charge: 0,
-    })
-    .select("id")
-    .single();
-
-  if (shipment && rentals?.length) {
-    await supabase.from("shipment_items").insert(
-      rentals.map((rental: { id: string }) => ({
-        shipment_id: shipment.id,
-        rental_id: rental.id,
-        direction: "out",
-      })),
+  const picks = await readPicks();
+  if (picks.length === 0) return fail("Pick at least one book for your first box.");
+  if (picks.length > plan.books_per_month) {
+    return fail(
+      `The ${plan.name} plan holds ${plan.books_per_month} books. Choose a bigger plan or remove ${picks.length - plan.books_per_month}.`,
     );
   }
 
-  // 5. the invoice lines
-  const bookLines = ((rentals ?? []) as any[]).map((rental) => ({
-    order_id: order.id,
-    book_id: rental.book_id as string,
-    label: `Rental — ${rental.books?.title ?? "Book"}`,
-    quantity: 1,
-    unit_price: 0,
-  }));
+  const courier = String(formData.get("courier") ?? "steadfast");
+  const couriers = await getCourierSettings();
+  const deliveryFee = quoteCourier(couriers, courier, "outbound").customer_charge;
 
-  await supabase.from("order_items").insert([
-    ...bookLines,
-    { order_id: order.id, label: `Plan — ${plan.name} (month 1)`, quantity: 1, unit_price: subtotal },
-    ...(depositAmount > 0
-      ? [{ order_id: order.id, label: "Refundable security deposit", quantity: 1, unit_price: depositAmount }]
-      : []),
-    ...(deliveryFee > 0
-      ? [{ order_id: order.id, label: `Delivery — ${courier}`, quantity: 1, unit_price: deliveryFee }]
-      : []),
-  ]);
+  const supabase = await createClient();
+  const session = await getSession();
 
-  redirect(`/checkout/${order.id}`);
+  let userId: string;
+  let email: string | null;
+  let phone: string | null;
+
+  if (session) {
+    userId = session.userId;
+    email = session.email;
+    phone = session.profile?.phone ?? null;
+  } else {
+    const fullName = String(formData.get("full_name") ?? "").trim();
+    const emailInput = String(formData.get("email") ?? "").trim().toLowerCase();
+    const password = String(formData.get("password") ?? "");
+    const phoneInput = String(formData.get("phone") ?? "").trim();
+
+    if (!fullName) return fail("Please tell us your name.");
+    if (!emailInput.includes("@")) return fail("Enter a valid email address.");
+    if (password.length < 6) return fail("Password must be at least 6 characters.");
+    if (!phoneInput) return fail("Enter a phone number so the courier can reach you.");
+
+    if (!supabaseAdminConfigured) {
+      return fail(
+        "Checkout sign-up is not configured on this deployment yet. Create an account first, then finish your order.",
+      );
+    }
+
+    const admin = createAdminClient();
+    if (!admin) return fail("Checkout sign-up is not configured on this deployment yet.");
+
+    const { data: created, error: createError } = await admin.auth.admin.createUser({
+      email: emailInput,
+      password,
+      // Checkout sign-ups are trusted: the customer is placing a real order
+      // with a phone number, and blocking the order on an email click loses it.
+      email_confirm: true,
+      user_metadata: { full_name: fullName, phone: phoneInput },
+    });
+
+    if (createError) {
+      if (/already|exists|registered/i.test(createError.message)) {
+        return fail("That email already has an account. Sign in above — your box will still be here.");
+      }
+      return fail(createError.message);
+    }
+
+    userId = created.user.id;
+    email = emailInput;
+    phone = phoneInput;
+
+    // Establish the session before writing the order, so RLS sees the member.
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: emailInput,
+      password,
+    });
+    if (signInError) {
+      return fail(
+        `Your account was created, but we could not sign you in automatically. Sign in and your box will still be saved. (${signInError.message})`,
+      );
+    }
+
+    const jar = await cookies();
+    const head = await headers();
+    after(() =>
+      sendMetaEvent({
+        name: "CompleteRegistration",
+        eventId: `checkout-signup-${userId}`,
+        email: emailInput,
+        phone: phoneInput,
+        fbp: jar.get("_fbp")?.value ?? null,
+        fbc: jar.get("_fbc")?.value ?? null,
+        clientIp: head.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
+        userAgent: head.get("user-agent") ?? null,
+        contentName: "REY BD checkout sign-up",
+      }),
+    );
+  }
+
+  // Reuse a saved address, or create one from the form.
+  const addressIdRaw = String(formData.get("address_id") ?? "").trim();
+  let addressId: string | null = addressIdRaw || null;
+
+  if (!addressId) {
+    const payload = readAddress(formData);
+    if (!payload.recipient || !payload.phone || !payload.street) {
+      return fail("Add a delivery address before continuing.");
+    }
+    if (payload.is_default) {
+      await supabase.from("addresses").update({ is_default: false }).eq("user_id", userId);
+    }
+    const { data: address, error } = await supabase
+      .from("addresses")
+      .insert({ ...payload, user_id: userId, is_default: true })
+      .select("id")
+      .single();
+    if (error) return fail(`Could not save address: ${error.message}`);
+    addressId = address.id;
+  }
+
+  if (!addressId) return fail("Add a delivery address before continuing.");
+
+  // The deposit is charged once per member.
+  const { data: existingDeposit } = await supabase
+    .from("deposits")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("status", "held")
+    .maybeSingle();
+  const depositAmount = existingDeposit ? 0 : Number(plan.security_deposit);
+
+  const result = await createSignupOrder({
+    supabase,
+    userId,
+    email,
+    phone,
+    plan,
+    bookIds: picks,
+    addressId,
+    courier,
+    deliveryFee,
+    depositAmount,
+  });
+  if ("error" in result) return fail(result.error);
+
+  await clearPicks();
+  redirect(`/checkout/${result.orderId}`);
 }
 
 /* -------------------------------------------------------------------------- */

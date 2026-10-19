@@ -253,8 +253,8 @@ export default async function BookDetailPage(props: PageProps<"/library/[slug]">
             </div>
 
             <p className="mt-4 text-xs text-ink-muted">
-              Members pick their titles each month — put this in your box and confirm it when you
-              are ready. Not a member yet? Choose a plan and build your first box.
+              Pick it for your box — choose a plan and create your account at checkout. Already a
+              member? It goes straight to your monthly box.
             </p>
           </div>
         </div>

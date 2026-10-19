@@ -66,7 +66,7 @@ export function PlanCard({
         </p>
 
         <Link
-          href={`/subscribe/${plan.slug}`}
+          href={`/checkout?plan=${plan.slug}`}
           className={`${plan.is_popular ? "btn btn-primary" : "btn btn-outline"} mt-5 w-full`}
         >
           {ctaLabel}

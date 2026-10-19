@@ -39,10 +39,12 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+  // `/checkout` is the guest box + account-creation page and must stay public.
+  // Only a placed order (`/checkout/<id>`) needs a session.
   const isPrivate =
     pathname.startsWith("/admin") ||
     pathname.startsWith("/account") ||
-    pathname.startsWith("/checkout");
+    pathname.startsWith("/checkout/");
 
   // A Server Action POST must not be bounced to the login page. React expects an
   // action response, so a redirect here surfaces as "An unexpected response was
