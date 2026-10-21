@@ -1,7 +1,7 @@
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
-export const revalidate = 300;
+export const revalidate = 86400;
 
 export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (

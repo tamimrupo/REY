@@ -8,7 +8,7 @@ import { SITE_URL } from "@/lib/site-url";
 // authors and posts discoverable without waiting for the next deploy. Without
 // this the sitemap is a build-time snapshot — and can even be served from a
 // previous build's cache, as it just was.
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [authors, cmsPages, genres, plans] = await Promise.all([

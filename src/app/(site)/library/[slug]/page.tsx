@@ -24,9 +24,9 @@ import { bookJsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 import { clipDescription } from "@/lib/seo";
 import type { Book } from "@/lib/types";
 
-// Public catalogue page with no per-user data — safe to cache. One-hour ISR
+// Public catalogue page with no per-user data — safe to cache. Daily ISR
 // keeps TTFB low instead of hitting Supabase on every request.
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 /**
  * Keep the <title> tag short enough that Google/Semrush stop flagging it as

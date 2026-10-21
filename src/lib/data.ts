@@ -140,7 +140,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
  *
  * Cached because the metadata now blocks rendering (see htmlLimitedBots in
  * next.config.ts): a settings change shows on the site immediately and in the
- * page's <head> within five minutes.
+ * page's <head> within a day.
  */
 export const getSiteSettingsForMetadata = unstable_cache(
   async (): Promise<SiteSettings> => {
@@ -155,7 +155,7 @@ export const getSiteSettingsForMetadata = unstable_cache(
     }
   },
   ["site-settings-for-metadata"],
-  { revalidate: 300 },
+  { revalidate: 86400 },
 );
 
 export async function getPaymentSettings(): Promise<PaymentSettings> {
@@ -342,7 +342,7 @@ export const getBooksCount = unstable_cache(
     }
   },
   ["books-count"],
-  { revalidate: 300 },
+  { revalidate: 86400 },
 );
 
 /**

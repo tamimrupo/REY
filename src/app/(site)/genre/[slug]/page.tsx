@@ -10,9 +10,9 @@ import { getGenreCopy } from "@/lib/genre-copy";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { openGraph } from "@/lib/open-graph";
 
-// Public catalogue page with no per-user data — safe to cache. One-hour ISR
+// Public catalogue page with no per-user data — safe to cache. Daily ISR
 // keeps TTFB low instead of hitting Supabase on every request.
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export async function generateMetadata(props: PageProps<"/genre/[slug]">) {
   const { slug } = await props.params;
