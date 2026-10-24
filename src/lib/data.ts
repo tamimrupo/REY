@@ -102,7 +102,7 @@ async function computePublic<T>(run: (sb: any) => Promise<T>, fallback: T): Prom
 
 const BOOK_SELECT = "*, authors(name, slug, avatar_url, bio), genres(name)";
 const BOOK_SELECT_LIST =
-  "id, title, slug, cover_url, language, rarity, demand, is_active, total_copies, published_year, series, series_order, author_id, genre_id, authors(name), genres(name)";
+  "id, title, slug, cover_url, language, rarity, demand, is_active, total_copies, published_year, series, series_order, author_id, genre_id, created_at, authors(name), genres(name)";
 const RENTAL_SELECT = "*, books(id, title, slug, cover_url, authors(name))";
 const SHIPMENT_SELECT =
   "*, profiles(full_name, phone), addresses(*), orders(order_number), shipment_items(*, rentals(*, books(id, title, slug, cover_url, authors(name))))";

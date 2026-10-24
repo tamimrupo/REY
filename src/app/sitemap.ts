@@ -20,11 +20,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   // Pull every active book, paginating through listBooks (capped at 60/page).
-  const bookSlugs: string[] = [];
+  // Keep each book's creation date so the sitemap can carry a real lastmod.
+  const bookEntries: { slug: string; lastModified: string }[] = [];
   let page = 1;
   for (;;) {
     const result = await listBooks({ page, perPage: 60 });
-    for (const book of result.books) bookSlugs.push(book.slug);
+    for (const book of result.books) {
+      bookEntries.push({ slug: book.slug, lastModified: book.created_at });
+    }
     if (page >= result.pages) break;
     page += 1;
   }
@@ -65,10 +68,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: p.priority,
     })),
-    ...bookSlugs
-      .filter((slug) => !REDIRECTED_BOOK_SLUGS.has(slug))
-      .map((slug) => ({
-        url: `${SITE_URL}/library/${slug}`,
+    ...bookEntries
+      .filter((book) => !REDIRECTED_BOOK_SLUGS.has(book.slug))
+      .map((book) => ({
+        url: `${SITE_URL}/library/${book.slug}`,
+        lastModified: book.lastModified,
         changeFrequency: "monthly" as const,
         priority: 0.6,
       })),
@@ -95,11 +99,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((page) => page.status === "published" && !REDIRECTED_CMS_SLUGS.has(page.slug))
       .map((page) => ({
         url: `${SITE_URL}/p/${page.slug}`,
+        lastModified: page.updated_at,
         changeFrequency: "monthly" as const,
         priority: 0.4,
       })),
     ...POSTS.map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: post.date,
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
